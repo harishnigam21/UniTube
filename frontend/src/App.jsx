@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
@@ -504,6 +504,52 @@ export default function App() {
       ],
     },
   ]);
+  const [screenSize, setScreenSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const screen = {
+    video: { "480px": 1, "640px": 2, "768px": 2, "1024px": 3 },
+    short: { "480px": 2, "640px": 3, "768px": 4, "1024px": 5 },
+  };
+  useEffect(() => {
+    const handleReSize = () => {
+      setScreenSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener("resize", handleReSize);
+    return () => window.removeEventListener("resize", handleReSize);
+  }, []);
+
+  function divideArray(arr, n) {
+    const result = [];
+
+    for (let i = 0; i < arr.length; i += n) {
+      result.push(arr.slice(i, i + n));
+    }
+
+    return result;
+  }
+  const altContain = (videoArr, shortArr) => {
+    const videoArrChunk = divideArray(videoArr, 3);
+    const shortArrChunk = divideArray(shortArr, 4);
+    const finalContain = [];
+    console.log("Video", videoArrChunk);
+    console.log("Short", shortArrChunk);
+    const maxLength = Math.max(videoArrChunk.length, shortArrChunk.length);
+    console.log(maxLength);
+    for (let i = 0; i < maxLength; i++) {
+      if (videoArrChunk[i]) {
+        finalContain.push({ videos: videoArrChunk[i] });
+      }
+      if (shortArrChunk[i] && i < 2) {
+        finalContain.push({ shorts: shortArrChunk[i] });
+      }
+    }
+    console.log(finalContain);
+  };
+  useEffect(() => {
+    altContain(video, short);
+  }, [screenSize]);
   return (
     <main className="flex relative flex-col box-border">
       <Header navToggle={navToggle} setNavToggle={setNavToggle} login={login} />
