@@ -504,6 +504,7 @@ export default function App() {
       ],
     },
   ]);
+  const [finalContain, setFinalContain] = useState([]);
   const [screenSize, setScreenSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -530,13 +531,34 @@ export default function App() {
     return result;
   }
   const altContain = (videoArr, shortArr) => {
-    const videoArrChunk = divideArray(videoArr, 3);
-    const shortArrChunk = divideArray(shortArr, 4);
+    const videoArrChunk = divideArray(
+      videoArr,
+      screenSize.width <= 480
+        ? 1
+        : screenSize.width <= 640
+        ? 2
+        : screenSize.width <= 768
+        ? 2
+        : screenSize.width <= 1024
+        ? 3
+        : 3
+    );
+    const shortArrChunk = divideArray(
+      shortArr,
+      screenSize.width <= 300
+        ? 1
+        : screenSize.width <= 480
+        ? 2
+        : screenSize.width <= 640
+        ? 3
+        : screenSize.width <= 768
+        ? 4
+        : screenSize.width <= 1024
+        ? 5
+        : 5
+    );
     const finalContain = [];
-    console.log("Video", videoArrChunk);
-    console.log("Short", shortArrChunk);
     const maxLength = Math.max(videoArrChunk.length, shortArrChunk.length);
-    console.log(maxLength);
     for (let i = 0; i < maxLength; i++) {
       if (videoArrChunk[i]) {
         finalContain.push({ videos: videoArrChunk[i] });
@@ -545,7 +567,7 @@ export default function App() {
         finalContain.push({ shorts: shortArrChunk[i] });
       }
     }
-    console.log(finalContain);
+    setFinalContain(finalContain);
   };
   useEffect(() => {
     altContain(video, short);
@@ -555,7 +577,7 @@ export default function App() {
       <Header navToggle={navToggle} setNavToggle={setNavToggle} login={login} />
       <section className="flex absolute top-0 box-border w-full max-h-screen overflow-y-scroll">
         <SlideBar navToggle={navToggle} />
-        <Outlet context={{ video, short }} />
+        <Outlet context={{ video, short, finalContain }} />
       </section>
       <Footer />
     </main>

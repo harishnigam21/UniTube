@@ -1,1 +1,34 @@
 @import "tailwindcss";
+@plugin "tailwind-scrollbar";
+@layer base {
+  * {
+    @apply scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent;
+  }
+}
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background-color: #0f0f0f;
+}
+* {
+  box-sizing: border-box;
+}
+div,
+section,
+article {
+  transition: all 0.5s ease;
+}
+.noscrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+@theme {
+  --color-bgprimary: #0f0f0f;
+  --color-primary: #ff0033;
+  --color-secondary: white;
+  --color-tertiary: #2da6ff;
+  --color-border: #222222;
+  --color-text: white;
+  --color-txlight: #aaaaaa;
+}
