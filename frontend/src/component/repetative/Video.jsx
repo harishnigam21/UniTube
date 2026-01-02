@@ -1,4 +1,6 @@
 import { HiDotsVertical } from "react-icons/hi";
+import { getDaysBetween } from "../../utils/getDate";
+import { millifyNum } from "../../utils/millify";
 export default function Video({ vid }) {
   const handleHoverOver = (e) => {
     const target = e.currentTarget.childNodes[2];
@@ -43,9 +45,9 @@ export default function Video({ vid }) {
           </strong>
           <small className="text-txlight">{vid.channelName}</small>
           <small className="text-txlight flex gap-2 flex-nowrap items-center whitespace-nowrap">
-            <span>{vid.views}</span>
+            <span>{millifyNum(vid.views)} views</span>
             <span>.</span> {/** //TODO : align it center **/}
-            <span>{vid.postedAt}</span>
+            <span>{getDaysBetween(vid.postedAt)}</span>
           </small>
         </div>
         <div className="icon grow flex justify-end">
