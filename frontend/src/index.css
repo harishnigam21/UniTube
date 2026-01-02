@@ -1,28 +1,66 @@
 @import "tailwindcss";
 @plugin "tailwind-scrollbar";
+
 @layer base {
   * {
     @apply scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent;
+    &::-webkit-scrollbar {
+      width: 4px !important;
+      max-height: 4px !important;
+    }
+    &::-webkit-scrollbar-track {
+      margin-inline: calc(50% - 40px) !important;
+      border-radius: 100px !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      margin-inline: calc(50% - 40px) !important;
+      border-radius: 100px !important;
+    }
   }
 }
+
+@layer utilities {
+  .scrollbar-short {
+    &::-webkit-scrollbar {
+      height: 4px !important;
+      display: block !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      margin-inline: calc(50% - 40px) !important;
+      border-radius: 100px !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 100px !important;
+    }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+  }
+}
+
 body,
 #root {
   margin: 0;
   padding: 0;
   background-color: #0f0f0f;
 }
+
 * {
   box-sizing: border-box;
 }
+
 div,
-section,
-article {
-  transition: all 0.5s ease;
+section {
+  transition: opacity 0.3s ease;
 }
-.noscrollbar::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
+
 @theme {
   --color-bgprimary: #0f0f0f;
   --color-primary: #ff0033;
