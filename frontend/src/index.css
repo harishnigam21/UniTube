@@ -61,6 +61,9 @@ section {
   transition: all 0.5s ease;
 }
 
+button:disabled {
+  opacity: 0.5;
+}
 @theme {
   --color-bgprimary: #0f0f0f;
   --color-primary: #ff0033;

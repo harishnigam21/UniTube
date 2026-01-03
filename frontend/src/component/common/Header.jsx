@@ -73,7 +73,7 @@ export default function Header({
                     className="flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-border icon"
                   >
                     <item.icon className="text-2xl icon" />
-                    <span>{item.name}</span>
+                    <span className="whitespace-nowrap">{item.name}</span>
                   </div>
                 ) : (
                   <div
@@ -94,7 +94,7 @@ export default function Header({
                   className="flex items-center gap-2 p-1.5 rounded-full border border-border icon"
                 >
                   <item.icon className="text-2xl icon" />
-                  <span>{item.name}</span>
+                  <span className="whitespace-nowrap">{item.name}</span>
                 </div>
               ))}
         </article>
