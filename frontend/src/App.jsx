@@ -7,6 +7,10 @@ import SlideBar from "./component/common/SlideBar";
 import "./App.css";
 export default function App() {
   const [navToggle, setNavToggle] = useState(false);
+  const [sidebarToggle, setSidebarToggle] = useState({
+    status: true,
+    type: "type1",
+  });
   const [login, setLogin] = useState(false);
   const [video, setVideo] = useState([
     {
@@ -668,12 +672,23 @@ export default function App() {
   ]);
   return (
     <main className="flex relative flex-col box-border ">
-      <Header navToggle={navToggle} setNavToggle={setNavToggle} login={login} />
+      <Header
+        navToggle={navToggle}
+        setNavToggle={setNavToggle}
+        setSidebarToggle={setSidebarToggle}
+        login={login}
+      />
       <section className="flex absolute top-0 box-border w-full max-h-screen overflow-y-scroll">
-        <SlideBar navToggle={navToggle} />
-        <Outlet context={{ video, short }} />
+        <SlideBar
+          navToggle={navToggle}
+          setNavToggle={setNavToggle}
+          sidebarToggle={sidebarToggle}
+        />
+        <article className="flex flex-col w-full pt-13">
+          <Outlet context={{ video, short, setSidebarToggle }} />
+        </article>
       </section>
-      <Footer />
+      {/* <Footer /> */}
     </main>
   );
 }

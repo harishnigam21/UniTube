@@ -4,11 +4,14 @@ import HomeSkeleton from "./component/skeleton/Home";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
 export default function Home() {
-  const { video, short } = useOutletContext();
+  const { video, short, setSidebarToggle } = useOutletContext();
   const [videos, setVideos] = useState([]);
   const [category, setCategory] = useState([]);
   const [categorySelected, setCategorySelected] = useState("all");
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
+  useEffect(() => {
+    setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
+  }, []);
   useEffect(() => {
     const filterItem = async () => {
       if (categorySelected.toLowerCase() == "all") {
@@ -55,12 +58,12 @@ export default function Home() {
     }
   };
   return (
-    <section className="relative flex flex-col gap-3 px-2 pt-13 h-screen w-full overflow-y-scroll">
+    <section className="relative flex flex-col gap-3 px-2 h-screen w-full overflow-y-scroll">
       {loader ? (
         <HomeSkeleton />
       ) : (
         <>
-          <article className="flex sticky top-0 min-h-fit w-full flex-nowrap overflow-x-scroll noscrollbar gap-4 items-center p-2 z-40 bg-bgprimary">
+          <article className="flex sticky top-0 min-h-fit w-full flex-nowrap overflow-x-scroll noscrollbar gap-4 items-center p-2 z-30 bg-bgprimary">
             {category.map((categ, index) => (
               <p
                 key={`home/filterby/category/${index}`}

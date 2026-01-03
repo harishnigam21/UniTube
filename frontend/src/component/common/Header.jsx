@@ -1,25 +1,39 @@
 import items from "../../assets/data/static/header";
-export default function Header({ navToggle, setNavToggle, login }) {
+import { Link } from "react-router-dom";
+export default function Header({
+  navToggle,
+  setNavToggle,
+  login,
+  setSidebarToggle,
+}) {
   return (
-    <header className="flex flex-col justify-between sticky top-0 py-1.5 px-4 overflow-hidden z-50 bg-bgprimary">
+    <header className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 overflow-hidden z-50 bg-bgprimary">
       <article className="flex gap-8 justify-between items-center">
         <article className="flex gap-4 items-center">
           {items
             .filter((item) => item.id == 0)
             .map((item) => (
               <div
-                onClick={() => setNavToggle(!navToggle)}
+                onClick={() => {
+                  setNavToggle(!navToggle);
+                  setSidebarToggle((prev) => ({
+                    ...prev,
+                    status: prev.type == "type1" ? true : !prev.status,
+                  }));
+                }}
                 key={`${item.name}`}
                 className="flex items-center p-2 rounded-full hover:bg-border icon transition-all"
               >
                 <item.icon className="text-text text-2xl" />
               </div>
             ))}
-          <img
-            src={items[1].icon}
-            alt={items[1].name}
-            className="max-w-20 min-w-16 max-h-10 min-h-8 object-center object-cover"
-          />
+          <Link to={items[1].path}>
+            <img
+              src={items[1].icon}
+              alt={items[1].name}
+              className="max-w-20 min-w-16 max-h-10 min-h-8 object-center object-cover"
+            />
+          </Link>
         </article>
         <article className="flex gap-4 items-center justify-center grow">
           {items.slice(2, 4).map((item) =>

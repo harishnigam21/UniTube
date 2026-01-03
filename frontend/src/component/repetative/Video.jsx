@@ -1,6 +1,7 @@
 import { HiDotsVertical } from "react-icons/hi";
 import { getDaysBetween } from "../../utils/getDate";
 import { millifyNum } from "../../utils/millify";
+import { Link } from "react-router-dom";
 export default function Video({ vid }) {
   const handleHoverOver = (e) => {
     const target = e.currentTarget.childNodes[2];
@@ -17,7 +18,8 @@ export default function Video({ vid }) {
     }
   };
   return (
-    <article
+    <Link
+      to={`/watch?v=${vid.id}`}
       className={`relative flex flex-col gap-2 p-2 rounded-xl overflow-hidden text-text icon backdrop-blur-2xl w-full`}
       onMouseOver={(e) => handleHoverOver(e)}
       onMouseOut={(e) => handleHoverOut(e)}
@@ -62,6 +64,6 @@ export default function Video({ vid }) {
           className="w-full h-full blur-[200px]"
         />
       </div>
-    </article>
+    </Link>
   );
 }
