@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { useOutletContext } from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
 export default function Home() {
-  const { video, short, setSidebarToggle } = useOutletContext();
+  const { short, setSidebarToggle } = useOutletContext();
+  const video = useSelector((store) => store.videos.items);
   const [videos, setVideos] = useState([]);
   const [category, setCategory] = useState([]);
   const [categorySelected, setCategorySelected] = useState("all");
@@ -58,29 +60,29 @@ export default function Home() {
     }
   };
   return (
-    <section className="relative flex flex-col gap-3 px-2 h-screen w-full overflow-y-scroll">
+    <section className="flex flex-col gap-3 px-2 h-screen w-full overflow-y-auto overflow-x-hidden">
       {loader ? (
         <HomeSkeleton />
       ) : (
-        <>
-          <article className="flex sticky top-0 min-h-fit w-full flex-nowrap overflow-x-scroll noscrollbar gap-4 items-center p-2 z-30 bg-bgprimary">
+        <article className="relative flex flex-col w-full">
+          <article className="min-w-0 w-full max-w-full flex flex-wrap sticky bg-bgprimary top-0 z-10 py-5 px-2 overflow-x-auto noscrollbar gap-4">
             {category.map((categ, index) => (
-              <p
+              <span
                 key={`home/filterby/category/${index}`}
                 className="rounded-md bg-border text-text py-1 px-3 icon"
                 onClick={() => setCategorySelected(categ.toLowerCase())}
               >
                 {categ}
-              </p>
+              </span>
             ))}
           </article>
-          <article className=" text-text">
-            <article className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5 max-w-450 mx-auto">
+          <article className="w-full text-text">
+            <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
               {videos.map((video, index) => (
                 <React.Fragment key={video.id}>
                   <Video key={`video/${video.id}`} vid={video} />
                   {index === 1 && (
-                    <article className="col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
+                    <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
                       <article className="flex items-center justify-between mb-4 px-2">
                         <div className="flex items-center gap-2">
                           <span className="text-red-600 text-3xl font-bold italic">
@@ -120,7 +122,7 @@ export default function Home() {
               ))}
             </article>
           </article>
-        </>
+        </article>
       )}
     </section>
   );

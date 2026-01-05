@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Provider } from "react-redux";
+import myStore from "./store/Store";
 import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
@@ -12,336 +14,6 @@ export default function App() {
     type: "type1",
   });
   const [login, setLogin] = useState(false);
-  const [video, setVideo] = useState([
-    {
-      id: "v1",
-      channelId: "ch_js_mastery_01",
-      uploader: "JavaScript Mastery Team",
-      thumbnail: "https://picsum.photos/seed/v1/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=tech",
-      title: "Building a Modern YouTube Clone with React 18 & Tailwind CSS",
-      channelName: "JavaScript Mastery",
-      views: 1250000,
-      likes: 92000,
-      dislikes: 120,
-      postedAt: "31-12-2025_10:00:00",
-      duration: "45:12",
-      category: "Programming",
-      description:
-        "In this comprehensive masterclass, we dive deep into React 18 features, exploring the power of the new Concurrent Mode and hooks. We specifically focus on building high-performance Tailwind grid layouts that are fully responsive across mobile, tablet, and ultra-wide monitors. You will learn how to implement advanced React Router patterns for seamless navigation and state management techniques used in production-level applications.",
-      comments: [
-        {
-          id: "c1",
-          user: "CodeNewbie",
-          text: "Finally, a tutorial that explains the logic behind the grid! Super helpful.",
-          likes: 1200,
-        },
-        {
-          id: "c1_2",
-          user: "DevGuru",
-          text: "The way you handled the responsive breakpoints is much cleaner than how I've been doing it.",
-          likes: 450,
-        },
-        {
-          id: "c1_3",
-          user: "ReactFan",
-          text: "Is there a part 2 covering the backend integration?",
-          likes: 88,
-        },
-      ],
-    },
-    {
-      id: "v2",
-      channelId: "ch_baking_secrets_02",
-      uploader: "Chef Elena Rodriguez",
-      thumbnail: "https://picsum.photos/seed/v2/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=cooking",
-      title: "Why You Should Never Use Cold Butter for Cookies",
-      channelName: "Baking Secrets",
-      views: 850000,
-      likes: 42000,
-      dislikes: 1100,
-      postedAt: "02-01-2026_07:35:26",
-      duration: "12:05",
-      category: "Cooking",
-      description:
-        "Learn the scientific chemical reactions behind cookie textures. Many amateur bakers make the mistake of using butter straight from the fridge, but room-temperature 'creamed' butter is the key to that perfect chewy-on-the-inside, crispy-on-the-outside texture. We demonstrate three side-by-side batches—cold, melted, and room temp—to show you exactly how the fat structure changes the final spread and lift of your cookies.",
-      comments: [
-        {
-          id: "c2",
-          user: "CookieMonster",
-          text: "Perfect tips. My last batch was a flat mess, now I know why!",
-          likes: 3100,
-        },
-        {
-          id: "c2_2",
-          user: "BakerJoe",
-          text: "Does this apply to pie crusts too?",
-          likes: 120,
-        },
-        {
-          id: "c2_3",
-          user: "SugarRush",
-          text: "Can confirm, the room temp butter changed my life.",
-          likes: 15,
-        },
-      ],
-    },
-    {
-      id: "v3",
-      channelId: "ch_nomadic_03",
-      uploader: "Chris Travels",
-      thumbnail: "https://picsum.photos/seed/v3/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=travel",
-      title: "Inside Tokyo's Most Expensive Capsule Hotel",
-      channelName: "Nomadic Life",
-      views: 3400000,
-      likes: 125000,
-      dislikes: 3400,
-      postedAt: "01-12-2025_15:30:00",
-      duration: "22:45",
-      category: "Travel",
-      description:
-        "Spending 24 hours in a luxury $200 per night capsule hotel in the heart of Shinjuku. While most capsules are budget-friendly options for salarymen, this high-end facility offers a full spa, gourmet dining, and AI-controlled sleeping environments. We take you through the entire check-in process, the communal bathing culture, and see if a tiny box can actually feel like a 5-star suite.",
-      comments: [
-        {
-          id: "c3",
-          user: "JetSetter",
-          text: "That view from the communal lounge is insane for a capsule hotel.",
-          likes: 890,
-        },
-        {
-          id: "c3_2",
-          user: "TravelBug",
-          text: "I stayed there last year! The pajamas they give you are so comfy.",
-          likes: 210,
-        },
-        {
-          id: "c3_3",
-          user: "TokyoDreamer",
-          text: "Still seems expensive for a pod, but the spa looks worth it.",
-          likes: 45,
-        },
-      ],
-    },
-    {
-      id: "v4",
-      channelId: "ch_lofi_girl_04",
-      uploader: "Lofi Studio Team",
-      thumbnail: "https://picsum.photos/seed/v4/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=lofi",
-      title: "Lofi Hip Hop Radio - Beats to Study/Relax To",
-      channelName: "Lofi Girl",
-      views: 4500000,
-      likes: 980000,
-      dislikes: 1200,
-      postedAt: "01-01-2024_00:00:00",
-      duration: "LIVE",
-      category: "Music",
-      description:
-        "Join the global community for 24/7 chill beats, perfect for studying, working, or just relaxing after a long day. Our curated selection features underground producers from all over the world, bringing you the finest in lo-fi hip hop, jazzhop, and ambient sounds. Don't forget to participate in our live chat—it's one of the friendliest places on the internet!",
-      comments: [
-        {
-          id: "c4",
-          user: "Student22",
-          text: "Saves my grades every single semester.",
-          likes: 15000,
-        },
-        {
-          id: "c4_2",
-          user: "CoffeeShopVibes",
-          text: "Listening to this while the rain hits my window... perfection.",
-          likes: 4300,
-        },
-      ],
-    },
-    {
-      id: "v5",
-      channelId: "ch_tech_reviews_05",
-      uploader: "Marques K. Brown",
-      thumbnail: "https://picsum.photos/seed/v5/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=mkbhd",
-      title: "The Smartphone Awards 2025!",
-      channelName: "TechReviews",
-      views: 5100000,
-      likes: 310000,
-      dislikes: 8900,
-      postedAt: "30-12-2025_18:00:00",
-      duration: "18:20",
-      category: "Technology",
-      description:
-        "It’s that time of year again! We’ve spent the last 12 months testing every major flagship and budget release to bring you the definitive Smartphone Awards. From the 'Best Camera' and 'Best Battery Life' to the dreaded 'Bust of the Year,' we break down which companies pushed the envelope and which ones played it too safe. Stay tuned for the big reveal of our overall Phone of the Year.",
-      comments: [
-        {
-          id: "c5",
-          user: "PhoneFan",
-          text: "Expected winner for the camera category, but the battery award was a surprise!",
-          likes: 5000,
-        },
-        {
-          id: "c5_2",
-          user: "AndroidLoyal",
-          text: "Finally some recognition for the smaller brands. Great video.",
-          likes: 1200,
-        },
-      ],
-    },
-    {
-      id: "v6",
-      channelId: "ch_yoga_sarah_06",
-      uploader: "Sarah Zen",
-      thumbnail: "https://picsum.photos/seed/v6/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=yoga",
-      title: "15 Minute Full Body Stretch - Daily Routine",
-      channelName: "Yoga with Sarah",
-      views: 200000,
-      likes: 12000,
-      dislikes: 50,
-      postedAt: "15-06-2025_06:00:00",
-      duration: "15:00",
-      category: "Fitness",
-      description:
-        "Perfect for beginners sitting at a desk all day. This routine focuses on opening up the hip flexors, releasing tension in the lower back, and stretching the neck and shoulders. No equipment needed—just 15 minutes of your time to reset your body and mind. Consistent practice will improve your posture and reduce chronic desk-related pain.",
-      comments: [
-        {
-          id: "c6",
-          user: "HealthyHabits",
-          text: "Back pain gone after just three days of this routine!",
-          likes: 400,
-        },
-        {
-          id: "c6_2",
-          user: "DeskWorker",
-          text: "I do this during my lunch break. It's a game changer.",
-          likes: 85,
-        },
-      ],
-    },
-    {
-      id: "v7",
-      channelId: "ch_gaming_insider_07",
-      uploader: "Alex Hunter",
-      thumbnail: "https://picsum.photos/seed/v7/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=gaming",
-      title: "Top 10 Secrets in the New RPG Trailer",
-      channelName: "Gaming Insider",
-      views: 12000000,
-      likes: 450000,
-      dislikes: 12000,
-      postedAt: "25-12-2025_12:00:00",
-      duration: "08:15",
-      category: "Gaming",
-      description:
-        "Did you spot the hidden character in frame 42? We analyze the latest 4K trailer frame-by-frame to uncover hidden lore, secret weapons, and easter eggs that confirm the return of a fan-favorite villain. We also discuss the leaked map size and how it compares to previous entries in the franchise. This might be the biggest open world we've ever seen.",
-      comments: [
-        {
-          id: "c7",
-          user: "GamerPro",
-          text: "I totally missed the reflection in the window! Great catch.",
-          likes: 2500,
-        },
-        {
-          id: "c7_2",
-          user: "LoreMaster",
-          text: "The sword he's holding is definitely the one from the first game.",
-          likes: 900,
-        },
-      ],
-    },
-    {
-      id: "v8",
-      channelId: "ch_money_mindset_08",
-      uploader: "Financial Freedom Group",
-      thumbnail: "https://picsum.photos/seed/v8/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=money",
-      title: "How to Invest Your First $1000 in 2025",
-      channelName: "Money Mindset",
-      views: 650000,
-      likes: 38000,
-      dislikes: 500,
-      postedAt: "10-09-2025_09:15:00",
-      duration: "12:50",
-      category: "Finance",
-      description:
-        "A complete beginner's guide to index funds and wealth building. We explain the power of compound interest and why starting with just $1000 can set you up for long-term success. We compare different brokerage accounts, look at low-cost ETFs, and discuss the importance of an emergency fund before you even start investing. Stop letting your money sit in a 0% savings account.",
-      comments: [
-        {
-          id: "c8",
-          user: "Investor101",
-          text: "The chart on compound interest really opened my eyes.",
-          likes: 120,
-        },
-        {
-          id: "c8_2",
-          user: "SavingGrace",
-          text: "Wish I saw this in my 20s. Better late than never!",
-          likes: 55,
-        },
-      ],
-    },
-    {
-      id: "v9",
-      channelId: "ch_comedy_hub_09",
-      uploader: "Laugh Factory Team",
-      thumbnail: "https://picsum.photos/seed/v9/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=comedy",
-      title: "Every Zoom Meeting Ever (Parody)",
-      channelName: "The Comedy Hub",
-      views: 2800000,
-      likes: 195000,
-      dislikes: 1500,
-      postedAt: "20-05-2024_14:30:00",
-      duration: "04:30",
-      category: "Comedy",
-      description:
-        "You're on mute! Can everyone see my screen? We act out the most relatable and frustrating moments of remote work life. From the awkward 'no you go ahead' silences to the accidental background appearances by family members and pets. If you've spent the last three years in video calls, this video is for you.",
-      comments: [
-        {
-          id: "c9",
-          user: "OfficeLife",
-          text: "The 'frozen face' bit had me dying. Too accurate! 😂",
-          likes: 8000,
-        },
-        {
-          id: "c9_2",
-          user: "WfhKing",
-          text: "I'm watching this while in a Zoom meeting right now.",
-          likes: 3400,
-        },
-      ],
-    },
-    {
-      id: "v10",
-      channelId: "ch_space_science_10",
-      uploader: "Dr. Neil Orbit",
-      thumbnail: "https://picsum.photos/seed/v10/1280/720",
-      channelPicture: "https://i.pravatar.cc/150?u=space",
-      title: "What Happens if You Fall into a Black Hole?",
-      channelName: "Space Science",
-      views: 950000,
-      likes: 67000,
-      dislikes: 300,
-      postedAt: "28-12-2025_14:10:00",
-      duration: "14:10",
-      category: "Science",
-      description:
-        "Exploring the terrifying reality of spaghettification and time dilation. We use the latest CGI simulations to show what a journey past the event horizon might look like from both the traveler's perspective and an outside observer's. We also discuss Hawking Radiation and the information paradox—what actually happens to your physical matter once you're inside?",
-      comments: [
-        {
-          id: "c10",
-          user: "SpaceNerd",
-          text: "The visualization of the photon sphere was mind-blowing.",
-          likes: 1100,
-        },
-        {
-          id: "c10_2",
-          user: "ScienceRules",
-          text: "Time dilation is such a scary concept to think about.",
-          likes: 420,
-        },
-      ],
-    },
-  ]);
   const [short, setShort] = useState([
     {
       id: "s1",
@@ -672,23 +344,25 @@ export default function App() {
   ]);
   return (
     <main className="flex relative flex-col box-border ">
-      <Header
-        navToggle={navToggle}
-        setNavToggle={setNavToggle}
-        setSidebarToggle={setSidebarToggle}
-        login={login}
-      />
-      <section className="flex absolute top-0 box-border w-full max-h-screen overflow-y-scroll">
-        <SlideBar
+      <Provider store={myStore}>
+        <Header
           navToggle={navToggle}
           setNavToggle={setNavToggle}
-          sidebarToggle={sidebarToggle}
+          setSidebarToggle={setSidebarToggle}
+          login={login}
         />
-        <article className="flex flex-col w-full pt-13">
-          <Outlet context={{ video, short, setSidebarToggle }} />
-        </article>
-      </section>
-      {/* <Footer /> */}
+        <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
+          <SlideBar
+            navToggle={navToggle}
+            setNavToggle={setNavToggle}
+            sidebarToggle={sidebarToggle}
+          />
+          <article className="flex flex-col w-full max-w-full pt-13">
+            <Outlet context={{ short, setSidebarToggle }} />
+          </article>
+        </section>
+        {/* <Footer /> */}
+      </Provider>
     </main>
   );
 }

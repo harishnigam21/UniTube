@@ -52,9 +52,12 @@ body,
   background-color: #0f0f0f;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
+
 
 div,
 section {
@@ -63,6 +66,10 @@ section {
 
 button:disabled {
   opacity: 0.5;
+}
+.noscrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 @theme {
   --color-bgprimary: #0f0f0f;

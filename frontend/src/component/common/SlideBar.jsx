@@ -9,11 +9,13 @@ export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
       if (sidebarToggle.type == "type2") {
         setNavToggle(true);
         barRef.current.classList.add("fixed");
+        barRef.current.classList.remove("sticky");
       } else {
         barRef.current.classList.remove("fixed");
+        barRef.current.classList.add("sticky");
       }
     }
-  }, [sidebarToggle,setNavToggle]);
+  }, [sidebarToggle, setNavToggle]);
   const handleCollapseAndExpand = (e) => {
     const arrowTarget = e.currentTarget.childNodes[1];
     const target = e.currentTarget.parentElement.childNodes[1];
@@ -38,7 +40,7 @@ export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
           exit={{ opacity: 0, x: "-100%" }}
           transition={{ duration: 0.25, ease: "easeIn" }}
           ref={barRef}
-          className=" flex flex-col z-40 h-screen bg-bgprimary pl-4 pt-16 overflow-y-scroll gap-4 min-w-fit whitespace-nowrap transition-all"
+          className=" flex flex-col z-40 sticky left-0 h-screen bg-bgprimary pl-4 pt-16 overflow-y-scroll gap-4 min-w-fit whitespace-nowrap transition-all"
         >
           {items.map((item, index) => (
             <article
