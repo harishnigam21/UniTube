@@ -9,11 +9,13 @@ const channelSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  channelBanner: { type: String, require: true },
-  channelPicture: { type: String, require: true },
-  subscribers: {
-    type: String,
-    default: 0,
-  },
+  channelBanner: { type: String, required: true },
+  channelPicture: { type: String, required: true },
+  subscribers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+  ],
 });
 export default mongoose.model("channels", channelSchema);

@@ -3,16 +3,16 @@ const commentSchema = mongoose.Schema({
   post_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "posts",
-    require: true,
+    required: true,
   },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
-    require: true,
+    required: true,
   },
   commentText: {
     type: String,
-    require: true,
+    required: true,
   },
   likes: {
     type: Number,
@@ -24,12 +24,12 @@ const commentSchema = mongoose.Schema({
   },
   level: {
     type: Number,
-    require: true,
+    required: true,
     default: 0,
   },
   postedAt: {
     type: String,
-    require: true,
+    required: true,
   },
 });
 export default mongoose.model("comments", commentSchema);

@@ -3,29 +3,29 @@ const postSchema = mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
-    require: true,
+    required: true,
   },
   channel_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "channels",
-    require: true,
+    required: true,
   },
   title: {
     type: String,
-    require: true,
+    required: true,
   },
   type: {
     //video,short,audio,news,podcast
     type: String,
-    require: true,
+    required: true,
   },
   thumbnail: {
     type: String,
-    require: true,
+    required: true,
   },
   videoURL: {
     type: String,
-    require: true,
+    required: true,
   },
   likes: {
     type: Number,
@@ -37,19 +37,19 @@ const postSchema = mongoose.Schema({
   },
   postedAt: {
     type: String,
-    require: true,
+    required: true,
   },
   duration: {
     type: String,
-    require: true,
+    required: true,
   },
   description: {
     type: String,
-    require: true,
+    required: true,
   },
   details: {
     type: Object,
-    require: true,
+    required: true,
   },
 });
 export default mongoose.model("posts", postSchema);
