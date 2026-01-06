@@ -45,11 +45,9 @@ const postSchema = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
   },
   details: {
     type: Object,
-    required: true,
   },
 });
 export default mongoose.model("posts", postSchema);
