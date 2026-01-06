@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BsEmojiLaughing } from "react-icons/bs";
 
-export default function PostComment({ size, submitText }) {
+export default function PostComment({ size, submitText, level }) {
   const [showBtn, setShowBtn] = useState(false);
   const [commentIpt, setCommentIpt] = useState("");
   return (
@@ -20,7 +21,10 @@ export default function PostComment({ size, submitText }) {
           defaultValue={commentIpt}
           placeholder="Add a Comment..."
           className="w-full grow py-1 px-2 outline-none border-b border-border"
-          onFocus={() => setShowBtn(true)}
+          onFocus={() => {
+            setShowBtn(true);
+            console.log(level);
+          }}
           onBlur={() => setShowBtn(false)}
           onChange={(e) => setCommentIpt(e.target.value)}
         />

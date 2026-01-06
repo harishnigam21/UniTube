@@ -3,7 +3,7 @@ import { SlLike, SlDislike } from "react-icons/sl";
 import { FaChevronDown } from "react-icons/fa";
 import PostComment from "./PostComment";
 
-export default function Comment({ comm }) {
+export default function Comment({ comm, level }) {
   return (
     <article className="flex gap-4 w-full">
       <img
@@ -41,7 +41,7 @@ export default function Comment({ comm }) {
             Reply
           </small>
           <div className="hidden w-full basis-full">
-            <PostComment size={8} submitText={"Reply"} />
+            <PostComment size={8} submitText={"Reply"} level={level} />
           </div>
         </div>
         {comm.replies && comm.replies.length > 0 && (
@@ -65,7 +65,11 @@ export default function Comment({ comm }) {
             </p>
             <article className="hidden flex-col gap-4 ml-4">
               {comm.replies.map((item) => (
-                <Comment key={`subcomment/of/${item.id}`} comm={item} />
+                <Comment
+                  key={`subcomment/of/${item.id}`}
+                  comm={item}
+                  level={level + 1}
+                />
               ))}
             </article>
           </article>
