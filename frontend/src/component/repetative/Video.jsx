@@ -3,26 +3,10 @@ import { getDaysBetween } from "../../utils/getDate";
 import { millifyNum } from "../../utils/millify";
 import { Link } from "react-router-dom";
 export default function Video({ vid }) {
-  const handleHoverOver = (e) => {
-    const target = e.currentTarget.childNodes[2];
-    if (target) {
-      target.classList.remove("opacity-0");
-      target.classList.add("opacity-100");
-    }
-  };
-  const handleHoverOut = (e) => {
-    const target = e.currentTarget.childNodes[2];
-    if (target) {
-      target.classList.remove("opacity-100");
-      target.classList.add("opacity-0");
-    }
-  };
   return (
     <Link
       to={`/watch?v=${vid.id}`}
-      className={`relative flex flex-col gap-2 p-2 rounded-xl overflow-hidden text-text icon backdrop-blur-2xl w-full`}
-      onMouseOver={(e) => handleHoverOver(e)}
-      onMouseOut={(e) => handleHoverOut(e)}
+      className={`relative group flex flex-col gap-2 p-2 rounded-xl overflow-hidden text-text icon backdrop-blur-2xl w-full`}
     >
       <div className="relative">
         <img

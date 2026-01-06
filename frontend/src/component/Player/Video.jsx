@@ -10,7 +10,7 @@ import VideoPlayer from "./VideoPlayer";
 import VideoRecommendation from "./VideoRecommendation";
 
 export default function Video() {
-  const { setSidebarToggle } = useOutletContext();
+  const { setSidebarToggle, screenSize } = useOutletContext();
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
   const videoInfoSelector = useMemo(() => getVideoInfo(videoId), [videoId]);
@@ -44,7 +44,11 @@ export default function Video() {
           {/* comments */}
           <VideoComment comments={VideoInfo.comments} />
         </article>
-        <VideoRecommendation tags={VideoInfo.tags} />
+        <VideoRecommendation
+          tags={VideoInfo.tags}
+          id={VideoInfo.id}
+          screenSize={screenSize}
+        />
       </article>
     </section>
   );

@@ -21,7 +21,7 @@ export default function Home() {
         setTimeout(() => {
           setVideos(video);
           setLoader(false);
-        }, 3000);
+        }, 1000);
       } else {
         setVideos(
           video.filter(

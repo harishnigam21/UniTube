@@ -13,6 +13,17 @@ export default function App() {
     status: true,
     type: "type1",
   });
+  const [screenSize, setScreenSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const [login, setLogin] = useState(false);
   const [short, setShort] = useState([
     {
@@ -358,7 +369,7 @@ export default function App() {
             sidebarToggle={sidebarToggle}
           />
           <article className="flex flex-col w-full max-w-full pt-13">
-            <Outlet context={{ short, setSidebarToggle }} />
+            <Outlet context={{ short, setSidebarToggle, screenSize }} />
           </article>
         </section>
         {/* <Footer /> */}

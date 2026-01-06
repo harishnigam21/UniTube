@@ -44,12 +44,16 @@ export const recommendedItems = createSelector([interestItems], (items) => {
 });
 
 //role of tags here
-export const inthereRecommendations = (tags) =>
+export const inthereRecommendations = (tags, id) =>
   createSelector([selectItems], (items) => {
     if (tags.length == 0) {
       return items;
     }
-    return items.filter((item) => item.tags?.some((tag) => tags.includes(tag)));
+    return items.filter((item) => {
+      if (item.id != id) {
+        return item.tags?.some((tag) => tags.includes(tag));
+      }
+    });
   });
 
 //temporary, in future this will be fetched from DB
