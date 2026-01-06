@@ -12,6 +12,7 @@ const Validate = (req, res, next) => {
       message: "Invalid product ID format",
     });
   }
+  console.log("Mongoose ID Verified");
   next();
 };
 export default Validate;
