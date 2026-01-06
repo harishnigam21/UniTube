@@ -11,7 +11,9 @@ const registerValidation = (req, res, next) => {
     cnfPassword,
   } = req.body;
   const errors = [];
-  //firstname,lastname
+  //password mismatch
+  password != cnfPassword && errors.push("Password's does not matches");
+  //firstname,lastname,dob
   !firstname || firstname.length < 2
     ? errors.push("Missing First Name")
     : !lastname || lastname.length < 2
@@ -112,5 +114,7 @@ const registerValidation = (req, res, next) => {
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
+  console.log("Registration Input Validation done");
   next();
 };
+export default registerValidation;
