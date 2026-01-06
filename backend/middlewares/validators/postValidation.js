@@ -1,63 +1,64 @@
-const postValidation = (req, res, next) => {};
-const {
-  user_id,
-  channel_id,
-  title,
-  type,
-  thumbnail,
-  videoURL,
-  description,
-  details,
-} = req.body;
+const postValidation = (req, res, next) => {
+  const {
+    user_id,
+    channel_id,
+    title,
+    type,
+    thumbnail,
+    videoURL,
+    description,
+    details,
+  } = req.body;
 
-const errors = [];
+  const errors = [];
 
-// channel_id
-if (!user_id || !isValidObjectId(user_id)) {
-  errors.push("Invalid or missing user_id");
-}
-// channel_id
-if (!channel_id || !isValidObjectId(channel_id)) {
-  errors.push("Invalid or missing channel_id");
-}
+  // channel_id
+  if (!user_id || !isValidObjectId(user_id)) {
+    errors.push("Invalid or missing user_id");
+  }
+  // channel_id
+  if (!channel_id || !isValidObjectId(channel_id)) {
+    errors.push("Invalid or missing channel_id");
+  }
 
-// title
-if (!title || typeof title !== "string" || title.trim().length < 3) {
-  errors.push("Title must be at least 3 characters");
-}
+  // title
+  if (!title || typeof title !== "string" || title.trim().length < 3) {
+    errors.push("Title must be at least 3 characters");
+  }
 
-// type
-const allowedTypes = ["video", "short", "live"];
-if (!allowedTypes.includes(type)) {
-  errors.push("Invalid type");
-}
+  // type
+  const allowedTypes = ["video", "short", "live"];
+  if (!allowedTypes.includes(type)) {
+    errors.push("Invalid type");
+  }
 
-// thumbnail
-if (!thumbnail || !isValidURL(thumbnail)) {
-  errors.push("Invalid thumbnail URL");
-}
+  // thumbnail
+  if (!thumbnail || !isValidURL(thumbnail)) {
+    errors.push("Invalid thumbnail URL");
+  }
 
-// videoURL
-if (!videoURL || !isValidURL(videoURL)) {
-  errors.push("Invalid video URL");
-}
+  // videoURL
+  if (!videoURL || !isValidURL(videoURL)) {
+    errors.push("Invalid video URL");
+  }
 
-//duration and postedAt will be assign by backend code
+  //duration and postedAt will be assign by backend code
 
-// description (optional)
-if (description && typeof description !== "string") {
-  errors.push("Description must be a string");
-}
+  // description (optional)
+  if (description && typeof description !== "string") {
+    errors.push("Description must be a string");
+  }
 
-// details (optional)
-if (details && typeof details !== "object") {
-  errors.push("Details must be an object");
-}
+  // details (optional)
+  if (details && typeof details !== "object") {
+    errors.push("Details must be an object");
+  }
 
-if (errors.length > 0) {
-  return res.status(400).json({ errors });
-}
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
 
-next();
+  next();
+};
 
 export default postValidation;
