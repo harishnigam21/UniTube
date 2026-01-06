@@ -11,15 +11,26 @@ const registerValidation = (req, res, next) => {
     cnfPassword,
   } = req.body;
   const errors = [];
+  const nameRegex = /^[a-zA-Z]+$/;
   //password mismatch
   password != cnfPassword && errors.push("Password's does not matches");
   //firstname,lastname,dob
-  if (!firstname || firstname.length < 2) {
-    errors.push("Missing First Name");
+  if (!firstname || firstname.length < 2 || !nameRegex.test(firstname)) {
+    errors.push(
+      "Invalid First Name  (no space and no other characters except alphabets)"
+    );
   }
 
-  if (!lastname || lastname.length < 2) {
-    errors.push("Missing Last Name");
+  if (middlename.length > 2 && !nameRegex.test(middlename)) {
+    errors.push(
+      "Invalid Middle Name  (no space and no other characters except alphabets)"
+    );
+  }
+
+  if (!lastname || lastname.length < 2 || !nameRegex.test(lastname)) {
+    errors.push(
+      "Invalid Last Name (no space and no other characters except alphabets)"
+    );
   }
 
   if (!dob || dob.length < 8) {
@@ -29,7 +40,7 @@ const registerValidation = (req, res, next) => {
     const patterns = {
       password:
         /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|~`-])[^\s]{8,}$/,
-      name: /^[a-z]+$/,
+      name: /^[a-zA-Z]+$/,
       email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       dob: /^\d{2}-\d{2}-\d{4}$/,
       mobile: /^\d{10}$/,
