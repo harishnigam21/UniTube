@@ -14,13 +14,17 @@ const registerValidation = (req, res, next) => {
   //password mismatch
   password != cnfPassword && errors.push("Password's does not matches");
   //firstname,lastname,dob
-  !firstname || firstname.length < 2
-    ? errors.push("Missing First Name")
-    : !lastname || lastname.length < 2
-    ? errors.push("Missing Last Name")
-    : !dob || dob.length < 8
-    ? errors.push("Missing DOB")
-    : null;
+  if (!firstname || firstname.length < 2) {
+    errors.push("Missing First Name");
+  }
+
+  if (!lastname || lastname.length < 2) {
+    errors.push("Missing Last Name");
+  }
+
+  if (!dob || dob.length < 8) {
+    errors.push("Missing DOB");
+  }
   const validateInput = (type, value) => {
     const patterns = {
       password:
