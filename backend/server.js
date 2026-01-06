@@ -1,10 +1,19 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import connectDB from "./DB/DBConnection.js";
+import Auth from "./routes/Auth.js";
+
+const PORT = process.env.PORT || 5000;
 const app = express();
 configDotenv();
 connectDB();
-const PORT = process.env.PORT || 5000;
+
+//App level middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//App level Routes
+app.use("/", Auth);
 app.get("/", (req, res) =>
   res.status(200).json({ message: "UniTube Server is Running Perfect" })
 );
