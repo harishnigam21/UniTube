@@ -13,7 +13,7 @@ export default function Home() {
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
-  }, []);
+  }, [setSidebarToggle]);
   useEffect(() => {
     const filterItem = async () => {
       if (categorySelected.toLowerCase() == "all") {
