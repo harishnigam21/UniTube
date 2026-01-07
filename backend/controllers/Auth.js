@@ -6,20 +6,22 @@ export const LogIn = async (req, res) => {
   try {
     const ExistingUser = await Users.findOne({ email });
     if (!ExistingUser) {
+      console.log("Non-Registered User trying to login : ", email);
       return res.status(404).json({ message: "You are not registered yet !" });
     }
     const comparePassword = bcrypt.compare(password, ExistingUser.password);
     if (!comparePassword) {
+      console.log("Incorrect password received from : ", ExistingUser.email);
       return res
         .status(401)
         .json({ message: "Incorrect Password, Please try again" });
     }
     const access_token = jwt.sign(
-      { email: ExistingUser.email },
+      { email: ExistingUser.id },
       process.env.ACCESS_TOKEN_KEY,
       { expiresIn: "1d" }
     );
-    console.log("Successfully Verified User");
+    console.log("Successfully Verified User : ", ExistingUser.email);
     return res
       .status(200)
       .json({ message: "Successfully Verified User", actk: access_token });
@@ -43,6 +45,10 @@ export const Register = async (req, res) => {
     const userExist = await Users.findOne({ email });
 
     if (userExist) {
+      console.log(
+        "Registered User trying to register again : ",
+        userExist.email
+      );
       return res.status(409).json({ message: "Email ID already exist" });
     }
     const encryptedPassword = await bcrypt.hash(password, 5);
@@ -61,12 +67,12 @@ export const Register = async (req, res) => {
       console.log("Failed to create new User");
       return res.status(503).json({ message: "Failed to create new User" });
     }
-    console.log("Successfully Created User");
+    console.log("Successfully Created User : ", email);
     return res
       .status(201)
       .json({ message: "User has been registered Successfully " });
   } catch (error) {
-    console.log("Error occurred at Register Controller : ", error);
+    console.error("Error occurred at Register Controller : ", error);
     return res.status(500).json({ message: error.message });
   }
 };
