@@ -52,11 +52,12 @@ export const deleteChannel = async (req, res) => {
       { session }
     );
     if (!deleteChannel) {
+      await session.abortTransaction();
       console.error(
         `User : ${req.user.email} trying to delete channel : ${req.params.id} that does not exist or might user is not authorized`
       );
       return res.status(404).json({
-        message: "Channel no longer exists or you are not authorized",
+        message: "Channel no longer exists",
       });
     }
 
@@ -65,8 +66,14 @@ export const deleteChannel = async (req, res) => {
       { $pull: { channels: deleteChannel._id } },
       { session }
     );
+
+    await Post.deleteMany(
+      { user_id: req.user.id, channel_id: deleteChannel._id },
+      { session }
+    );
+
     await session.commitTransaction();
-    console.log("Successfully Channel has been deleted", deleteChannel);
+    console.log(`Channel ${deleteChannel._id} deleted by user ${req.user.id}`);
     return res
       .status(200)
       .json({ message: "Successfully Channel has been deleted" });
