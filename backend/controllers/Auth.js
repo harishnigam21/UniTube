@@ -6,12 +6,12 @@ export const LogIn = async (req, res) => {
   try {
     const ExistingUser = await Users.findOne({ email });
     if (!ExistingUser) {
-      console.log("Non-Registered User trying to login : ", email);
+      console.error("Non-Registered User trying to login : ", email);
       return res.status(404).json({ message: "You are not registered yet !" });
     }
     const comparePassword = bcrypt.compare(password, ExistingUser.password);
     if (!comparePassword) {
-      console.log("Incorrect password received from : ", ExistingUser.email);
+      console.error("Incorrect password received from : ", ExistingUser.email);
       return res
         .status(401)
         .json({ message: "Incorrect Password, Please try again" });
@@ -45,7 +45,7 @@ export const Register = async (req, res) => {
     const userExist = await Users.findOne({ email });
 
     if (userExist) {
-      console.log(
+      console.error(
         "Registered User trying to register again : ",
         userExist.email
       );
@@ -64,7 +64,7 @@ export const Register = async (req, res) => {
     };
     const createUser = await Users.create(newUser);
     if (!createUser) {
-      console.log("Failed to create new User");
+      console.error("Failed to create new User");
       return res.status(503).json({ message: "Failed to create new User" });
     }
     console.log("Successfully Created User : ", email);
