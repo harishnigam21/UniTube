@@ -40,5 +40,12 @@ const userSchema = mongoose.Schema({
       ref: "channels",
     },
   ],
+  channels: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "channels",
+      default: [],
+    },
+  ],
 });
 export default mongoose.model("users", userSchema);
