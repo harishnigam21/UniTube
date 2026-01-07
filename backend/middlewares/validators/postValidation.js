@@ -1,6 +1,5 @@
 const postValidation = (req, res, next) => {
   const {
-    user_id,
     channel_id,
     title,
     type,
@@ -12,10 +11,6 @@ const postValidation = (req, res, next) => {
 
   const errors = [];
 
-  // channel_id
-  if (!user_id || !isValidObjectId(user_id)) {
-    errors.push("Invalid or missing user_id");
-  }
   // channel_id
   if (!channel_id || !isValidObjectId(channel_id)) {
     errors.push("Invalid or missing channel_id");
