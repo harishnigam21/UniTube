@@ -4,11 +4,11 @@ import {
   deleteChannel,
   subscriberToggle,
   updateChannel,
-} from "../controllers/Channel";
-import jwtVerifier from "../middlewares/jwt/jwtVerifier";
-import Validate from "../middlewares/validators/mongooseIDValidation";
-import channelValidation from "../middlewares/validators/channelValidation";
-import channelUpdateValidation from "../middlewares/validators/channelUpdateValidation";
+} from "../controllers/Channel.js";
+import jwtVerifier from "../middlewares/jwt/jwtVerifier.js";
+import Validate from "../middlewares/validators/mongooseIDValidation.js";
+import channelValidation from "../middlewares/validators/channelValidation.js";
+import channelUpdateValidation from "../middlewares/validators/channelUpdateValidation.js";
 const router = express.Router();
 router
   .route("/create_channel")
