@@ -11,7 +11,7 @@ const channelSchema = mongoose.Schema({
   },
   channelBanner: { type: String, required: true },
   channelPicture: { type: String, required: true },
-  description: { type: String, required: true },
+  description: { type: String, default: "Description not provided" },
   subscribers: [
     {
       type: mongoose.Schema.Types.ObjectId,

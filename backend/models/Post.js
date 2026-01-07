@@ -45,6 +45,7 @@ const postSchema = mongoose.Schema({
   },
   description: {
     type: String,
+    default: "Description not provided",
   },
   details: {
     type: Object,
