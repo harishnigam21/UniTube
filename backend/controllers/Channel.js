@@ -7,14 +7,16 @@ export const createChannel = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const createChannel = await Channel.create(
-      {
-        user_id: req.user.id,
-        channelName,
-        channelBanner,
-        channelPicture,
-        description,
-      },
+    const [createChannel] = await Channel.create(
+      [
+        {
+          user_id: req.user.id,
+          channelName,
+          channelBanner,
+          channelPicture,
+          description,
+        },
+      ],
       { session }
     );
     await User.updateOne(
