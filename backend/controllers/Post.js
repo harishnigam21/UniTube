@@ -3,7 +3,51 @@ import Post from "../models/Post.js";
 import Channel from "../models/Channel.js";
 import { getNextDate } from "../utils/getDate";
 import formatDuration from "../utils/getTime.js";
-export const getPost = async (req, res) => {};
+//TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
+export const getPost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).lean();
+    if (!post) {
+      console.error(`${req.user.id} Failed to fetch post`);
+      return res.status(404).json({ message: "Failed to fetch post" });
+    }
+    console.log("Successfully fetched post");
+    return res
+      .status(200)
+      .json({ message: "Successfully fetched post", data: post });
+  } catch (error) {
+    console.error("Error Occurred at getPost controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getMorePost = async (req, res) => {
+  const { cursor } = req.query;
+  const parsedLimit = Math.min(parseInt(req.query.limit) || 10, 20);
+  try {
+    const query = {};
+    if (cursor) {
+      query.createdAt = { $lt: new Date(cursor) };
+    }
+    const posts = await Post.find(query)
+      .sort({
+        createdAt: -1,
+      })
+      .limit(parsedLimit + 1)
+      .lean();
+    let nextCursor = null;
+    if (posts.length > parsedLimit) {
+      const lastPost = posts.pop();
+      nextCursor = lastPost.createdAt.toISOString();
+    }
+    console.log("Successfully fetch Post");
+    return res
+      .status(200)
+      .json({ message: "Successfully fetched Post", data: posts, nextCursor });
+  } catch (error) {
+    console.error("Error from getMorePost Controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 export const createPost = async (req, res) => {
   const { channel_id, title, type, thumbnail, videoURL, description, details } =
     req.body;
@@ -48,7 +92,42 @@ export const createPost = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-export const updatePost = async (req, res) => {};
+export const updatePost = async (req, res) => {
+  try {
+    //remove unwanted payloads
+    const acceptedKey = ["thumbnail", "description", "details"];
+    const updatedPayLoad = {};
+    for (const key of acceptedKey) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
+    const updatePost = await Post.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user_id: req.user.id,
+      },
+      { $set: updatedPayLoad },
+      { new: true, runValidators: true }
+    );
+    if (!updatePost) {
+      console.error(
+        `User : ${req.user.email} trying to update Post : ${req.params.id} that does not exist or might user is not authorized`
+      );
+      return res.status(404).json({
+        message: "Post no longer exists",
+      });
+    }
+    console.log("Successfully Post has been updated", updatePost);
+    return res.status(200).json({
+      message: "Successfully Post has been updated",
+      data: updatePost,
+    });
+  } catch (error) {
+    console.error("Error from updatePost controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 export const deletePost = async (req, res) => {
   try {
     const dltPost = await Post.findOneAndDelete({
