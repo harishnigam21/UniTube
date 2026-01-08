@@ -18,5 +18,6 @@ const channelSchema = mongoose.Schema({
       ref: "users",
     },
   ],
+  timestamps: true,
 });
 export default mongoose.model("channels", channelSchema);

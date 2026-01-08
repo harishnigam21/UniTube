@@ -50,5 +50,6 @@ const postSchema = mongoose.Schema({
   details: {
     type: Object,
   },
+  timestamps: true,
 });
 export default mongoose.model("posts", postSchema);
