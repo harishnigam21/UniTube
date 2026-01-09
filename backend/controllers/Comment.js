@@ -11,13 +11,13 @@ export const getComment = async (req, res) => {
     const root = [];
     const map = {};
     allComment.forEach((c) => {
-      c.children = [];
+      c.replies = [];
       map[c._id] = c;
     });
 
     allComment.forEach((c) => {
       if (c.parent_id) {
-        map[c.parent_id]?.children.push(c);
+        map[c.parent_id]?.replies.push(c);
       } else {
         root.push(c);
       }

@@ -4,12 +4,17 @@ import jwt from "jsonwebtoken";
 export const LogIn = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const ExistingUser = await Users.findOne({ email });
+    const ExistingUser = await Users.findOne({ email }).select(
+      "+password +_id"
+    );
     if (!ExistingUser) {
       console.error("Non-Registered User trying to login : ", email);
       return res.status(404).json({ message: "You are not registered yet !" });
     }
-    const comparePassword = bcrypt.compare(password, ExistingUser.password);
+    const comparePassword = await bcrypt.compare(
+      password,
+      ExistingUser.password
+    );
     if (!comparePassword) {
       console.error("Incorrect password received from : ", ExistingUser.email);
       return res
