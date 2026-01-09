@@ -10,6 +10,12 @@ const commentSchema = mongoose.Schema({
     ref: "users",
     required: true,
   },
+  parent_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "comments",
+    required: true,
+    default: null,
+  },
   commentText: {
     type: String,
     required: true,
@@ -22,15 +28,11 @@ const commentSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  level: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
   postedAt: {
     type: String,
     required: true,
   },
   timestamps: true,
 });
+commentSchema.index({ post_id: 1, createdAt: 1 });
 export default mongoose.model("comments", commentSchema);

@@ -37,7 +37,7 @@ const postValidation = (req, res, next) => {
     errors.push("Invalid video URL");
   }
 
-  //duration and postedAt will be assign by backend code
+  //TODO:duration and postedAt will be assign by backend code
 
   // description (optional)
   if (description && typeof description !== "string") {
