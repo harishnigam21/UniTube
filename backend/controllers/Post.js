@@ -116,7 +116,7 @@ export const updatePost = async (req, res) => {
     const updatedPayLoad = {};
     for (const key of acceptedKey) {
       if (req.body[key] !== undefined) {
-        updateData[key] = req.body[key];
+        updatedPayLoad[key] = req.body[key];
       }
     }
     const updatePost = await Post.findOneAndUpdate(

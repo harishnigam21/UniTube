@@ -29,23 +29,27 @@ const postValidation = (req, res, next) => {
 
   // 3. Type
   const allowedTypes = ["video", "short", "audio", "news", "podcast"];
-  if (!type || !allowedTypes.includes(type)) {
+  if (!type || !allowedTypes.includes(type.toLowerCase())) {
     return sendError(`Invalid type. Allowed types: ${allowedTypes.join(", ")}`);
   }
 
   // 4. Category
   const allowedCategory = [
-    "Music",
-    "Education",
-    "Travel",
-    "Food",
-    "Fitness",
-    "Gaming",
-    "News",
-    "Comedy",
+    "music",
+    "education",
+    "travel",
+    "food",
+    "fitness",
+    "gaming",
+    "news",
+    "comedy",
   ];
-  if (!category || !allowedCategory.includes(category)) {
-    return sendError("Invalid category selected");
+  if (!category || !allowedCategory.includes(category.toLowerCase())) {
+    return sendError(
+      `Invalid category selected. Allowed category : ${allowedCategory.join(
+        ", "
+      )}`
+    );
   }
 
   // 5. Tags (Checking if it's an array using the method we discussed)
@@ -54,7 +58,7 @@ const postValidation = (req, res, next) => {
   }
 
   // 6. Thumbnail and Video URL
-  const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|mp4|mp3|mkv))$/i;
+  const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|mp4|mp3|mkv|mov))$/i;
 
   if (!thumbnail || !urlRegex.test(thumbnail)) {
     return sendError("A valid thumbnail image URL is required");
