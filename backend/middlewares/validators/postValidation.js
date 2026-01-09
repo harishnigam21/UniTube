@@ -11,25 +11,29 @@ const postValidation = (req, res, next) => {
     details,
   } = req.body;
 
-  const errors = [];
+  // Helper to send response and stop execution immediately
+  const sendError = (error) => {
+    return res.status(400).json({ success: false, error });
+  };
 
-  // channel_id
-  if (!channel_id || !isValidObjectId(channel_id)) {
-    errors.push("Invalid or missing channel_id");
+  // 1. Channel ID (MongoDB ObjectId format)
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  if (!channel_id || !objectIdRegex.test(channel_id)) {
+    return sendError("Invalid or missing channel_id");
   }
 
-  // title
+  // 2. Title
   if (!title || typeof title !== "string" || title.trim().length < 3) {
-    errors.push("Title must be at least 3 characters");
+    return sendError("Title is required and must be at least 3 characters");
   }
 
-  // type
+  // 3. Type
   const allowedTypes = ["video", "short", "audio", "news", "podcast"];
   if (!type || !allowedTypes.includes(type)) {
-    errors.push("Invalid type");
+    return sendError(`Invalid type. Allowed types: ${allowedTypes.join(", ")}`);
   }
 
-  // category
+  // 4. Category
   const allowedCategory = [
     "Music",
     "Education",
@@ -41,37 +45,40 @@ const postValidation = (req, res, next) => {
     "Comedy",
   ];
   if (!category || !allowedCategory.includes(category)) {
-    errors.push("Invalid type");
-  }
-  if (tags && !tags.isArray()) {
-    errors.push("Invalid tags");
-  }
-  if (!thumbnail || !isValidURL(thumbnail)) {
-    // thumbnail
-    errors.push("Invalid thumbnail URL");
+    return sendError("Invalid category selected");
   }
 
-  // videoURL
-  if (!videoURL || !isValidURL(videoURL)) {
-    errors.push("Invalid video URL");
+  // 5. Tags (Checking if it's an array using the method we discussed)
+  if (tags && !Array.isArray(tags)) {
+    return sendError("Tags must be provided as an array");
   }
 
-  //TODO:duration and postedAt will be assign by backend code
+  // 6. Thumbnail and Video URL
+  const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|mp4|mp3|mkv))$/i;
 
-  // description (optional)
-  if (description && typeof description !== "string") {
-    errors.push("Description must be a string");
+  if (!thumbnail || !urlRegex.test(thumbnail)) {
+    return sendError("A valid thumbnail image URL is required");
   }
 
-  // details (optional)
-  if (details && typeof details !== "object") {
-    errors.push("Details must be an object");
+  if (!videoURL || !urlRegex.test(videoURL)) {
+    return sendError("A valid video or media URL is required");
   }
 
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
+  // 7. Description (optional)
+  if (description !== undefined && typeof description !== "string") {
+    return sendError("Description must be a string");
   }
 
+  // 8. Details (optional object for extra metadata)
+  if (
+    details !== undefined &&
+    (typeof details !== "object" || Array.isArray(details))
+  ) {
+    return sendError("Details must be a valid object");
+  }
+
+  // If it reaches here, everything is valid
+  console.log("Post Validation Successful");
   next();
 };
 

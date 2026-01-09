@@ -1,31 +1,51 @@
 const channelUpdateValidation = (req, res, next) => {
   const { channelName, channelBanner, channelPicture, description } = req.body;
-  const errors = [];
 
-  // Improved Name Check: Check for existence OR length
+  // Helper to send response and stop execution immediately
+  const sendError = (error) => {
+    return res.status(400).json({ success: false, error });
+  };
+
+  // 1. Channel Name Check (Optional update)
   if (channelName !== undefined) {
     if (typeof channelName !== "string" || channelName.trim().length < 4) {
-      errors.push(
-        "Channel name must be a string and at least 4 characters long"
+      return sendError(
+        "Channel name must be a string and at least 4 characters long."
       );
     }
   }
 
-  // URL Checks
-  if (channelBanner && !isValidURL(channelBanner))
-    errors.push("Invalid channelBanner URL");
-  if (channelPicture && !isValidURL(channelPicture))
-    errors.push("Invalid channel Picture");
+  // URL Regex for Banner and Picture
+  const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i;
 
-  // Description Check
-  if (description !== undefined && typeof description !== "string") {
-    errors.push("Description must be a string");
+  // 2. Channel Banner Check (Optional update)
+  if (channelBanner) {
+    if (!urlRegex.test(channelBanner)) {
+      return sendError(
+        "Invalid channelBanner URL. Must be a valid image link."
+      );
+    }
   }
 
-  if (errors.length > 0) {
-    return res.status(400).json({ success: false, errors });
+  // 3. Channel Picture Check (Optional update)
+  if (channelPicture) {
+    if (!urlRegex.test(channelPicture)) {
+      return sendError(
+        "Invalid channelPicture URL. Must be a valid image link."
+      );
+    }
   }
 
+  // 4. Description Check (Optional update)
+  if (description !== undefined) {
+    if (typeof description !== "string") {
+      return sendError("Description must be a string.");
+    }
+  }
+
+  // If all checks pass
+  console.log("Channel Update Validation Successful");
   next();
 };
+
 export default channelUpdateValidation;

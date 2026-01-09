@@ -1,41 +1,66 @@
-const postUpdateValidation = () => {
+const postUpdateValidation = (req, res, next) => {
   const { thumbnail, description, details, tags, category } = req.body;
-  const errors = [];
-  // thumbnail
-  if (thumbnail && !isValidURL(thumbnail)) {
-    errors.push("Invalid thumbnail URL");
+
+  // Helper to send response and stop execution immediately
+  const sendError = (error) => {
+    return res.status(400).json({ success: false, error });
+  };
+
+  // 1. Thumbnail URL check (only if provided)
+  if (thumbnail) {
+    const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i;
+    if (!urlRegex.test(thumbnail)) {
+      return sendError("Invalid thumbnail URL format.");
+    }
   }
 
-  // category
-  const allowedCategory = [
-    "Music",
-    "Education",
-    "Travel",
-    "Food",
-    "Fitness",
-    "Gaming",
-    "News",
-    "Comedy",
-  ];
-  if (category && !allowedCategory.includes(category)) {
-    errors.push("Invalid type");
-  }
-  if (tags && !tags.isArray()) {
-    errors.push("Invalid tags");
-  }
-  // description (optional)
-  if (description && typeof description !== "string") {
-    errors.push("Description must be a string");
-  }
-  // details (optional)
-  if (details && typeof details !== "object") {
-    errors.push("Details must be an object");
+  // 2. Category check (only if provided)
+  if (category) {
+    const allowedCategory = [
+      "Music",
+      "Education",
+      "Travel",
+      "Food",
+      "Fitness",
+      "Gaming",
+      "News",
+      "Comedy",
+    ];
+    if (!allowedCategory.includes(category)) {
+      return sendError(
+        `Invalid category. Must be one of: ${allowedCategory.join(", ")}`
+      );
+    }
   }
 
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
+  // 3. Tags check (must be an array if provided)
+  if (tags) {
+    if (!Array.isArray(tags)) {
+      return sendError("Tags must be an array of strings.");
+    }
   }
 
+  // 4. Description check (must be a string if provided)
+  if (description !== undefined) {
+    if (typeof description !== "string") {
+      return sendError("Description must be a string.");
+    }
+  }
+
+  // 5. Details check (must be an object and NOT an array)
+  if (details !== undefined) {
+    if (
+      typeof details !== "object" ||
+      Array.isArray(details) ||
+      details === null
+    ) {
+      return sendError("Details must be a valid object.");
+    }
+  }
+
+  // Success
+  console.log("Post Update Validation Passed");
   next();
 };
+
 export default postUpdateValidation;

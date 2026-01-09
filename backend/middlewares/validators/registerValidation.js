@@ -10,32 +10,27 @@ const registerValidation = (req, res, next) => {
     password,
     cnfPassword,
   } = req.body;
-  const errors = [];
   const nameRegex = /^[a-zA-Z]+$/;
-  //password mismatch
-  password != cnfPassword && errors.push("Password's does not matches");
-  //firstname,lastname,dob
+
+  const sendError = (error) => {
+    console.error(error);
+    return res.status(400).json({ success: false, error });
+  };
+
+  if (password !== cnfPassword) {
+    return sendError("Passwords do not match");
+  }
+
   if (!firstname || firstname.length < 2 || !nameRegex.test(firstname)) {
-    errors.push(
-      "Invalid First Name  (no space and no other characters except alphabets)"
-    );
+    return sendError("Invalid First Name (Min 2 chars, alphabets only)");
   }
-
-  if (middlename.length > 2 && !nameRegex.test(middlename)) {
-    errors.push(
-      "Invalid Middle Name  (no space and no other characters except alphabets)"
-    );
+  if (middlename && (middlename.length < 2 || !nameRegex.test(middlename))) {
+    return sendError("Invalid Middle Name (Min 2 chars, alphabets only)");
   }
-
   if (!lastname || lastname.length < 2 || !nameRegex.test(lastname)) {
-    errors.push(
-      "Invalid Last Name (no space and no other characters except alphabets)"
-    );
+    return sendError("Invalid Last Name (Min 2 chars, alphabets only)");
   }
 
-  if (!dob || dob.length < 8) {
-    errors.push("Missing DOB");
-  }
   const validateInput = (type, value) => {
     const patterns = {
       password:
@@ -48,88 +43,60 @@ const registerValidation = (req, res, next) => {
 
     switch (type) {
       case "password":
-        if (!value) errors.push("Password is required.");
-        if (/\s/.test(value)) errors.push("Password cannot contain spaces.");
+        if (!value) return sendError("Password is required.");
+        if (/\s/.test(value))
+          return sendError("Password cannot contain spaces.");
         if (!/(?=.*[A-Z])/.test(value))
-          errors.push("Password needs at least one capital letter.");
+          return sendError("Password needs at least one capital letter.");
         if (!/(?=.*\d)/.test(value))
-          errors.push("Password needs at least one number.");
+          return sendError("Password needs at least one number.");
         if (!/(?=.*[!@#$%^&*()_+])/.test(value))
-          errors.push("Password needs at least one symbol.");
+          return sendError("Password needs at least one symbol.");
         if (value.length < 8)
-          errors.push("Password must be at least 8 characters long.");
-        return null;
-
-      case "name":
-        if (!value) errors.push("Name is required.");
-        if (/[A-Z]/.test(value))
-          errors.push("Name must be all lowercase (no camelCase).");
-        if (/\s/.test(value)) errors.push("Name cannot contain spaces.");
-        if (!patterns.name.test(value))
-          errors.push("Name can only contain letters.");
-        return null;
+          return sendError("Password must be at least 8 characters long.");
+        break;
 
       case "email":
-        if (!value) errors.push("Email is required.");
+        if (!value) return sendError("Email is required.");
         if (!patterns.email.test(value))
-          errors.push("Please enter a valid email address.");
-        return null;
+          return sendError("Please enter a valid email address.");
+        break;
 
       case "gender":
         const accept = ["male", "female", "other"];
-        if (!accept.includes(value)) {
-          errors.push("Invalid gender");
-        }
-        return null;
+        if (!value || !accept.includes(value.toLowerCase()))
+          return sendError("Invalid gender");
+        break;
 
       case "dob":
-        if (!patterns.dob.test(value)) {
-          errors.push(
-            "Invalid format. Please use DD-MM-YYYY (e.g., 18-02-2001)."
-          );
-        }
+        if (!value || !patterns.dob.test(value))
+          return sendError("Invalid format. Use DD-MM-YYYY.");
         const [day, month, year] = value.split("-").map(Number);
-        if (month < 1 || month > 12)
-          errors.push("Invalid month (must be 01-12).");
-        if (day < 1 || day > 31) errors.push("Invalid day (must be 01-31).");
+        if (month < 1 || month > 12) return sendError("Invalid month (01-12).");
+        if (day < 1 || day > 31) return sendError("Invalid day (01-31).");
         const currentYear = new Date().getFullYear();
-        if (year > currentYear) errors.push("Year cannot be in the future.");
-        if (year < 1800) errors.push("Year is too far in the past.");
-        return null;
+        if (year > currentYear)
+          return sendError("Year cannot be in the future.");
+        if (year < 1800) return sendError("Year is too far in the past.");
+        break;
 
       case "mobile":
-        const str = String(value);
-        if (!str || str.trim().length === 0) {
-          errors.push("Mobile number cannot be empty.");
-        }
-        if (str.length !== 10) {
-          errors.push(
-            `Mobile number must be exactly 10 digits. (Current length: ${str.length})`
-          );
-        }
-        const onlyDigits = /^[0-9]+$/;
-        if (!onlyDigits.test(str)) {
-          errors.push(
-            "Mobile number must only contain digits from 0-9 (no spaces or symbols)."
-          );
-        }
-        return null;
-
-      default:
-        return null;
+        const str = String(value || "");
+        if (str.length !== 10 || !/^[0-9]+$/.test(str))
+          return sendError("Mobile number must be exactly 10 digits.");
+        break;
     }
+    return null;
   };
-  validateInput("email", email);
-  validateInput("password", password);
-  validateInput("password", cnfPassword);
-  validateInput("gender", gender);
-  validateInput("dob", dob);
-  validateInput("mobile", mobileno);
 
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
+  if (validateInput("email", email)) return;
+  if (validateInput("password", password)) return;
+  if (validateInput("gender", gender)) return;
+  if (validateInput("dob", dob)) return;
+  if (validateInput("mobile", mobileno)) return;
+
   console.log("Registration Input Validation done");
   next();
 };
+
 export default registerValidation;
