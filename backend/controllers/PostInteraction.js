@@ -27,7 +27,7 @@ export const postLike = async (req, res) => {
       );
 
       //deleting and updating record from dislike collection for same post
-      const deleteDisLike = await DislikeLike.findOneAndDelete({
+      const deleteDisLike = await Dislike.findOneAndDelete({
         user_id: req.user.id,
         post_id: req.params.id,
       }).session(session);
@@ -49,17 +49,19 @@ export const postLike = async (req, res) => {
         .json({ message: "Successfully liked", likes: updatedPost.likes });
     }
     await Like.deleteOne({ _id: checkLike.id }).session(session);
-    await Post.updateOne(
+    const removeLike = await Post.findOneAndUpdate(
       {
         _id: findPost.id,
         likes: { $gt: 0 },
       },
       { $inc: { likes: -1 } },
-      { session }
+      { session, new: true, runValidators: true }
     );
     await session.commitTransaction();
     console.log(`${req.user.id} takes its like back from post:${findPost.id}`);
-    return res.status(200).json({ message: "Like removed" });
+    return res
+      .status(200)
+      .json({ message: "Like removed", likes: removeLike.likes });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from videoLike Controller : ", error);
