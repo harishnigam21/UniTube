@@ -1,5 +1,6 @@
 import Comment from "../models/Comment.js";
 import Post from "../models/Post.js";
+import { getNextDate } from "../utils/getDate.js";
 export const getComment = async (req, res) => {
   try {
     const allComment = await Comment.find({ post_id: req.params.id })
@@ -59,6 +60,7 @@ export const postComment = async (req, res) => {
       user_id: req.user.id,
       parent_id,
       commentText,
+      postedAt: getNextDate(),
     });
     console.log(
       parent_id

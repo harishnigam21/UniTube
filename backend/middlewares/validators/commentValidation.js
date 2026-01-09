@@ -11,7 +11,6 @@ const commentValidation = (req, res, next) => {
   if (!commentText || typeof commentText !== "string") {
     errors.push("commentText is not valid");
   }
-  //TODO: postedAt will be assigned by controller
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
