@@ -20,6 +20,9 @@ const channelUpdateValidation = (req, res, next) => {
 
   // 2. Channel Banner Check (Optional update)
   if (channelBanner) {
+    if (channelBanner.trim().length === 0) {
+      return sendError("Channel banner cannot be empty.");
+    }
     if (!urlRegex.test(channelBanner)) {
       return sendError(
         "Invalid channelBanner URL. Must be a valid image link."
@@ -29,6 +32,9 @@ const channelUpdateValidation = (req, res, next) => {
 
   // 3. Channel Picture Check (Optional update)
   if (channelPicture) {
+    if (channelPicture.trim().length === 0) {
+      return sendError("Channel banner cannot be empty.");
+    }
     if (!urlRegex.test(channelPicture)) {
       return sendError(
         "Invalid channelPicture URL. Must be a valid image link."

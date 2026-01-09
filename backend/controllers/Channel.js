@@ -1,6 +1,7 @@
 import Channel from "../models/Channel.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
+import Post from "../models/Post.js";
 // require all mandatory fields
 export const createChannel = async (req, res) => {
   const { channelName, channelBanner, channelPicture, description } = req.body;
@@ -101,7 +102,7 @@ export const updateChannel = async (req, res) => {
     const updatedPayLoad = {};
     for (const key of acceptedKey) {
       if (req.body[key] !== undefined) {
-        updateData[key] = req.body[key];
+        updatedPayLoad[key] = req.body[key];
       }
     }
     const updateChannel = await Channel.findOneAndUpdate(
