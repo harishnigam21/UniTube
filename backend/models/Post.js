@@ -21,6 +21,25 @@ const postSchema = mongoose.Schema(
       enum: ["video", "short", "audio", "news", "podcast"],
       required: true,
     },
+    category: {
+      type: String,
+      enum: [
+        "Music",
+        "Education",
+        "Travel",
+        "Food",
+        "Fitness",
+        "Gaming",
+        "News",
+        "Comedy",
+      ],
+      required: true,
+    },
+
+    tags: {
+      type: [String],
+      default: [],
+    },
     thumbnail: {
       type: String,
       required: true,
@@ -37,6 +56,7 @@ const postSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    views: { type: Number, default: 0 },
     postedAt: {
       type: String,
       required: true,
@@ -56,5 +76,6 @@ const postSchema = mongoose.Schema(
   { timestamps: true }
 );
 postSchema.index({ channel_id: 1, createdAt: -1 });
-postSchema.index({ user_id: 1 });
+postSchema.index({ category: 1 });
+postSchema.index({ tags: 1 });
 export default mongoose.model("posts", postSchema);

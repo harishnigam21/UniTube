@@ -1,7 +1,7 @@
 import { getVideoDurationInSeconds } from "get-video-duration";
 import Post from "../models/Post.js";
 import Channel from "../models/Channel.js";
-import { getNextDate } from "../utils/getDate";
+import { getNextDate } from "../utils/getDate.js";
 import formatDuration from "../utils/getTime.js";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
 export const getPost = async (req, res) => {
@@ -49,8 +49,17 @@ export const getMorePost = async (req, res) => {
   }
 };
 export const createPost = async (req, res) => {
-  const { channel_id, title, type, thumbnail, videoURL, description, details } =
-    req.body;
+  const {
+    channel_id,
+    title,
+    type,
+    category,
+    tags,
+    thumbnail,
+    videoURL,
+    description,
+    details,
+  } = req.body;
   try {
     const channel = await Channel.findOne({
       _id: channel_id,
@@ -76,6 +85,8 @@ export const createPost = async (req, res) => {
       channel_id,
       title,
       type,
+      category,
+      tags,
       thumbnail,
       videoURL,
       postedAt: getNextDate(),
@@ -95,7 +106,13 @@ export const createPost = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     //remove unwanted payloads
-    const acceptedKey = ["thumbnail", "description", "details"];
+    const acceptedKey = [
+      "thumbnail",
+      "description",
+      "details",
+      "category",
+      "tags",
+    ];
     const updatedPayLoad = {};
     for (const key of acceptedKey) {
       if (req.body[key] !== undefined) {

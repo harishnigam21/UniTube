@@ -1,9 +1,27 @@
 const postUpdateValidation = () => {
-  const { thumbnail, description, details } = req.body;
+  const { thumbnail, description, details, tags, category } = req.body;
   const errors = [];
   // thumbnail
-  if (!thumbnail || !isValidURL(thumbnail)) {
+  if (thumbnail && !isValidURL(thumbnail)) {
     errors.push("Invalid thumbnail URL");
+  }
+
+  // category
+  const allowedCategory = [
+    "Music",
+    "Education",
+    "Travel",
+    "Food",
+    "Fitness",
+    "Gaming",
+    "News",
+    "Comedy",
+  ];
+  if (category && !allowedCategory.includes(category)) {
+    errors.push("Invalid type");
+  }
+  if (tags && !tags.isArray()) {
+    errors.push("Invalid tags");
   }
   // description (optional)
   if (description && typeof description !== "string") {

@@ -3,6 +3,8 @@ const postValidation = (req, res, next) => {
     channel_id,
     title,
     type,
+    category,
+    tags,
     thumbnail,
     videoURL,
     description,
@@ -22,13 +24,30 @@ const postValidation = (req, res, next) => {
   }
 
   // type
-  const allowedTypes = ["video", "short", "live"];
-  if (!allowedTypes.includes(type)) {
+  const allowedTypes = ["video", "short", "audio", "news", "podcast"];
+  if (!type || !allowedTypes.includes(type)) {
     errors.push("Invalid type");
   }
 
-  // thumbnail
+  // category
+  const allowedCategory = [
+    "Music",
+    "Education",
+    "Travel",
+    "Food",
+    "Fitness",
+    "Gaming",
+    "News",
+    "Comedy",
+  ];
+  if (!category || !allowedCategory.includes(category)) {
+    errors.push("Invalid type");
+  }
+  if (tags && !tags.isArray()) {
+    errors.push("Invalid tags");
+  }
   if (!thumbnail || !isValidURL(thumbnail)) {
+    // thumbnail
     errors.push("Invalid thumbnail URL");
   }
 
