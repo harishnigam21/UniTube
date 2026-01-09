@@ -13,7 +13,7 @@ const jwtVerifier = async (req, res, next) => {
       return res.status(400), json({ message: "Invalid token format" });
     }
     console.log("1.1 Verifying Token...");
-    const decoded = jwt.sign(token, process.env.ACCESS_TOKEN_KEY);
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
     console.log("1.2 Token Verified Successfully");
     console.log("2.1 Checking User Existence...");
     const UserExist = await User.findById(decoded.id);

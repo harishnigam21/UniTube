@@ -22,9 +22,9 @@ export const LogIn = async (req, res) => {
         .json({ message: "Incorrect Password, Please try again" });
     }
     const access_token = jwt.sign(
-      { email: ExistingUser.id },
+      { id: ExistingUser._id },
       process.env.ACCESS_TOKEN_KEY,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
     console.log("Successfully Verified User : ", ExistingUser.email);
     return res
