@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import Post from "../models/Post";
-import Like from "../models/PostLike";
-import Dislike from "../models/PostDislike";
+import Post from "../models/Post.js";
+import Like from "../models/PostLike.js";
+import Dislike from "../models/PostDislike.js";
 export const postLike = async (req, res) => {
   const session = await mongoose.startSession();
   try {

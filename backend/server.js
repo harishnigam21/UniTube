@@ -4,6 +4,7 @@ import connectDB from "./DB/DBConnection.js";
 import Auth from "./routes/Auth.js";
 import Channel from "./routes/Channel.js";
 import Post from "./routes/Post.js";
+import Comment from "./routes/Comment.js";
 import PostInteraction from "./routes/PostInteraction.js";
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -19,6 +20,7 @@ app.use("/", Auth);
 app.use("/", Channel);
 app.use("/", Post);
 app.use("/", PostInteraction);
+app.use("/", Comment);
 
 app.get("/", (req, res) =>
   res.status(200).json({ message: "UniTube Server is Running Perfect" })

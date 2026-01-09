@@ -1,8 +1,8 @@
 import express from "express";
-import { deleteComment, getComment, postComment } from "../controllers/Comment";
-import jwtVerifier from "../middlewares/jwt/jwtVerifier";
-import commentValidation from "../middlewares/validators/commentValidation";
-import Validate from "../middlewares/validators/mongooseIDValidation";
+import { deleteComment, getComment, postComment } from "../controllers/Comment.js";
+import jwtVerifier from "../middlewares/jwt/jwtVerifier.js";
+import commentValidation from "../middlewares/validators/commentValidation.js";
+import Validate from "../middlewares/validators/mongooseIDValidation.js";
 const router = express.Router();
 router
   .route("/comment/:id")

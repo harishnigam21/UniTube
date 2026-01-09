@@ -5,11 +5,11 @@ import {
   getPost,
   updatePost,
   getMorePost,
-} from "../controllers/Post";
-import Validate from "../middlewares/validators/mongooseIDValidation";
-import jwtVerifier from "../middlewares/jwt/jwtVerifier";
-import postValidation from "../middlewares/validators/postValidation";
-import postUpdateValidation from "../middlewares/validators/postUpdateValidation";
+} from "../controllers/Post.js";
+import Validate from "../middlewares/validators/mongooseIDValidation.js";
+import jwtVerifier from "../middlewares/jwt/jwtVerifier.js";
+import postValidation from "../middlewares/validators/postValidation.js";
+import postUpdateValidation from "../middlewares/validators/postUpdateValidation.js";
 const router = express.Router();
 router
   .route("/post/:id")
