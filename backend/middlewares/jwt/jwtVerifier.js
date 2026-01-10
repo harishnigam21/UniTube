@@ -10,7 +10,7 @@ const jwtVerifier = async (req, res, next) => {
     }
     const token = header.split(" ")[1]; // bearer token...
     if (!token) {
-      return res.status(400), json({ message: "Invalid token format" });
+      return res.status(400).json({ message: "Invalid token format" });
     }
     console.log("1.1 Verifying Token...");
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);

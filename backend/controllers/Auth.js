@@ -2,17 +2,17 @@ import Users from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 export const LogIn = async (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
   try {
-    const ExistingUser = await Users.findOne({ email }).select(
-      "+password +_id"
-    );
+    const ExistingUser = await Users.findOne({ email })
+      .select("+password +_id")
+      .lean();
     if (!ExistingUser) {
       console.error("Non-Registered User trying to login : ", email);
       return res.status(404).json({ message: "You are not registered yet !" });
     }
     const comparePassword = await bcrypt.compare(
-      password,
+      req.body.password,
       ExistingUser.password
     );
     if (!comparePassword) {
@@ -26,10 +26,13 @@ export const LogIn = async (req, res) => {
       process.env.ACCESS_TOKEN_KEY,
       { expiresIn: "7d" }
     );
+    const { password, refreshToken, ...other } = ExistingUser;
     console.log("Successfully Verified User : ", ExistingUser.email);
-    return res
-      .status(200)
-      .json({ message: "Successfully Verified User", actk: access_token });
+    return res.status(200).json({
+      message: "Successfully Verified User",
+      actk: access_token,
+      user: other,
+    });
   } catch (error) {
     console.error("Error from LogIn controller : ", error);
     return res.status(500).json({ message: error.message });
@@ -54,7 +57,7 @@ export const Register = async (req, res) => {
         "Registered User trying to register again : ",
         userExist.email
       );
-      return res.status(409).json({ message: "Email ID already exist" });
+      return res.status(403).json({ message: "Email ID already exist" });
     }
     const encryptedPassword = await bcrypt.hash(password, 5);
     const newUser = {
