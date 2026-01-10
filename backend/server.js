@@ -1,5 +1,8 @@
 import express from "express";
 import { configDotenv } from "dotenv";
+import cors from "cors";
+import corsOptions from "./config/cors.js";
+import credentials from "./middlewares/credentials/credentials.js";
 import connectDB from "./DB/DBConnection.js";
 import Auth from "./routes/Auth.js";
 import Channel from "./routes/Channel.js";
@@ -12,8 +15,10 @@ configDotenv();
 connectDB();
 
 //App level middlewares
+app.use(credentials);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
 
 //App level Routes
 app.use("/", Auth);
