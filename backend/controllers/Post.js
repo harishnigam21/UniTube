@@ -6,15 +6,31 @@ import formatDuration from "../utils/getTime.js";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
 export const getPost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).lean();
+    const post = await Post.findById(req.params.id)
+      .select(
+        "user_id channel_id title type category tags videoURL likes views description details thumbnail views postedAt duration"
+      )
+      .populate("channel_id", "channelPicture channelName subscribers")
+      .populate("user_id", "firstname lastname")
+      .lean();
     if (!post) {
       console.error(`${req.user.id} Failed to fetch post`);
       return res.status(404).json({ message: "Failed to fetch post" });
     }
     console.log("Successfully fetched post");
-    return res
-      .status(200)
-      .json({ message: "Successfully fetched post", data: post });
+    return res.status(200).json({
+      message: "Successfully fetched post",
+      data: {
+        ...post,
+        channel_id: {
+          ...post.channel_id,
+          subscribers: post.channel_id.subscribers.length,
+          isSubscribed: post.channel_id.subscribers.some((subs) =>
+            subs.equals(req.user.id)
+          ),
+        },
+      },
+    });
   } catch (error) {
     console.error("Error Occurred at getPost controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
