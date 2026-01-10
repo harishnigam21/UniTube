@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import logo from "../../assets/images/logo.png";
-import { useDispatch } from "react-redux";
-import { newUser } from "../../store/Slices/User";
 export default function SignIn() {
   const [userCredentials, setUserCredentials] = useState({
     email: "",
@@ -13,7 +11,6 @@ export default function SignIn() {
   const [passwordStatus, setPasswordStatus] = useState(false);
   const errorRef = useRef(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
@@ -57,9 +54,8 @@ export default function SignIn() {
         data.actk &&
           window.localStorage.setItem("acTk", JSON.stringify(data.actk));
         setTimeout(() => {
-          navigate(`/home`, { replace: true });
+          navigate(`/`, { state: data.user }, { replace: true });
         }, 2000);
-        data.user && dispatch(newUser(data.user));
       } catch (error) {
         console.log(error.message);
         errorRef.current.textContent = error.message;

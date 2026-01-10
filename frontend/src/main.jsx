@@ -5,6 +5,8 @@ import "./index.css";
 import App from "./App.jsx";
 import Home from "./Home.jsx";
 import Video from "./component/Player/Video.jsx";
+import SignIn from "./component/Auth_Component/SignIn.jsx";
+import SignUp from "./component/Auth_Component/SignUp.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -13,6 +15,14 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "watch", element: <Video /> },
     ],
+  },
+  {
+    path: "/login",
+    element: <SignIn />,
+  },
+  {
+    path: "/registration",
+    element: <SignUp />,
   },
 ]);
 createRoot(document.getElementById("root")).render(
