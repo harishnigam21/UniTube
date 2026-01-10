@@ -13,9 +13,9 @@ import postUpdateValidation from "../middlewares/validators/postUpdateValidation
 const router = express.Router();
 router
   .route("/post/:id")
-  .get(Validate, getPost)
+  .get(Validate, jwtVerifier, getPost)
   .delete(Validate, jwtVerifier, deletePost)
   .patch(Validate, jwtVerifier, postUpdateValidation, updatePost);
-router.route("/posts").get(getMorePost);
+router.route("/posts").get(jwtVerifier, getMorePost);
 router.route("/create_post").post(jwtVerifier, postValidation, createPost);
 export default router;
