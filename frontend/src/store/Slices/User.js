@@ -1,0 +1,42 @@
+import { createSlice } from "@reduxjs/toolkit";
+const userSlice = createSlice({
+  name: "User",
+  initialState: {
+    userInfo: {
+      firstname: "abcd",
+      middlename: "mnop",
+      lastname: "wxyz",
+      gender: "other",
+      dob: "18-02-2002",
+      email: "abcdmnopwxyz18@gmail.com",
+      subscription: [
+        {
+          $oid: "6960dfa452ae35444ac1e3b9",
+        },
+      ],
+      channels: [
+        {
+          $oid: "6960dfa452ae35444ac1e3b9",
+        },
+      ],
+    },
+    loginStatus: window.localStorage.getItem("acTk") ? true : false,
+  },
+  reducers: {
+    newUser: (state, action) => {
+      state.userInfo = action.payload.userInfo;
+    },
+    changeLoginStatus: (state, action) => {
+      if (!action.payload) {
+        window.localStorage.removeItem("acTk");
+        state.loginStatus = false;
+      } else {
+        if (action.payload) {
+          state.loginStatus(true);
+        }
+      }
+    },
+  },
+});
+export const { newUser, changeLoginStatus } = userSlice.actions;
+export default userSlice.reducer;
