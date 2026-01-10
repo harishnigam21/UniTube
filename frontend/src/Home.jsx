@@ -1,16 +1,58 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useOutletContext } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useOutletContext, useLocation } from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
+import { newUser } from "./store/Slices/User";
+import { changeLoginStatus } from "./store/Slices/User";
+import { setItems } from "./store/Slices/videoSlice";
 export default function Home() {
   const { short, setSidebarToggle } = useOutletContext();
   const video = useSelector((store) => store.videos.items);
   const [videos, setVideos] = useState([]);
   const [category, setCategory] = useState([]);
   const [categorySelected, setCategorySelected] = useState("all");
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
+  useEffect(() => {
+    if (location.state) {
+      dispatch(newUser({ userInfo: location.state.user }));
+      dispatch(changeLoginStatus({ status: location.state.status }));
+    }
+    const getPost = async () => {
+      setLoader(true);
+      const url = `${import.meta.env.VITE_BACKEND_HOST}/posts`;
+      const token = window.localStorage.getItem("acTk");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "content-type": "application/json",
+          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+        },
+        credentials: "include",
+      });
+      const responseData = await response.json();
+      console.log(responseData.message);
+      if (!response.ok) {
+        if (response.status == 401 || response.status == 400) {
+          dispatch(changeLoginStatus({ status: false }));
+        }
+        alert(responseData.message);
+        return;
+      }
+      setLoader(false);
+      dispatch(
+        setItems({
+          posts: responseData.data,
+          nextCursor: responseData.nextCursor,
+        })
+      );
+    };
+    getPost();
+  }, []);
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
   }, [setSidebarToggle]);
@@ -78,48 +120,49 @@ export default function Home() {
           </article>
           <article className="w-full text-text">
             <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
-              {videos.map((video, index) => (
-                <React.Fragment key={video.id}>
-                  <Video key={`video/${video.id}`} vid={video} />
-                  {index === 1 && (
-                    <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
-                      <article className="flex items-center justify-between mb-4 px-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-red-600 text-3xl font-bold italic">
-                            S
-                          </span>
-                          <h2 className="text-xl font-bold">Shorts</h2>
-                        </div>
-                        <div className="hidden md:flex gap-2">
-                          <button
-                            onClick={() => scrollShorts("left")}
-                            className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
-                          >
-                            ←
-                          </button>
-                          <button
-                            onClick={() => scrollShorts("right")}
-                            className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
-                          >
-                            →
-                          </button>
-                        </div>
+              {videos.length > 0 &&
+                videos.map((video, index) => (
+                  <React.Fragment key={video.id}>
+                    <Video key={`video/${video.id}`} vid={video} />
+                    {index === 1 && (
+                      <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
+                        <article className="flex items-center justify-between mb-4 px-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-red-600 text-3xl font-bold italic">
+                              S
+                            </span>
+                            <h2 className="text-xl font-bold">Shorts</h2>
+                          </div>
+                          <div className="hidden md:flex gap-2">
+                            <button
+                              onClick={() => scrollShorts("left")}
+                              className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                            >
+                              ←
+                            </button>
+                            <button
+                              onClick={() => scrollShorts("right")}
+                              className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                            >
+                              →
+                            </button>
+                          </div>
+                        </article>
+                        <article
+                          ref={scrollRef}
+                          className="flex overflow-x-auto gap-4 pb-4 scroll-smooth scrollbar-hide"
+                        >
+                          {short.slice(0, 10).map((short) => (
+                            <Shorts key={`short/${short.id}`} srt={short} />
+                          ))}
+                          <div className="flex items-center justify-center whitespace-nowrap icon">
+                            View All →
+                          </div>
+                        </article>
                       </article>
-                      <article
-                        ref={scrollRef}
-                        className="flex overflow-x-auto gap-4 pb-4 scroll-smooth scrollbar-hide"
-                      >
-                        {short.slice(0, 10).map((short) => (
-                          <Shorts key={`short/${short.id}`} srt={short} />
-                        ))}
-                        <div className="flex items-center justify-center whitespace-nowrap icon">
-                          View All →
-                        </div>
-                      </article>
-                    </article>
-                  )}
-                </React.Fragment>
-              ))}
+                    )}
+                  </React.Fragment>
+                ))}
             </article>
           </article>
         </article>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import dummy from "../../assets/videos/dummy.MOV";
 import { FaPlay } from "react-icons/fa";
 import { FaPause } from "react-icons/fa";
 import {
@@ -10,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineFullscreenExit, AiOutlineFullscreen } from "react-icons/ai";
-export default function VideoPlayer() {
+export default function VideoPlayer({ url }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -91,7 +90,7 @@ export default function VideoPlayer() {
     >
       <video
         ref={videoRef}
-        src={dummy}
+        src={url}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onClick={togglePlay} // Click video to play/pause

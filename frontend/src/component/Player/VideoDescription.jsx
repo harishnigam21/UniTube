@@ -13,7 +13,7 @@ export default function VideoDescription({
     <article className="flex flex-col gap-2 bg-border rounded-xl p-4 text-sm">
       <p className="font-medium flex gap-2">
         <span>{millifyNum(views)} views</span>
-        <span>{postedAt.slice(0, 10)}</span>
+        <span>{postedAt?.slice(0, 10)}</span>
       </p>
       {/* description */}
       <div>

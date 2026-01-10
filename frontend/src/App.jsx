@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import myStore from "./store/Store";
 import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
@@ -24,7 +24,6 @@ export default function App() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const [login, setLogin] = useState(false);
   const [short, setShort] = useState([
     {
       id: "s1",
@@ -360,7 +359,6 @@ export default function App() {
           navToggle={navToggle}
           setNavToggle={setNavToggle}
           setSidebarToggle={setSidebarToggle}
-          login={login}
         />
         <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
           <SlideBar

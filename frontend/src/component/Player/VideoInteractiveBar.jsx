@@ -49,7 +49,7 @@ export default function VideoInteractiveBar({
           </small>
         </div>
         <button className="rounded-full bg-text text-black py-1.5 px-3 font-medium icon">
-          {isSubscribed ? "Subscribed" : "Subscribe"}
+          {isSubscribed ? "UnSubscibe" : "Subscribe"}
         </button>
       </div>
       <div

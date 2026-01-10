@@ -27,12 +27,12 @@ const userSlice = createSlice({
       state.userInfo = action.payload.userInfo;
     },
     changeLoginStatus: (state, action) => {
-      if (!action.payload) {
+      if (!action.payload.status) {
         window.localStorage.removeItem("acTk");
         state.loginStatus = false;
       } else {
-        if (action.payload) {
-          state.loginStatus(true);
+        if (action.payload.status) {
+          state.loginStatus = true;
         }
       }
     },

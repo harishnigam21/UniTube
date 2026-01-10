@@ -46,7 +46,7 @@ export const recommendedItems = createSelector([interestItems], (items) => {
 //role of tags here
 export const inthereRecommendations = (tags, id) =>
   createSelector([selectItems], (items) => {
-    if (tags.length == 0) {
+    if (!tags || tags.length == 0) {
       return items;
     }
     return items.filter((item) => {

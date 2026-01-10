@@ -54,7 +54,11 @@ export default function SignIn() {
         data.actk &&
           window.localStorage.setItem("acTk", JSON.stringify(data.actk));
         setTimeout(() => {
-          navigate(`/`, { state: data.user }, { replace: true });
+          navigate(
+            `/`,
+            { state: { user: data.user, status: true } },
+            { replace: true }
+          );
         }, 2000);
       } catch (error) {
         console.log(error.message);
