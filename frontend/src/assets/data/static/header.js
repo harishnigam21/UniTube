@@ -12,6 +12,6 @@ const items = [
   { id: 4, name: "Create", icon: MdAdd, path: "/" },
   { id: 5, name: "notify", icon: IoNotificationsOutline, path: "/" },
   { id: 6, name: "profile", icon: CgProfile, path: "/profile" },
-  { id: 7, name: "Sign in", icon: CgProfile, path: "/signin" },
+  { id: 7, name: "Sign in", icon: CgProfile, path: "/login" },
 ];
 export default items;

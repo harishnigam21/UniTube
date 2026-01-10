@@ -1,11 +1,8 @@
+import { useSelector } from "react-redux";
 import items from "../../assets/data/static/header";
 import { Link } from "react-router-dom";
-export default function Header({
-  navToggle,
-  setNavToggle,
-  login,
-  setSidebarToggle,
-}) {
+export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
+  const login = useSelector((store) => store.user.loginStatus);
   return (
     <header className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 overflow-hidden z-50 bg-bgprimary">
       <article className="flex gap-8 justify-between items-center">
@@ -68,15 +65,17 @@ export default function Header({
           {login
             ? items.slice(-4, -1).map((item) =>
                 item.name.toLowerCase() == "create" ? (
-                  <div
+                  <Link
+                    to={item.path}
                     key={`header/item/${item.id}`}
                     className="flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-border icon"
                   >
                     <item.icon className="text-2xl icon" />
                     <span className="whitespace-nowrap">{item.name}</span>
-                  </div>
+                  </Link>
                 ) : (
-                  <div
+                  <Link
+                    to={item.path}
                     key={`header/item/${item.id}`}
                     className="flex items-center"
                   >
@@ -85,17 +84,18 @@ export default function Header({
                         item.name == "profile" ? "text-3xl" : "text-2xl"
                       } icon`}
                     />
-                  </div>
+                  </Link>
                 )
               )
             : items.slice(-1).map((item) => (
-                <div
+                <Link
+                  to={item.path}
                   key={`header/item/${item.id}`}
                   className="flex items-center gap-2 p-1.5 rounded-full border border-border icon"
                 >
                   <item.icon className="text-2xl icon" />
                   <span className="whitespace-nowrap">{item.name}</span>
-                </div>
+                </Link>
               ))}
         </article>
       </article>
