@@ -1,5 +1,7 @@
 import { getVideoDurationInSeconds } from "get-video-duration";
 import Post from "../models/Post.js";
+import Like from "../models/PostLike.js";
+import DisLike from "../models/PostDislike.js";
 import Channel from "../models/Channel.js";
 import { getNextDate } from "../utils/getDate.js";
 import formatDuration from "../utils/getTime.js";
@@ -14,9 +16,17 @@ export const getPost = async (req, res) => {
       .populate("user_id", "firstname lastname")
       .lean();
     if (!post) {
-      console.error(`${req.user.id} Failed to fetch post`);
-      return res.status(404).json({ message: "Failed to fetch post" });
+      console.error(`${req.user.id} Post not found`);
+      return res.status(404).json({ message: "Post not found" });
     }
+    const isLiked = await Like.findOne({
+      post_id: req.params.id,
+      user_id: req.user.id,
+    });
+    const isDisLiked = await DisLike.findOne({
+      post_id: req.params.id,
+      user_id: req.user.id,
+    });
     console.log("Successfully fetched post");
     return res.status(200).json({
       message: "Successfully fetched post",
@@ -29,6 +39,8 @@ export const getPost = async (req, res) => {
             subs.equals(req.user.id)
           ),
         },
+        isliked: isLiked ? true : false,
+        isDisLiked: isDisLiked ? true : false,
       },
     });
   } catch (error) {

@@ -4,15 +4,22 @@ import { RiShareForwardLine } from "react-icons/ri";
 import { FaRegBookmark } from "react-icons/fa";
 import { MdFileDownload, MdOutlinedFlag } from "react-icons/md";
 import { HiDotsHorizontal, HiScissors } from "react-icons/hi";
-import { SlDislike, SlLike } from "react-icons/sl";
+import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
 
 export default function VideoInteractiveBar({
+  channelid,
+  postid,
   channelPicture,
   channelName,
   subscriber,
   isSubscribed,
   likes,
+  isliked,
+  isDisLiked,
 }) {
+  const [like, setLike] = useState(likes);
+  const [subscribers, setSubscribers] = useState(subscriber);
+  const [isSubscribe, setIsSubscribe] = useState(isSubscribed);
   const dynaBtn = [
     { icon: RiShareForwardLine, name: "Share", number: "", work: "" },
     { icon: FaRegBookmark, name: "Save", number: "", work: "" },
@@ -21,6 +28,8 @@ export default function VideoInteractiveBar({
     { icon: MdOutlinedFlag, name: "Report", number: "", work: "" },
   ];
   const dynaBtnRef = useRef(null);
+  const likeRef = useRef(null);
+  const dislikeRef = useRef(null);
   const [dynaBtnRange, setDynaBtnRange] = useState(dynaBtn.length);
   const handleAlignment = () => {
     if (dynaBtnRef.current) {
@@ -33,7 +42,90 @@ export default function VideoInteractiveBar({
     window.addEventListener("resize", handleAlignment);
     return () => window.removeEventListener("resize", handleAlignment);
   }, []);
-
+  const handleLike = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_HOST}/like/${postid}`;
+    const token = window.localStorage.getItem("acTk");
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+      },
+      credentials: "include",
+    });
+    const responseData = await response.json();
+    console.log(responseData.message);
+    if (response.ok) {
+      if (!responseData.status) {
+        likeRef.current.style.color = "white";
+        likeRef.current.style.transform = "scale(0.5)";
+        setTimeout(() => {
+          likeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      if (responseData.status) {
+        dislikeRef.current.style.color = "white";
+        likeRef.current.style.color = "blue";
+        likeRef.current.style.transform = "scale(2)";
+        setTimeout(() => {
+          likeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      setLike(responseData.likes);
+    }
+  };
+  const handleDisLike = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_HOST}/dislike/${postid}`;
+    const token = window.localStorage.getItem("acTk");
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+      },
+      credentials: "include",
+    });
+    const responseData = await response.json();
+    console.log(responseData.message);
+    if (response.ok) {
+      if (!responseData.status) {
+        dislikeRef.current.style.color = "white";
+        dislikeRef.current.style.transform = "scale(0.5)";
+        setTimeout(() => {
+          dislikeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      if (responseData.status) {
+        likeRef.current.style.color = "white";
+        dislikeRef.current.style.color = "red";
+        dislikeRef.current.style.transform = "scale(2)";
+        setTimeout(() => {
+          dislikeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      setLike(responseData?.likes);
+    }
+  };
+  const handleSubscribe = async () => {
+    const url = `${
+      import.meta.env.VITE_BACKEND_HOST
+    }/new_subscriber/${channelid}`;
+    const token = window.localStorage.getItem("acTk");
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+      },
+      credentials: "include",
+    });
+    const responseData = await response.json();
+    console.log(responseData.message);
+    if (response.ok) {
+      setSubscribers(responseData.subscriber);
+      setIsSubscribe(responseData.status);
+    }
+  };
   return (
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">
       <div className="flex items-center gap-4">
@@ -45,11 +137,14 @@ export default function VideoInteractiveBar({
         <div className="flex flex-col justify-center whitespace-nowrap">
           <p className="font-medium">{channelName}</p>
           <small className="text-txlight">
-            {millifyNum(subscriber)} subscribers
+            {millifyNum(subscribers)} subscribers
           </small>
         </div>
-        <button className="rounded-full bg-text text-black py-1.5 px-3 font-medium icon">
-          {isSubscribed ? "UnSubscibe" : "Subscribe"}
+        <button
+          className="rounded-full bg-text text-black py-1.5 px-3 font-medium icon"
+          onClick={handleSubscribe}
+        >
+          {isSubscribe ? "UnSubscibe" : "Subscribe"}
         </button>
       </div>
       <div
@@ -58,15 +153,25 @@ export default function VideoInteractiveBar({
         onLoad={handleAlignment}
       >
         <div className="flex items-center flex-nowrap gap-4 bg-border rounded-full py-2 px-4 overflow-hidden">
-          <div className="flex gap-2 items-center icon">
-            <SlLike className="text-xl" />
-            <p>{millifyNum(likes)}</p>
+          <div className="flex gap-2 items-center icon" onClick={handleLike}>
+            <BiSolidLike
+              ref={likeRef}
+              className={`text-2xl transition-all ${
+                isliked && "text-blue-600"
+              }`}
+            />
+            <p>{millifyNum(like)}</p>
           </div>
           <span className="mb-1 text-gray-500 scale-y-400 text-xs font-thin">
             |
           </span>
-          <div className="flex gap-4 items-center icon">
-            <SlDislike className="text-xl" />
+          <div className="flex gap-4 items-center icon" onClick={handleDisLike}>
+            <BiSolidDislike
+              ref={dislikeRef}
+              className={`text-2xl transition-all ${
+                isDisLiked && "text-red-600"
+              }`}
+            />
           </div>
         </div>
         {dynaBtn.slice(0, dynaBtnRange - 1).map((item, index) => (

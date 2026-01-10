@@ -44,9 +44,11 @@ export const postLike = async (req, res) => {
 
       await session.commitTransaction();
       console.log(`${req.user.id} liked post:${findPost.id}`);
-      return res
-        .status(201)
-        .json({ message: "Successfully liked", likes: updatedPost.likes });
+      return res.status(201).json({
+        message: "Successfully liked",
+        likes: updatedPost.likes,
+        status: true,
+      });
     }
     await Like.deleteOne({ _id: checkLike.id }).session(session);
     const removeLike = await Post.findOneAndUpdate(
@@ -59,9 +61,11 @@ export const postLike = async (req, res) => {
     );
     await session.commitTransaction();
     console.log(`${req.user.id} takes its like back from post:${findPost.id}`);
-    return res
-      .status(200)
-      .json({ message: "Like removed", likes: removeLike.likes });
+    return res.status(200).json({
+      message: "Like removed",
+      likes: removeLike.likes,
+      status: false,
+    });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from videoLike Controller : ", error);
@@ -111,9 +115,11 @@ export const postDislike = async (req, res) => {
       );
       await session.commitTransaction();
       console.log(`${req.user.id} disliked post:${findPost.id}`);
-      return res
-        .status(201)
-        .json({ message: "Successfully disliked", likes: updatedPost.likes });
+      return res.status(201).json({
+        message: "Successfully disliked",
+        likes: updatedPost.likes,
+        status: true,
+      });
     }
     await Dislike.deleteOne({ _id: checkDisLike.id }).session(session);
     await Post.updateOne(
@@ -128,7 +134,7 @@ export const postDislike = async (req, res) => {
     console.log(
       `${req.user.id} take back its dislike from post:${findPost.id}`
     );
-    return res.status(200).json({ message: "Dislike removed" });
+    return res.status(200).json({ message: "Dislike removed", status: false });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from videoDisLike Controller : ", error);

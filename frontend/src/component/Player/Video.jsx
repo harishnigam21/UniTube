@@ -11,16 +11,15 @@ import { setSelectedItem } from "../../store/Slices/videoSlice";
 import { changeLoginStatus } from "../../store/Slices/User";
 export default function Video() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const { setSidebarToggle, screenSize } = useOutletContext();
-  const selectedItem = useSelector((store) => store.videos.selectedItem);
-  const [VideoInfo, setVideoInfo] = useState(selectedItem);
+  const VideoInfo = useSelector((store) => store.videos.selectedItem);
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
-  useEffect(() => {
-    setVideoInfo(selectedItem);
-  }, [selectedItem]);
+
   useEffect(() => {
     const getPost = async () => {
+      setLoading(true);
       const url = `${import.meta.env.VITE_BACKEND_HOST}/post/${videoId}`;
       const token = window.localStorage.getItem("acTk");
       const response = await fetch(url, {
@@ -45,6 +44,7 @@ export default function Video() {
           selectedItem: responseData.data,
         })
       );
+      setLoading(false);
     };
     getPost();
   }, [dispatch, videoId]);
@@ -53,7 +53,9 @@ export default function Video() {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
 
-  return (
+  return loading ? (
+    <p className="text-xl text-red">Loading...</p>
+  ) : (
     <section className="w-full overflow-y-auto overflow-x-hidden text-text flex flex-col gap-4">
       {/* THE ACTUAL VIDEO */}
       <VideoPlayer url={VideoInfo.videoURL} />
@@ -62,11 +64,15 @@ export default function Video() {
         <article className="flex flex-col gap-4 justify-center self-start w-full">
           <strong className="text-xl">{VideoInfo.title}</strong>
           <VideoInteractiveBar
+            postid={VideoInfo._id}
+            channelid={VideoInfo.channel_id._id}
             channelPicture={VideoInfo.channel_id?.channelPicture}
             channelName={VideoInfo.channel_id?.channelName}
             subscriber={VideoInfo.channel_id?.subscribers}
             isSubscribed={VideoInfo.channel_id?.isSubscribed}
             likes={VideoInfo.likes}
+            isDisLiked={VideoInfo.isDisLiked}
+            isliked={VideoInfo.isliked}
           />
           <VideoDescription
             views={VideoInfo.views}
@@ -75,7 +81,7 @@ export default function Video() {
             details={VideoInfo.details}
           />
           {/* comments */}
-          {/* <VideoComment comments={VideoInfo.comments} /> */}
+          <VideoComment postid={VideoInfo._id} />
         </article>
         <VideoRecommendation
           tags={VideoInfo.tags}

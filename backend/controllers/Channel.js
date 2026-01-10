@@ -144,12 +144,12 @@ export const subscriberToggle = async (req, res) => {
       return res.status(404).json({ message: "No such channel found" });
     }
     if (channel.subscribers.some((id) => id.toString() === req.user.id)) {
-      await Channel.updateOne(
+      const subscriber = await Channel.findOneAndUpdate(
         { _id: req.params.id },
         { $pull: { subscribers: req.user.id } },
-        { session }
+        { session, new: true }
       );
-      const unsubscribe = await User.updateOne(
+      await User.updateOne(
         { _id: req.user.id },
         { $pull: { subscription: req.params.id } },
         { session }
@@ -158,16 +158,18 @@ export const subscriberToggle = async (req, res) => {
       console.log(
         `User : ${req.user.id}, unsubscribed to channel-${req.params.id}`
       );
-      return res
-        .status(200)
-        .json({ message: "Successfully unsubscribed", data: unsubscribe });
+      return res.status(200).json({
+        message: "Successfully unsubscribed",
+        subscriber: subscriber.subscribers.length,
+        status: false,
+      });
     }
-    await Channel.updateOne(
+    const subscriber = await Channel.findOneAndUpdate(
       { _id: req.params.id },
       { $addToSet: { subscribers: req.user.id } },
-      { session }
+      { session, new: true }
     );
-    const subscription = await User.updateOne(
+    await User.updateOne(
       { _id: req.user.id },
       { $addToSet: { subscription: req.params.id } },
       { session }
@@ -176,9 +178,11 @@ export const subscriberToggle = async (req, res) => {
     console.log(
       `User : ${req.user.id}, subscribed to channel-${req.params.id}`
     );
-    return res
-      .status(200)
-      .json({ message: "Successfully subscribed", data: subscription });
+    return res.status(200).json({
+      message: "Successfully subscribed",
+      subscriber: subscriber.subscribers.length,
+      status: true,
+    });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from subscriberToggle Controller : ", error);
