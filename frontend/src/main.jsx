@@ -7,6 +7,9 @@ import Home from "./Home.jsx";
 import Video from "./component/Player/Video.jsx";
 import SignIn from "./component/Auth_Component/SignIn.jsx";
 import SignUp from "./component/Auth_Component/SignUp.jsx";
+import myStore from "./store/Store";
+
+import { Provider } from "react-redux";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +30,8 @@ const router = createBrowserRouter([
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={myStore}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>
 );

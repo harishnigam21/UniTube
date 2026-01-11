@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Provider, useSelector } from "react-redux";
-import myStore from "./store/Store";
 import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
@@ -354,24 +352,22 @@ export default function App() {
   ]);
   return (
     <main className="flex relative flex-col box-border ">
-      <Provider store={myStore}>
-        <Header
+      <Header
+        navToggle={navToggle}
+        setNavToggle={setNavToggle}
+        setSidebarToggle={setSidebarToggle}
+      />
+      <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
+        <SlideBar
           navToggle={navToggle}
           setNavToggle={setNavToggle}
-          setSidebarToggle={setSidebarToggle}
+          sidebarToggle={sidebarToggle}
         />
-        <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
-          <SlideBar
-            navToggle={navToggle}
-            setNavToggle={setNavToggle}
-            sidebarToggle={sidebarToggle}
-          />
-          <article className="flex flex-col w-full max-w-full pt-13">
-            <Outlet context={{ short, setSidebarToggle, screenSize }} />
-          </article>
-        </section>
-        {/* <Footer /> */}
-      </Provider>
+        <article className="flex flex-col w-full max-w-full pt-13">
+          <Outlet context={{ short, setSidebarToggle, screenSize }} />
+        </article>
+      </section>
+      {/* <Footer /> */}
     </main>
   );
 }
