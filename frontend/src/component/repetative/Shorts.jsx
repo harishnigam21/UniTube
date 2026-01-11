@@ -1,25 +1,7 @@
 import { HiDotsVertical } from "react-icons/hi";
 export default function Shorts({ srt }) {
-  const handleHoverOver = (e) => {
-    const target = e.currentTarget.childNodes[2];
-    if (target) {
-      target.classList.remove("opacity-0");
-      target.classList.add("opacity-100");
-    }
-  };
-  const handleHoverOut = (e) => {
-    const target = e.currentTarget.childNodes[2];
-    if (target) {
-      target.classList.remove("opacity-100");
-      target.classList.add("opacity-0");
-    }
-  };
   return (
-    <article
-      className="relative flex flex-col rounded-xl overflow-hidden gap-2 p-2 icon min-w-40 sm:min-w-50 lg:min-w-60"
-      onMouseOver={(e) => handleHoverOver(e)}
-      onMouseOut={(e) => handleHoverOut(e)}
-    >
+    <article className="relative group flex flex-col rounded-xl overflow-hidden gap-2 p-2 icon min-w-40 sm:min-w-50 lg:min-w-60">
       <img
         src={srt.thumbnail}
         alt={`thumbnail for short ${srt.id}`}

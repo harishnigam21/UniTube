@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from "react";
 import { millifyNum } from "../../utils/millify";
 import { RiShareForwardLine } from "react-icons/ri";
@@ -17,6 +18,7 @@ export default function VideoInteractiveBar({
   isliked,
   isDisLiked,
 }) {
+  const [showExtra, setShowExtra] = useState(false);
   const [like, setLike] = useState(likes);
   const [subscribers, setSubscribers] = useState(subscriber);
   const [isSubscribe, setIsSubscribe] = useState(isSubscribed);
@@ -188,29 +190,24 @@ export default function VideoInteractiveBar({
           <div className="flex gap-2 items-center icon">
             <HiDotsHorizontal
               className="text-xl"
-              onClick={(e) => {
-                const target = e.currentTarget.parentElement.childNodes[1];
-                if (target) {
-                  if (target.classList.contains("hidden")) {
-                    target.classList.remove("hidden");
-                  } else {
-                    target.classList.add("hidden");
-                  }
-                }
+              onClick={() => {
+                setShowExtra((prev) => !prev);
               }}
             />
-            <ol className="absolute hidden top-0 right-0 bg-border w-fit py-2 pl-1 pr-3 z-20 mt-14 rounded-xl shadow-[0.1px_0.1px_10px_0.1px_black]">
-              {dynaBtn.slice(dynaBtnRange - 1).map((item, index) => (
-                <div
-                  title={item.name}
-                  className="flex items-center gap-2 bg-border rounded-full py-2 px-4 icon"
-                  key={`video/player/icon/hidden/${index}`}
-                >
-                  <item.icon className="text-xl" />
-                  <p>{item.name}</p>
-                </div>
-              ))}
-            </ol>
+            {showExtra && (
+              <ol className="absolute top-0 right-0 bg-border w-fit py-2 pl-1 pr-3 z-20 mt-14 rounded-xl shadow-[0.1px_0.1px_10px_0.1px_black]">
+                {dynaBtn.slice(dynaBtnRange - 1).map((item, index) => (
+                  <div
+                    title={item.name}
+                    className="flex items-center gap-2 bg-border rounded-full py-2 px-4 icon"
+                    key={`video/player/icon/hidden/${index}`}
+                  >
+                    <item.icon className="text-xl" />
+                    <p>{item.name}</p>
+                  </div>
+                ))}
+              </ol>
+            )}
           </div>
         </div>
       </div>

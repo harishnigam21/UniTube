@@ -41,7 +41,7 @@ export default function Video({ vid }) {
         </div>
       </article>
 
-      <div className="absolute inset-0  w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-1 text-red-500 text-2xl">
+      <div className="absolute inset-0  w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-1 text-2xl">
         <img
           src={vid.thumbnail}
           alt="backdrop"

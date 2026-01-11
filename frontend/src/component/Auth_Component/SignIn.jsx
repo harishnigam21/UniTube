@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "../../store/Slices/userSlice";
 export default function SignIn() {
   const dispatch = useDispatch();
+  const [loader, setLoader] = useState(false);
   const [userCredentials, setUserCredentials] = useState({
     email: "",
     password: "",
@@ -26,8 +27,7 @@ export default function SignIn() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    form.children[1].classList.remove("hidden");
+    setLoader(true);
 
     const verifyUser = async () => {
       const url = `${import.meta.env.VITE_BACKEND_HOST}/login`;
@@ -49,7 +49,6 @@ export default function SignIn() {
               navigate(`/signup`, { replace: true });
             }, 2000);
           }
-          form.children[1].classList.add("hidden");
           return;
         }
         errorRef.current.style.color = "green";
@@ -67,16 +66,14 @@ export default function SignIn() {
       } catch (error) {
         console.log(error.message);
         errorRef.current.textContent = error.message;
-        form.children[1].classList.add("hidden");
+      } finally {
+        setLoader(false);
       }
     };
 
     setTimeout(() => {
       errorRef.current.textContent = validateEmail(userCredentials.email);
-
-      !validateEmail(userCredentials.email)
-        ? verifyUser()
-        : form.children[1].classList.add("hidden");
+      !validateEmail(userCredentials.email) ? verifyUser() : setLoader(false);
     }, 1000);
   };
   return (
@@ -168,8 +165,9 @@ export default function SignIn() {
           }}
         >
           <p>Sign In</p>
-          {/* loader */}
-          <p className="hidden w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
+          {loader && (
+            <p className="w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
+          )}
         </button>
         <Link to={"/forgot_password"} className="text-primary self-center">
           Forgot your password?

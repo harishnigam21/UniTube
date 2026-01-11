@@ -2,6 +2,7 @@ import logo from "../../assets/images/logo.png";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 export default function SignUp() {
+  const [loader, setLoader] = useState(false);
   const [userCredentials, setUserCredentials] = useState({
     first_name: "",
     middle_name: "",
@@ -75,11 +76,9 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    form.children[1].classList.remove("hidden");
+    setLoader(true);
 
     const verifyUser = async () => {
-      form.children[1].classList.remove("hidden");
       try {
         const url = `${import.meta.env.VITE_BACKEND_HOST}/registration`;
         const response = await fetch(url, {
@@ -95,7 +94,6 @@ export default function SignUp() {
             }, 2000);
           }
           errorRef.current.textContent = data.message;
-          form.children[1].classList.add("hidden");
           return;
         }
         errorRef.current.style.color = "green";
@@ -106,7 +104,8 @@ export default function SignUp() {
       } catch (error) {
         console.log(error.message);
         errorRef.current.textContent = error.message;
-        form.children[1].classList.add("hidden");
+      } finally {
+        setLoader(false);
       }
     };
 
@@ -134,7 +133,7 @@ export default function SignUp() {
         userCredentials.gender &&
         userCredentials.password === cnfPassword &&
         verifyUser();
-      form.children[1].classList.add("hidden");
+      setLoader(false);
     }, 1000);
   };
   return (
@@ -374,7 +373,9 @@ export default function SignUp() {
           }}
         >
           <p>Sign Up</p>
-          <p className="hidden w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
+          {loader && (
+            <p className="w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
+          )}
         </button>
         <span className="text-center">
           Already have an account?{" "}
