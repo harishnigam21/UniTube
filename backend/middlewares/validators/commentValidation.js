@@ -6,12 +6,6 @@ const commentValidation = (req, res, next) => {
     return res.status(400).json({ success: false, error });
   };
 
-  // 1. parent_id check (The Video ID or the Parent Comment ID for replies)
-  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-  if (!parent_id || !objectIdRegex.test(parent_id)) {
-    return sendError("Invalid or missing parent_id");
-  }
-
   // 2. commentText check
   if (!commentText || typeof commentText !== "string") {
     return sendError("Comment text must be a string");

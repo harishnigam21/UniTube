@@ -4,8 +4,9 @@ import { getNextDate } from "../utils/getDate.js";
 export const getComment = async (req, res) => {
   try {
     const allComment = await Comment.find({ post_id: req.params.id })
+      .populate("user_id", "firstname lastname")
       .sort({
-        createdAt: 1,
+        createdAt: -1,
       })
       .lean();
     const root = [];
@@ -55,7 +56,7 @@ export const postComment = async (req, res) => {
           .json({ message: "Parent Comment does not exist" });
       }
     }
-    await Comment.create({
+    const commentCreated = await Comment.create({
       post_id: req.params.id,
       user_id: req.user.id,
       parent_id,
@@ -71,6 +72,7 @@ export const postComment = async (req, res) => {
       message: parent_id
         ? "Successfully replied to comment"
         : "Successfully posted comment",
+      data: commentCreated,
     });
   } catch (error) {
     console.error("Error from postComment controller : ", error);

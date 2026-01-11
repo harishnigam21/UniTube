@@ -478,6 +478,7 @@ const videoSlice = createSlice({
       search: [],
     },
     selectedItem: {},
+    selectedItemComment: [],
     nextCursor: null,
   },
   reducers: {
@@ -500,8 +501,43 @@ const videoSlice = createSlice({
     setSelectedItem: (state, action) => {
       state.selectedItem = action.payload.selectedItem;
     },
+    setSelectedItemComment: (state, action) => {
+      state.selectedItemComment = action.payload.selectedItemComment;
+    },
+    addItemComment: (state, action) => {
+      const { newComment } = action.payload;
+      const flatten = (nodes) => {
+        return nodes.reduce((acc, node) => {
+          const { replies, ...rest } = node;
+          return acc.concat(rest, flatten(replies || []));
+        }, []);
+      };
+      const flatList = [...flatten(state.selectedItemComment), newComment];
+      const root = [];
+      const map = {};
+      flatList.forEach((c) => {
+        map[c._id] = { ...c, replies: [] };
+      });
+      flatList.forEach((c) => {
+        if (c.parent_id) {
+          if (map[c.parent_id]) {
+            map[c.parent_id].replies.unshift(map[c._id]);
+          }
+        } else {
+          root.unshift(map[c._id]);
+        }
+      });
+
+      state.selectedItemComment = root;
+    },
   },
 });
-export const { addCategory, addSearch, setItems, setSelectedItem } =
-  videoSlice.actions;
+export const {
+  addCategory,
+  addSearch,
+  setItems,
+  setSelectedItem,
+  setSelectedItemComment,
+  addItemComment,
+} = videoSlice.actions;
 export default videoSlice.reducer;

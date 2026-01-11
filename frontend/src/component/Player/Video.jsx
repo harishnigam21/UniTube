@@ -65,7 +65,7 @@ export default function Video() {
           <strong className="text-xl">{VideoInfo.title}</strong>
           <VideoInteractiveBar
             postid={VideoInfo._id}
-            channelid={VideoInfo.channel_id._id}
+            channelid={VideoInfo.channel_id?._id}
             channelPicture={VideoInfo.channel_id?.channelPicture}
             channelName={VideoInfo.channel_id?.channelName}
             subscriber={VideoInfo.channel_id?.subscribers}

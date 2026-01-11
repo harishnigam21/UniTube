@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { getDaysBetween } from "../../utils/getDate";
 import { SlLike, SlDislike } from "react-icons/sl";
 import { FaChevronDown } from "react-icons/fa";
 import PostComment from "./PostComment";
-
-export default function Comment({ comm, level }) {
+export default function Comment({ comm, postid }) {
+  const [toggleReply, setToggleReply] = useState(false);
+  const [toggleReplies, setToggleReplies] = useState(false);
   return (
     <article className="flex gap-4 w-full">
       <img
@@ -13,10 +15,10 @@ export default function Comment({ comm, level }) {
       />
       <div className="flex flex-col gap-2 w-full">
         <small className="flex gap-2">
-          <span className="font-medium">{comm.user}</span>
-          <span className="text-txlight">{getDaysBetween(comm.timestamp)}</span>
+          <span className="font-medium">{comm.user_id.firstname}</span>
+          <span className="text-txlight">{getDaysBetween(comm.postedAt)}</span>
         </small>
-        <p className="text-[16px]">{comm.text}</p>
+        <p className="text-[16px]">{comm.commentText}</p>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <div className="icon flex gap-2 items-center">
             <SlLike />
@@ -27,51 +29,45 @@ export default function Comment({ comm, level }) {
           </div>
           <small
             className="font-medium icon"
-            onClick={(e) => {
-              const target = e.currentTarget.parentElement.lastChild;
-              if (target) {
-                if (target.classList.contains("hidden")) {
-                  target.classList.remove("hidden");
-                } else {
-                  target.classList.add("hidden");
-                }
-              }
-            }}
+            onClick={() => setToggleReply((prev) => !prev)}
           >
             Reply
           </small>
-          <div className="hidden w-full basis-full">
-            <PostComment size={8} submitText={"Reply"} level={level} />
-          </div>
+          {toggleReply && (
+            <div className=" w-full basis-full">
+              <PostComment
+                size={8}
+                submitText={"Reply"}
+                parent={comm._id}
+                postid={postid}
+                setToggleReply={setToggleReply}
+                setToggleReplies={setToggleReplies}
+              />
+            </div>
+          )}
         </div>
         {comm.replies && comm.replies.length > 0 && (
           <article className="flex flex-col gap-4">
-            <p
+            <div
               className="icon flex items-center gap-2"
-              onClick={(e) => {
-                const target = e.currentTarget.parentElement.childNodes[1];
-                if (target) {
-                  if (target.classList.contains("hidden")) {
-                    target.classList.remove("hidden");
-                    target.classList.add("flex");
-                  } else {
-                    target.classList.add("hidden");
-                    target.classList.remove("flex");
-                  }
-                }
+              onClick={() => {
+                setToggleReplies((prev) => !prev);
               }}
             >
-              {comm.replies.length} replies <FaChevronDown />
-            </p>
-            <article className="hidden flex-col gap-4 ml-4">
-              {comm.replies.map((item) => (
-                <Comment
-                  key={`subcomment/of/${item.id}`}
-                  comm={item}
-                  level={level + 1}
+              <p>{comm.replies.length} replies </p>
+              <div className="mt-1">
+                <FaChevronDown
+                  className={`${toggleReplies ? "-rotate-90" : "rotate-0"} transition-all`}
                 />
-              ))}
-            </article>
+              </div>
+            </div>
+            {toggleReplies && (
+              <article className="flex flex-col gap-8 ml-4">
+                {comm.replies.map((item) => (
+                  <Comment key={`subcomment/of/${item._id}`} comm={item} />
+                ))}
+              </article>
+            )}
           </article>
         )}
       </div>
