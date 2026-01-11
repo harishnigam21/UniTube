@@ -8,7 +8,7 @@ import VideoInteractiveBar from "./VideoInteractiveBar";
 import VideoPlayer from "./VideoPlayer";
 import VideoRecommendation from "./VideoRecommendation";
 import { setSelectedItem } from "../../store/Slices/videoSlice";
-import { changeLoginStatus } from "../../store/Slices/User";
+import { changeLoginStatus } from "../../store/Slices/userSlice";
 export default function Video() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);

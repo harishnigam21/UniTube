@@ -530,6 +530,44 @@ const videoSlice = createSlice({
 
       state.selectedItemComment = root;
     },
+    deleteItemComment: (state, action) => {
+      const { commentIdToDelete } = action.payload;
+      const removeRecursive = (comments, id) => {
+        const index = comments.findIndex((c) => c._id === id);
+        if (index !== -1) {
+          comments.splice(index, 1);
+          return true;
+        }
+        for (let comment of comments) {
+          if (comment.replies && comment.replies.length > 0) {
+            const found = removeRecursive(comment.replies, id);
+            if (found) return true;
+          }
+        }
+        return false;
+      };
+      removeRecursive(state.selectedItemComment, commentIdToDelete);
+    },
+    updateItemComment: (state, action) => {
+      const { commentId, updatedText } = action.payload;
+
+      const updateRecursive = (comments) => {
+        for (let comment of comments) {
+          if (comment._id === commentId) {
+            comment.text = updatedText;
+            comment.isEdited = true;
+            return true;
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            const found = updateRecursive(comment.replies);
+            if (found) return true;
+          }
+        }
+        return false;
+      };
+
+      updateRecursive(state.selectedItemComment);
+    },
   },
 });
 export const {
@@ -539,5 +577,7 @@ export const {
   setSelectedItem,
   setSelectedItemComment,
   addItemComment,
+  deleteItemComment,
+  updateItemComment,
 } = videoSlice.actions;
 export default videoSlice.reducer;

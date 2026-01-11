@@ -12,6 +12,7 @@ export default function PostComment({
   setToggleReplies,
 }) {
   const postid = useSelector((store) => store.videos.selectedItem._id);
+  const user = useSelector((store) => store.user.userInfo);
   const dispatch = useDispatch();
   const [showBtn, setShowBtn] = useState(false);
   const [commentIpt, setCommentIpt] = useState("");
@@ -43,7 +44,18 @@ export default function PostComment({
       <div
         className={`w-${size} h-${size} rounded-full aspect-square border flex items-center justify-center`}
       >
-        <span>Ha</span>
+        {user.pic ? (
+          <img
+            src={user.pic}
+            className="object-center object-cover"
+            alt="user pic"
+          />
+        ) : (
+          <>
+            <span>{user.firstname[0].toUpperCase()}</span>
+            <span>{user.lastname[0].toUpperCase()}</span>
+          </>
+        )}
       </div>
       <article className="group flex flex-col gap-2 w-full">
         <input
