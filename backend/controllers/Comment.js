@@ -1,10 +1,11 @@
 import Comment from "../models/Comment.js";
 import Post from "../models/Post.js";
 import { getNextDate } from "../utils/getDate.js";
+import mongoose from "mongoose";
 export const getComment = async (req, res) => {
   try {
     const allComment = await Comment.find({ post_id: req.params.id })
-      .populate("user_id", "firstname lastname")
+      .populate("user_id", "firstname lastname email")
       .sort({
         createdAt: -1,
       })
@@ -63,6 +64,7 @@ export const postComment = async (req, res) => {
       commentText,
       postedAt: getNextDate(),
     });
+    await commentCreated.populate("user_id", "firstname lastname email");
     console.log(
       parent_id
         ? "Successfully replied to comment"
@@ -80,23 +82,34 @@ export const postComment = async (req, res) => {
   }
 };
 export const deleteComment = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const deleteComment = await Comment.findOneAndDelete({
-      _id: req.params.id,
-      user_id: req.user.id,
-    });
+    session.startTransaction();
+    const deleteComment = await Comment.findOneAndDelete(
+      {
+        _id: req.params.id,
+        user_id: req.user.id,
+      },
+      { session }
+    );
     if (!deleteComment) {
+      await session.abortTransaction();
       console.warn(
         `Comment no longer exist or User : ${req.user.id} is not authorized to delete Comment : ${req.params.id}`
       );
       return res.status(404).json({ message: "Comment no longer exist" });
     }
+    await Comment.deleteMany({ parent_id: req.params.id }, { session });
+    await session.commitTransaction();
     console.log("Successfully deleted comment");
     return res.status(200).json({
       message: "Successfully deleted comment",
     });
   } catch (error) {
+    await session.abortTransaction();
     console.error("Error from deleteComment controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await session.endSession();
   }
 };
