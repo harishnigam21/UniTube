@@ -3,9 +3,13 @@ const commentValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(400).json({ success: false, error });
+    return res.status(417).json({ success: false, error });
   };
-
+  //1. parent_id check
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  if (parent_id && !objectIdRegex.test(parent_id)) {
+    return sendError("Invalid or missing parent_id");
+  }
   // 2. commentText check
   if (!commentText || typeof commentText !== "string") {
     return sendError("Comment text must be a string");

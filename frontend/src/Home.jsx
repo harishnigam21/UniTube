@@ -122,8 +122,8 @@ export default function Home() {
             <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
               {videos.length > 0 &&
                 videos.map((video, index) => (
-                  <React.Fragment key={video.id}>
-                    <Video key={`video/${video.id}`} vid={video} />
+                  <React.Fragment key={video._id}>
+                    <Video key={`video/${video._id}`} vid={video} />
                     {index === 1 && (
                       <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
                         <article className="flex items-center justify-between mb-4 px-2">

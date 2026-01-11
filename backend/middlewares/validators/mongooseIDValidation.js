@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const Validate = (req, res, next) => {
   const { id } = req.params;
   if (!id) {
-    return res.status(400).json({ message: "Missing product ID" });
+    return res.status(417).json({ message: "Missing product ID" });
   }
   //mongoose.Types.ObjectId.isValid(id), provide by mongoose to validate id
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
+    return res.status(417).json({
       success: false,
       message: "Invalid product ID format",
     });

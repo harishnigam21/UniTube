@@ -3,7 +3,7 @@ const postUpdateValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(400).json({ success: false, error });
+    return res.status(417).json({ success: false, error });
   };
 
   // 1. Thumbnail URL check (only if provided)

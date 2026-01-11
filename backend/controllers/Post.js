@@ -57,7 +57,7 @@ export const getMorePost = async (req, res) => {
       query.createdAt = { $lt: new Date(cursor) };
     }
     const posts = await Post.find(query)
-      .select("user_id channel_id title thumbnail views postedAt duration")
+      .select("user_id channel_id title thumbnail category views postedAt duration")
       .populate("channel_id", "channelPicture channelName")
       .populate("user_id", "firstname lastname")
       .sort({

@@ -1,9 +1,15 @@
 const channelValidation = (req, res, next) => {
-  const { channelName, channelBanner, channelPicture, description } = req.body;
+  const {
+    channelName,
+    channelHandler,
+    channelBanner,
+    channelPicture,
+    description,
+  } = req.body;
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(400).json({ success: false, error });
+    return res.status(417).json({ success: false, error });
   };
 
   // 1. Channel Name Check (Required)
@@ -39,7 +45,16 @@ const channelValidation = (req, res, next) => {
       return sendError("Description is too long (maximum 500 characters).");
     }
   }
-
+  //5. channelHandler Check
+  const validateHandler = (name) => {
+    if (!name.startsWith("@")) return sendError("Handler must start with @");
+    if (name.length < 4) return sendError("Too short (min 3 chars after @)");
+    if (name.length > 31) return sendError("Too long (max 30 chars after @)");
+    if (!HANDLER_REGEX.test(name))
+      return "Only letters, numbers, dots, hyphens, and underscores allowed";
+    return null; // No error
+  };
+  validateHandler(channelHandler);
   // If all checks pass
   console.log("Channel Validation Successful");
   next();
