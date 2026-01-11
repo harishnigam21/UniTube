@@ -10,6 +10,12 @@ const channelSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    channelHandler: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
     channelBanner: { type: String, required: true },
     channelPicture: { type: String, required: true },
     description: { type: String, default: "Description not provided" },
@@ -22,4 +28,7 @@ const channelSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+channelSchema.index({ channelHandler: 1 }, { unique: true });
+channelSchema.index({ createdAt: -1 });
+
 export default mongoose.model("channels", channelSchema);

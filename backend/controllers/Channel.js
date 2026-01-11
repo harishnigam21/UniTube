@@ -191,3 +191,26 @@ export const subscriberToggle = async (req, res) => {
     await session.endSession();
   }
 };
+
+export const validateHandler = async (req, res) => {
+  try {
+    const handlerExist = await Channel.findOne({
+      channelHandler: req.params.handler,
+    });
+    if (handlerExist) {
+      console.warn(
+        `${req.user.id} checks for handler ${req.params.handler}, but it already exist`
+      );
+      return res
+        .status(409)
+        .json({ message: "Handler already exist", status: false });
+    }
+    console.log("Handler does not exist");
+    return res
+      .status(200)
+      .json({ message: "Handler does not exist", status: true });
+  } catch (error) {
+    console.error("Error from validateHandler Controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

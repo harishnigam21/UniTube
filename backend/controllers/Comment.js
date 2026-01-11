@@ -113,3 +113,36 @@ export const deleteComment = async (req, res) => {
     await session.endSession();
   }
 };
+export const updateComment = async (req, res) => {
+  const { txt } = req.body;
+  try {
+    if (!txt || !txt.trim()) {
+      console.warn(
+        `Invalid update is done by ${req.user.id} to comment ${req.params.id} `
+      );
+      return res.status(422).json({ message: "Not valid comment" });
+    }
+    const updateComment = await Comment.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user_id: req.user.id,
+      },
+      { $set: { commentText: txt.trim() } },
+      { new: true }
+    );
+    if (!updateComment) {
+      console.warn("Comment not found or unauthorized");
+      return res.status(404).json({ message: "No such comment exist" });
+    }
+    console.log("Successfully updated comment");
+    return res
+      .status(200)
+      .json({
+        message: "Successfully updated comment",
+        txt: updateComment.commentText,
+      });
+  } catch (error) {
+    console.error("Error from updateComment controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

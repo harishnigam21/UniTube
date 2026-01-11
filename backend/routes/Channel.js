@@ -4,11 +4,13 @@ import {
   deleteChannel,
   subscriberToggle,
   updateChannel,
+  validateHandler,
 } from "../controllers/Channel.js";
 import jwtVerifier from "../middlewares/jwt/jwtVerifier.js";
 import Validate from "../middlewares/validators/mongooseIDValidation.js";
 import channelValidation from "../middlewares/validators/channelValidation.js";
 import channelUpdateValidation from "../middlewares/validators/channelUpdateValidation.js";
+import handlerValidation from "../middlewares/validators/handlerValidation.js";
 const router = express.Router();
 router
   .route("/create_channel")
@@ -22,4 +24,7 @@ router
 router
   .route("/new_subscriber/:id")
   .patch(Validate, jwtVerifier, subscriberToggle);
+router
+  .route("/validatehandler/:handler")
+  .get(jwtVerifier, handlerValidation, validateHandler);
 export default router;
