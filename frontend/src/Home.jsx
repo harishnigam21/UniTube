@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useOutletContext, useLocation } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
-import { newUser } from "./store/Slices/User";
-import { changeLoginStatus } from "./store/Slices/User";
+import { changeLoginStatus } from "./store/Slices/userSlice";
 import { setItems } from "./store/Slices/videoSlice";
 export default function Home() {
   const { short, setSidebarToggle } = useOutletContext();
@@ -14,14 +13,9 @@ export default function Home() {
   const [videos, setVideos] = useState([]);
   const [category, setCategory] = useState([]);
   const [categorySelected, setCategorySelected] = useState("all");
-  const location = useLocation();
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
   useEffect(() => {
-    if (location.state) {
-      dispatch(newUser({ userInfo: location.state.user }));
-      dispatch(changeLoginStatus({ status: location.state.status }));
-    }
     const getPost = async () => {
       setLoader(true);
       const url = `${import.meta.env.VITE_BACKEND_HOST}/posts`;

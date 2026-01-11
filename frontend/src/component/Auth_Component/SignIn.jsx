@@ -3,7 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import logo from "../../assets/images/logo.png";
+import { useDispatch } from "react-redux";
+import { changeLoginStatus, newUser } from "../../store/Slices/userSlice";
 export default function SignIn() {
+  const dispatch = useDispatch();
   const [userCredentials, setUserCredentials] = useState({
     email: "",
     password: "",
@@ -53,12 +56,13 @@ export default function SignIn() {
         errorRef.current.textContent = data.message;
         data.actk &&
           window.localStorage.setItem("acTk", JSON.stringify(data.actk));
+        if (data.user) {
+          dispatch(newUser({ userInfo: data.user }));
+          dispatch(changeLoginStatus({ status: true }));
+          window.localStorage.setItem("userInfo", JSON.stringify(data.user));
+        }
         setTimeout(() => {
-          navigate(
-            `/`,
-            { state: { user: data.user, status: true } },
-            { replace: true }
-          );
+          navigate(`/`, { replace: true });
         }, 2000);
       } catch (error) {
         console.log(error.message);
