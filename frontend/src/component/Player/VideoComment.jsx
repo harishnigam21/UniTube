@@ -5,6 +5,7 @@ import { millifyNum } from "../../utils/millify";
 import Comment from "../common/Comment";
 import PostComment from "../common/PostComment";
 import { setSelectedItemComment } from "../../store/Slices/videoSlice";
+import { changeLoginStatus } from "../../store/Slices/userSlice";
 
 export default function VideoComment({ postid }) {
   const [toggleReply, setToggleReply] = useState(false);
@@ -14,22 +15,31 @@ export default function VideoComment({ postid }) {
   useEffect(() => {
     const getComment = async () => {
       setLoader(true);
+      const token = window.localStorage.getItem("acTk");
       const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${postid}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "content-type": "application/json",
+          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
         },
         credentials: "include",
       });
       const responseData = await response.json();
       console.log(responseData.message);
-      if (response.ok) {
-        dispatch(
-          setSelectedItemComment({ selectedItemComment: responseData.data })
-        );
-        setLoader(false);
+      if (!response.ok) {
+        if (response.status == 401 || response.status == 400) {
+          dispatch(changeLoginStatus({ status: false }));
+          window.localStorage.removeItem("acTk");
+          return;
+        }
+        alert(responseData.message);
+        return;
       }
+      dispatch(
+        setSelectedItemComment({ selectedItemComment: responseData.data })
+      );
+      setLoader(false);
     };
     getComment();
   }, [postid, dispatch]);

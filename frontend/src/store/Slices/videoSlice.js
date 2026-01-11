@@ -554,8 +554,7 @@ const videoSlice = createSlice({
       const updateRecursive = (comments) => {
         for (let comment of comments) {
           if (comment._id === commentId) {
-            comment.text = updatedText;
-            comment.isEdited = true;
+            comment.commentText = updatedText;
             return true;
           }
           if (comment.replies && comment.replies.length > 0) {

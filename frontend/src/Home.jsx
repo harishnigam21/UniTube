@@ -33,6 +33,7 @@ export default function Home() {
       if (!response.ok) {
         if (response.status == 401 || response.status == 400) {
           dispatch(changeLoginStatus({ status: false }));
+          window.localStorage.removeItem("acTk");
         }
         alert(responseData.message);
         return;

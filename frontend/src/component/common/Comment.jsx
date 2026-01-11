@@ -6,7 +6,7 @@ import PostComment from "./PostComment";
 import { useSelector, useDispatch } from "react-redux";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdOutlineDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { FiFlag } from "react-icons/fi";
 import {
   deleteItemComment,
   updateItemComment,
@@ -16,7 +16,8 @@ export default function Comment({ comm, postid }) {
   const [toggleReply, setToggleReply] = useState(false);
   const [toggleReplies, setToggleReplies] = useState(false);
   const [commentOption, seCommentOption] = useState(false);
-  const [updateCommentTxt, setUpdateCommentTxt] = useState("");
+  const [showUpdateSection, setShowUpdateSection] = useState(false);
+  const [updateCommentTxt, setUpdateCommentTxt] = useState(comm.commentText);
   const user = useSelector((store) => store.user.userInfo);
   const handleEdit = async () => {
     const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${comm._id}`;
@@ -37,10 +38,10 @@ export default function Comment({ comm, postid }) {
         dispatch(
           updateItemComment({
             commentId: comm._id,
-            updatedText: updateCommentTxt,
+            updatedText: responseData.txt,
           })
         );
-        setUpdateCommentTxt("");
+        setShowUpdateSection(false);
       }
     }
   };
@@ -94,30 +95,36 @@ export default function Comment({ comm, postid }) {
               >
                 {comm.user_id._id == user._id ? (
                   <>
-                    <Link
-                      className="pb-2 flex flex-nowrap items-center gap-2"
-                      onClick={handleEdit}
+                    <div
+                      className="pb-2 flex flex-nowrap items-center gap-2 icon"
+                      onClick={() => setShowUpdateSection(true)}
                     >
                       <div className="icon flex items-center">
                         <MdOutlineModeEdit className="text-xl" />
                       </div>
                       <span>Edit</span>
-                    </Link>
+                    </div>
                     <p className="border-txlight/10 border-b w-full scale-x-200"></p>
-                    <Link
-                      className="pt-2 flex flex-nowrap items-center gap-2"
+                    <div
+                      className="pt-2 flex flex-nowrap items-center gap-2 icon"
                       onClick={handleDelete}
                     >
                       <div className="icon flex items-center">
                         <MdOutlineDeleteOutline className="text-xl" />
                       </div>
                       <span>Delete</span>
-                    </Link>
+                    </div>
                   </>
                 ) : (
-                  <Link className="py-1" onClick={handleReport}>
-                    Report
-                  </Link>
+                  <div
+                    className="pt-2 flex flex-nowrap items-center gap-2 icon"
+                    onClick={handleReport}
+                  >
+                    <div className="icon flex items-center">
+                      <FiFlag className="text-xl" />
+                    </div>
+                    <span className="mb-1.5">Report</span>
+                  </div>
                 )}
               </div>
             )}
@@ -178,6 +185,35 @@ export default function Comment({ comm, postid }) {
           </article>
         )}
       </div>
+
+      {/* update comment section */}
+      {showUpdateSection && (
+        <div className="absolute top-0 left-0 z-2 w-full h-full bg-bgprimary opacity-80 flex flex-col gap-4 items-center justify-center p-8">
+          <input
+            className="w-full sm:w-3/4 md:1/2 border border-white rounded-md p-2 text-center bg-black text-white font-medium"
+            type="text"
+            name="updatecomment"
+            id="updatecomment"
+            value={updateCommentTxt}
+            onChange={(e) => setUpdateCommentTxt(e.target.value)}
+          />
+          <div className="flex gap-2 justify-end items-center">
+            <button
+              className="py-1 px-3 rounded-md border border-txlight icon"
+              onClick={() => setShowUpdateSection(false)}
+            >
+              Cancel
+            </button>
+            <button
+              disabled={updateCommentTxt.length > 1 ? false : true}
+              className="py-1 px-3 rounded-md border border-txlight icon"
+              onClick={handleEdit}
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      )}
     </article>
   );
 }
