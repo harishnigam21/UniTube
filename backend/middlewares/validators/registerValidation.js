@@ -14,7 +14,7 @@ const registerValidation = (req, res, next) => {
 
   const sendError = (error) => {
     console.error(error);
-    return res.status(417).json({ success: false, error });
+    return res.status(422).json({ success: false, error });
   };
 
   if (password !== cnfPassword) {

@@ -3,7 +3,7 @@ const handlerValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(417).json({ success: false, error });
+    return res.status(422).json({ success: false, error });
   };
   const validateHandler = (name) => {
     if (!name.startsWith("@")) return sendError("Handler must start with @");
