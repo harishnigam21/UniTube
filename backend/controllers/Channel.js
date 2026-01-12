@@ -14,7 +14,9 @@ export const createChannel = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const handlerExist = await Channel.findOne({ channelHandler });
+    const handlerExist = await Channel.findOne({ channelHandler }).session(
+      session
+    );
     if (handlerExist) {
       console.warn(
         `${req.user.id} checks for handler ${channelHandler}, but it already exist`
@@ -22,6 +24,15 @@ export const createChannel = async (req, res) => {
       return res
         .status(409)
         .json({ message: "Handler already exist", status: false });
+    }
+    const countChannel = await Channel.countDocuments({
+      user_id: req.user.id,
+    }).session(session);
+    if (countChannel >= process.env.MAX_CHANNEL) {
+      console.log(`User : ${req.user.id} has exceeded channel creation limit`);
+      return res
+        .status(403)
+        .json({ message: "Channel Creation limit exceeds" });
     }
     const [createChannel] = await Channel.create(
       [
