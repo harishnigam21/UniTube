@@ -4,18 +4,34 @@ import User from "../models/User.js";
 import Post from "../models/Post.js";
 // require all mandatory fields
 export const createChannel = async (req, res) => {
-  const { channelName, channelBanner, channelPicture, description } = req.body;
+  const { channelName, channelHandler, channelDescription } = req.body;
+  const bannerPath = req.files?.channelBanner
+    ? req.files.channelBanner[0].path.replace(/\\/g, "/")
+    : null;
+  const picturePath = req.files?.channelPicture
+    ? req.files.channelPicture[0].path.replace(/\\/g, "/")
+    : null;
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
+    const handlerExist = await Channel.findOne({ channelHandler });
+    if (handlerExist) {
+      console.warn(
+        `${req.user.id} checks for handler ${channelHandler}, but it already exist`
+      );
+      return res
+        .status(409)
+        .json({ message: "Handler already exist", status: false });
+    }
     const [createChannel] = await Channel.create(
       [
         {
           user_id: req.user.id,
           channelName,
-          channelBanner,
-          channelPicture,
-          description,
+          channelHandler,
+          channelBanner: bannerPath,
+          channelPicture: picturePath,
+          description: channelDescription,
         },
       ],
       { session }
@@ -30,9 +46,10 @@ export const createChannel = async (req, res) => {
       `Successfully Created Channel for ${req.user.email}`,
       createChannel
     );
-    return res
-      .status(201)
-      .json({ message: `Successfully Created Channel for ${req.user.email}` });
+    return res.status(201).json({
+      message: `Successfully Created Channel`,
+      data: createChannel._id,
+    });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from createChannel controller : ", error);
@@ -103,6 +120,16 @@ export const updateChannel = async (req, res) => {
     for (const key of acceptedKey) {
       if (req.body[key] !== undefined) {
         updatedPayLoad[key] = req.body[key];
+      }
+      if (req.files && req.files.channelBanner) {
+        updatedPayLoad[channelBanner] = req.files.channelBanner[0].path.replace(
+          /\\/g,
+          "/"
+        );
+      }
+      if (req.files && req.files.channelPicture) {
+        updatedPayLoad[channelPicture] =
+          req.files.channelPicture[0].path.replace(/\\/g, "/");
       }
     }
     const updateChannel = await Channel.findOneAndUpdate(
@@ -206,9 +233,7 @@ export const validateHandler = async (req, res) => {
         .json({ message: "Handler already exist", status: false });
     }
     console.log("Handler does not exist");
-    return res
-      .status(200)
-      .json({ message: "Handler does not exist", status: true });
+    return res.status(200).json({ message: "Handler Available", status: true });
   } catch (error) {
     console.error("Error from validateHandler Controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
