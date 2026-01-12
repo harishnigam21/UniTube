@@ -29,6 +29,11 @@ const userSlice = createSlice({
     newUser: (state, action) => {
       state.userInfo = action.payload.userInfo;
     },
+    updateChannel: (state, action) => {
+      const currentInfo = state.userInfo;
+      currentInfo?.channels.push(action.payload.id);
+      window.localStorage.setItem("userInfo", JSON.stringify(currentInfo));
+    },
     changeLoginStatus: (state, action) => {
       if (!action.payload.status) {
         window.localStorage.removeItem("acTk");
@@ -41,5 +46,5 @@ const userSlice = createSlice({
     },
   },
 });
-export const { newUser, changeLoginStatus } = userSlice.actions;
+export const { newUser, changeLoginStatus, updateChannel } = userSlice.actions;
 export default userSlice.reducer;

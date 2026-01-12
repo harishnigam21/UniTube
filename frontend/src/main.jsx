@@ -10,13 +10,31 @@ import SignUp from "./component/Auth_Component/SignUp.jsx";
 import myStore from "./store/Store";
 
 import { Provider } from "react-redux";
+import CreatePost from "./component/post/CreatePost.jsx";
+import CreateChannel from "./component/channel/CreateChannel.jsx";
+import ViewChannel from "./component/channel/ViewChannel.jsx";
+import Post from "./component/post/Post.jsx";
+import ViewPost from "./component/post/ViewPost.jsx";
+import Channel from "./component/channel/Channel.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { path: "/", element: <Home /> },
+      { index: true, element: <Home /> },
       { path: "watch", element: <Video /> },
+      {
+        path: "post",
+        element: <Post />,
+      },
+      { path: "post/create", element: <CreatePost /> },
+      { path: "post/view", element: <ViewPost /> },
+      {
+        path: "channel",
+        element: <Channel />,
+      },
+      { path: "channel/create", element: <CreateChannel /> },
+      { path: "channel/view", element: <ViewChannel /> },
     ],
   },
   {

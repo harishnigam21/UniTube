@@ -9,7 +9,7 @@ const items = [
   { id: 1, name: "logo", icon: logo, path: "/" },
   { id: 2, name: "search", icon: LuSearch, path: "/" },
   { id: 3, name: "mic", icon: LuMic, path: "/" },
-  { id: 4, name: "Create", icon: MdAdd, path: "/" },
+  { id: 4, name: "Create", icon: MdAdd, path: "/post/create" },
   { id: 5, name: "notify", icon: IoNotificationsOutline, path: "/" },
   { id: 6, name: "profile", icon: CgProfile, path: "/profile" },
   { id: 7, name: "Sign in", icon: CgProfile, path: "/login" },

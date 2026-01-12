@@ -58,7 +58,6 @@ body,
   box-sizing: border-box;
 }
 
-
 div,
 section {
   transition: all 0.5s ease;
@@ -72,13 +71,13 @@ button:disabled {
   height: 0;
 }
 @theme {
-  --color-bgprimary: #0f0f0f;
-  --color-primary: #ff0033;
+  --color-bgprimary: #0f0f0f; /*slightly black*/
+  --color-primary: #ff0033; /*slightly red*/
   --color-secondary: white;
-  --color-tertiary: #2da6ff;
-  --color-border: #222222;
+  --color-tertiary: #2da6ff; /*slightly sky blue*/
+  --color-border: #222222; /*slightly gray*/
   --color-text: white;
-  --color-txlight: #aaaaaa;
+  --color-txlight: #aaaaaa; /*light gray*/
 }
 
 @keyframes fromLeft {
