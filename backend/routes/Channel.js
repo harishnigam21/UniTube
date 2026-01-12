@@ -2,6 +2,8 @@ import express from "express";
 import {
   createChannel,
   deleteChannel,
+  getChannel,
+  getChannels,
   subscriberToggle,
   updateChannel,
   validateHandler,
@@ -18,7 +20,8 @@ const uploadMultiple = upload.fields([
   { name: "channelPicture", maxCount: 1 },
   { name: "channelBanner", maxCount: 1 },
 ]);
-
+router.route("/my_channels").get(jwtVerifier, getChannels);
+router.route("/channel/:id").get(Validate, jwtVerifier, getChannel);
 router
   .route("/create_channel")
   .post(jwtVerifier, uploadMultiple, channelValidation, createChannel);

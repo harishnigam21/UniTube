@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       { path: "post/create", element: <CreatePost /> },
       { path: "post/view", element: <ViewPost /> },
       {
-        path: "channel",
+        path: "channel/:id",
         element: <Channel />,
       },
       { path: "channel/create", element: <CreateChannel /> },

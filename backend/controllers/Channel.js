@@ -2,6 +2,46 @@ import Channel from "../models/Channel.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
+export const getChannel = async (req, res) => {};
+export const getChannels = async (req, res) => {
+  try {
+    //TODO: optimize this aggregation later
+    const Channels = await Channel.aggregate([
+      { $match: { user_id: new mongoose.Types.ObjectId(req.user.id) } },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "_id",
+          foreignField: "channel_id",
+          as: "channelPosts",
+        },
+      },
+      {
+        $addFields: {
+          postsCount: { $size: "$channelPosts" },
+          subscribersCount: { $size: { $ifNull: ["$subscribers", []] } },
+        },
+      },
+      {
+        $project: {
+          channelName: 1,
+          channelHandler: 1,
+          channelBanner: 1,
+          channelPicture: 1,
+          subscribers: "$subscribersCount",
+          posts: "$postsCount",
+        },
+      },
+    ]);
+    console.log(`User : ${req.user.id} fetched its channels successfully`);
+    return res
+      .status(200)
+      .json({ message: "Successfully fetched channels", data: Channels });
+  } catch (error) {
+    console.error("Error from getChannels controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 // require all mandatory fields
 export const createChannel = async (req, res) => {
   const { channelName, channelHandler, channelDescription } = req.body;
@@ -64,7 +104,7 @@ export const createChannel = async (req, res) => {
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from createChannel controller : ", error);
-    return res.status(500).json({ message: "Internal Serer Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   } finally {
     await session.endSession();
   }
@@ -107,7 +147,10 @@ export const deleteChannel = async (req, res) => {
     console.log(`Channel ${deleteChannel._id} deleted by user ${req.user.id}`);
     return res
       .status(200)
-      .json({ message: "Successfully Channel has been deleted" });
+      .json({
+        message: "Successfully Channel has been deleted",
+        data: deleteChannel._id,
+      });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from deleteChannel controller : ", error);

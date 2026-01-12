@@ -317,16 +317,21 @@ export default function CreateChannel() {
             {showInfo.message}
           </p>
         )}
-        {/* submit button */}
-        <button
-          type="submit"
-          className="flex items-center justify-center gap-2 font-medium py-2 px-6 rounded-md border border-border self-center shadow-[0.1px_0.1px_10px_0.1px_#222222_inset] icon"
-        >
-          <p>Submit</p>
-          {loader && (
-            <p className="w-5 aspect-square rounded-full border-2 border-l-bgprimary border-r-primary border-b-secondary border-t-bgprimary animate-[spin_0.3s_linear_infinite]"></p>
-          )}
-        </button>
+        {/* submit& cancel button */}
+        <div className="flex self-center gap-4">
+          <button className="font-medium py-2 px-6 rounded-md border border-border icon" onClick={()=>navigate('/')}>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="flex items-center justify-center gap-2 font-medium py-2 px-6 rounded-md border border-border self-center shadow-[0.1px_0.1px_10px_0.1px_#222222_inset] icon"
+          >
+            <p>Submit</p>
+            {loader && (
+              <p className="w-5 aspect-square rounded-full border-2 border-l-bgprimary border-r-primary border-b-secondary border-t-bgprimary animate-[spin_0.3s_linear_infinite]"></p>
+            )}
+          </button>
+        </div>
       </form>
     </section>
   );
