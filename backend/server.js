@@ -15,6 +15,7 @@ configDotenv();
 connectDB();
 
 //App level middlewares
+app.use("/uploads", express.static("uploads"));
 app.use(credentials);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

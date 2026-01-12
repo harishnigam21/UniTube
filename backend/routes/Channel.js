@@ -11,10 +11,17 @@ import Validate from "../middlewares/validators/mongooseIDValidation.js";
 import channelValidation from "../middlewares/validators/channelValidation.js";
 import channelUpdateValidation from "../middlewares/validators/channelUpdateValidation.js";
 import handlerValidation from "../middlewares/validators/handlerValidation.js";
+import { upload } from "../middlewares/multer/Upload.js";
 const router = express.Router();
+
+const uploadMultiple = upload.fields([
+  { name: "channelPicture", maxCount: 1 },
+  { name: "channelBanner", maxCount: 1 },
+]);
+
 router
   .route("/create_channel")
-  .post(jwtVerifier, channelValidation, createChannel);
+  .post(jwtVerifier, uploadMultiple, channelValidation, createChannel);
 router
   .route("/delete_channel/:id")
   .delete(Validate, jwtVerifier, deleteChannel);
