@@ -3,7 +3,7 @@ const commentValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(422).json({ success: false, error });
+    return res.status(422).json({ success: false, message:error });
   };
   //1. parent_id check
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;

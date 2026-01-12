@@ -3,14 +3,17 @@ const handlerValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(422).json({ success: false, error });
+    return res.status(422).json({ success: false, message:error });
   };
   const validateHandler = (name) => {
+    const HANDLER_REGEX = /^@[a-z0-9._-]{3,30}$/;
     if (!name.startsWith("@")) return sendError("Handler must start with @");
     if (name.length < 4) return sendError("Too short (min 3 chars after @)");
     if (name.length > 31) return sendError("Too long (max 30 chars after @)");
     if (!HANDLER_REGEX.test(name))
-      return "Only letters, numbers, dots, hyphens, and underscores allowed";
+      return sendError(
+        "Only letters, numbers, dots, hyphens, and underscores allowed"
+      );
     return null; // No error
   };
   validateHandler(channelHandler);

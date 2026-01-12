@@ -13,7 +13,7 @@ const postValidation = (req, res, next) => {
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(422).json({ success: false, error });
+    return res.status(422).json({ success: false, message:error });
   };
 
   // 1. Channel ID (MongoDB ObjectId format)
