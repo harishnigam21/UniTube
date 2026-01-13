@@ -12,7 +12,7 @@ export const getPost = async (req, res) => {
       .select(
         "user_id channel_id title type category tags videoURL likes views description details thumbnail views postedAt duration"
       )
-      .populate("channel_id", "channelPicture channelName subscribers")
+      .populate("channel_id", "channelPicture channelName subscribers channelHandler")
       .populate("user_id", "firstname lastname")
       .lean();
     if (!post) {

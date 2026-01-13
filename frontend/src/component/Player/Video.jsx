@@ -68,6 +68,7 @@ export default function Video() {
             channelid={VideoInfo.channel_id?._id}
             channelPicture={VideoInfo.channel_id?.channelPicture}
             channelName={VideoInfo.channel_id?.channelName}
+            channelHandler={VideoInfo.channel_id?.channelHandler}
             subscriber={VideoInfo.channel_id?.subscribers}
             isSubscribed={VideoInfo.channel_id?.isSubscribed}
             likes={VideoInfo.likes}

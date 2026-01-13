@@ -2,7 +2,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { getDaysBetween } from "../../utils/getDate";
 import { millifyNum } from "../../utils/millify";
 import { Link } from "react-router-dom";
-export default function Video({ vid }) {
+export default function Video({ vid, type }) {
   return (
     <Link
       to={`/watch?v=${vid._id}`}
@@ -20,13 +20,15 @@ export default function Video({ vid }) {
       </div>
 
       <article className="flex gap-4">
-        <img
-          className="w-8 h-8 rounded-full object-cover object-center"
-          src={`${import.meta.env.VITE_BACKEND_HOST}/${
-            vid.channel_id.channelPicture
-          }`}
-          alt={`channel name of ${vid._id}`}
-        />
+        {type == "home" && (
+          <img
+            className="w-8 h-8 rounded-full object-cover object-center"
+            src={`${import.meta.env.VITE_BACKEND_HOST}/${
+              vid.channel_id.channelPicture
+            }`}
+            alt={`channel name of ${vid._id}`}
+          />
+        )}
         <div className="flex flex-col">
           <strong className="text-xs sm:text-sm lg:text-base">
             {vid.title}

@@ -26,6 +26,16 @@ const channelSlice = createSlice({
         }
       }
     },
+    updateSelectedChannelSubscribe: (state, action) => {
+      if (state.selectedItems.isSubscribed) {
+        if (state.selectedItems.subscribers >= 1) {
+          state.selectedItems.subscribers -= 1;
+        }
+      } else {
+        state.selectedItems.subscribers += 1;
+      }
+      state.selectedItems.isSubscribed = !state.selectedItems.isSubscribed;
+    },
   },
 });
 export const {
@@ -34,5 +44,6 @@ export const {
   deleteChannel,
   updateChannel,
   setSelectedChannel,
+  updateSelectedChannelSubscribe,
 } = channelSlice.actions;
 export default channelSlice.reducer;

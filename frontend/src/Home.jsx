@@ -92,7 +92,11 @@ export default function Home() {
               {video.length > 0 ? (
                 video.map((video, index) => (
                   <React.Fragment key={video._id}>
-                    <Video key={`video/${video._id}`} vid={video} />
+                    <Video
+                      key={`video/${video._id}`}
+                      vid={video}
+                      type={"home"}
+                    />
                     {index === 1 && (
                       <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
                         <article className="flex items-center justify-between mb-4 px-2">

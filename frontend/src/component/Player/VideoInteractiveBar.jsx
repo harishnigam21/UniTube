@@ -6,11 +6,13 @@ import { FaRegBookmark } from "react-icons/fa";
 import { MdFileDownload, MdOutlinedFlag } from "react-icons/md";
 import { HiDotsHorizontal, HiScissors } from "react-icons/hi";
 import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 export default function VideoInteractiveBar({
   channelid,
   postid,
   channelPicture,
+  channelHandler,
   channelName,
   subscriber,
   isSubscribed,
@@ -131,13 +133,17 @@ export default function VideoInteractiveBar({
   return (
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">
       <div className="flex items-center gap-4">
-        <img
-          src={`${import.meta.env.VITE_BACKEND_HOST}/${channelPicture}`}
-          alt="refresh"
-          className="w-10 h-10 aspect-square rounded-full object-center object-cover"
-        />
+        <Link to={`/channel/${channelHandler}`}>
+          <img
+            src={`${import.meta.env.VITE_BACKEND_HOST}/${channelPicture}`}
+            alt="refresh"
+            className="w-10 h-10 aspect-square rounded-full object-center object-cover"
+          />
+        </Link>
         <div className="flex flex-col justify-center whitespace-nowrap">
-          <p className="font-medium">{channelName}</p>
+          <Link to={`/channel/${channelHandler}`} className="font-medium">
+            {channelName}
+          </Link>
           <small className="text-txlight">
             {millifyNum(subscribers)} subscribers
           </small>
