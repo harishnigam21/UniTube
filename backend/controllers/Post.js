@@ -99,7 +99,9 @@ export const createPost = async (req, res) => {
       user_id: req.user.id,
     });
     if (!channel) {
-      console.warn(`${req.user.email} is trying to access unknown user`);
+      console.warn(
+        `${req.user.id} is trying to create post on unknown channel`
+      );
       return res.status(404).json({ message: "Channel not Found" });
     }
     let durationInSeconds;

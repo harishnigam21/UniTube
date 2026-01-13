@@ -6,7 +6,8 @@ import {
 } from "react-icons/io5";
 import dummyUpload from "../../assets/images/dummy_upload.jpg";
 import { useDispatch } from "react-redux";
-import { updateChannel } from "../../store/Slices/userSlice";
+import { updateChannel } from "../../store/Slices/userSlice.js";
+import { addChannel } from "../../store/Slices/channelSlice.js";
 import { useNavigate } from "react-router-dom";
 export default function CreateChannel() {
   const dispatch = useDispatch();
@@ -102,8 +103,10 @@ export default function CreateChannel() {
         credentials: "include",
       });
       const responseData = await response.json();
+      console.log(responseData.message);
       if (response.ok) {
-        dispatch(updateChannel({ id: responseData.data }));
+        dispatch(updateChannel({ id: responseData.data._id }));
+        dispatch(addChannel({ item: responseData.data }));
         setHandlerAvailability(false);
         setChannelName("");
         setChannelHandler("");
@@ -319,7 +322,10 @@ export default function CreateChannel() {
         )}
         {/* submit& cancel button */}
         <div className="flex self-center gap-4">
-          <button className="font-medium py-2 px-6 rounded-md border border-border icon" onClick={()=>navigate('/')}>
+          <button
+            className="font-medium py-2 px-6 rounded-md border border-border icon"
+            onClick={() => navigate("/")}
+          >
             Cancel
           </button>
           <button

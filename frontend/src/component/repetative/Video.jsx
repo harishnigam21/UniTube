@@ -22,7 +22,9 @@ export default function Video({ vid }) {
       <article className="flex gap-4">
         <img
           className="w-8 h-8 rounded-full object-cover object-center"
-          src={vid.channel_id.channelPicture}
+          src={`${import.meta.env.VITE_BACKEND_HOST}/${
+            vid.channel_id.channelPicture
+          }`}
           alt={`channel name of ${vid._id}`}
         />
         <div className="flex flex-col">

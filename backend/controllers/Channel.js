@@ -5,7 +5,7 @@ import Post from "../models/Post.js";
 export const getChannel = async (req, res) => {};
 export const getChannels = async (req, res) => {
   try {
-    //TODO: optimize this aggregation later
+    //TODO: optimize this aggregation later,using pipeline, not necessary now
     const Channels = await Channel.aggregate([
       { $match: { user_id: new mongoose.Types.ObjectId(req.user.id) } },
       {
@@ -99,7 +99,15 @@ export const createChannel = async (req, res) => {
     );
     return res.status(201).json({
       message: `Successfully Created Channel`,
-      data: createChannel._id,
+      data: {
+        _id: createChannel._id,
+        channelName: createChannel.channelName,
+        channelHandler: createChannel.channelHandler,
+        channelBanner: createChannel.channelBanner,
+        channelPicture: createChannel.channelPicture,
+        subscribers: 0,
+        posts: 0,
+      },
     });
   } catch (error) {
     await session.abortTransaction();
@@ -145,12 +153,10 @@ export const deleteChannel = async (req, res) => {
 
     await session.commitTransaction();
     console.log(`Channel ${deleteChannel._id} deleted by user ${req.user.id}`);
-    return res
-      .status(200)
-      .json({
-        message: "Successfully Channel has been deleted",
-        data: deleteChannel._id,
-      });
+    return res.status(200).json({
+      message: "Successfully Channel has been deleted",
+      data: deleteChannel._id,
+    });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from deleteChannel controller : ", error);

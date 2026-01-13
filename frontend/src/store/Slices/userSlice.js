@@ -34,6 +34,12 @@ const userSlice = createSlice({
       currentInfo?.channels.push(action.payload.id);
       window.localStorage.setItem("userInfo", JSON.stringify(currentInfo));
     },
+    deleteChannelID: (state, action) => {
+      state.userInfo.channels = state.userInfo.channels.filter(
+        (channel) => channel != action.payload.id
+      );
+      window.localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
+    },
     changeLoginStatus: (state, action) => {
       if (!action.payload.status) {
         window.localStorage.removeItem("acTk");
@@ -46,5 +52,6 @@ const userSlice = createSlice({
     },
   },
 });
-export const { newUser, changeLoginStatus, updateChannel } = userSlice.actions;
+export const { newUser, changeLoginStatus, updateChannel, deleteChannelID } =
+  userSlice.actions;
 export default userSlice.reducer;

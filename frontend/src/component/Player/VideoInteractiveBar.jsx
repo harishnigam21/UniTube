@@ -132,7 +132,7 @@ export default function VideoInteractiveBar({
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">
       <div className="flex items-center gap-4">
         <img
-          src={channelPicture}
+          src={`${import.meta.env.VITE_BACKEND_HOST}/${channelPicture}`}
           alt="refresh"
           className="w-10 h-10 aspect-square rounded-full object-center object-cover"
         />

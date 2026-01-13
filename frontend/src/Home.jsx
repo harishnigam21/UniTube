@@ -10,9 +10,7 @@ import { setItems } from "./store/Slices/videoSlice";
 export default function Home() {
   const { short, setSidebarToggle } = useOutletContext();
   const video = useSelector((store) => store.videos.items);
-  const [videos, setVideos] = useState([]);
   const [category, setCategory] = useState([]);
-  const [categorySelected, setCategorySelected] = useState("all");
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
   useEffect(() => {
@@ -38,13 +36,15 @@ export default function Home() {
         alert(responseData.message);
         return;
       }
-      setLoader(false);
       dispatch(
         setItems({
           posts: responseData.data,
           nextCursor: responseData.nextCursor,
         })
       );
+      setTimeout(() => {
+        setLoader(false);
+      }, 2000);
     };
     getPost();
   }, []);
@@ -52,39 +52,14 @@ export default function Home() {
     setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
   }, [setSidebarToggle]);
   useEffect(() => {
-    const filterItem = async () => {
-      if (categorySelected.toLowerCase() == "all") {
-        setLoader(true);
-        setTimeout(() => {
-          setVideos(video);
-          setLoader(false);
-        }, 1000);
-      } else {
-        setVideos(
-          video.filter(
-            (item) =>
-              item.category.toLowerCase() == categorySelected.toLowerCase()
-          )
-        );
-      }
-    };
-    filterItem();
-  }, [video, categorySelected]);
-  useEffect(() => {
     const loadLoader = async () => {
-      if (videos.length > 0) {
-        const ctg = video.map((item) => item.category);
-        ctg.unshift("All");
-        setCategory(ctg);
-        setLoader(false);
-      } else {
-        setLoader(true);
-      }
+      const ctg = video.map((item) => item.category);
+      ctg.unshift("All");
+      setCategory(ctg);
     };
     loadLoader();
-  }, [video, videos]);
+  }, [video]);
   const scrollRef = useRef(null);
-
   const scrollShorts = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
@@ -107,7 +82,6 @@ export default function Home() {
               <span
                 key={`home/filterby/category/${index}`}
                 className="rounded-md bg-border text-text py-1 px-3 icon"
-                onClick={() => setCategorySelected(categ.toLowerCase())}
               >
                 {categ}
               </span>
@@ -115,8 +89,8 @@ export default function Home() {
           </article>
           <article className="w-full text-text">
             <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
-              {videos.length > 0 &&
-                videos.map((video, index) => (
+              {video.length > 0 ? (
+                video.map((video, index) => (
                   <React.Fragment key={video._id}>
                     <Video key={`video/${video._id}`} vid={video} />
                     {index === 1 && (
@@ -157,7 +131,12 @@ export default function Home() {
                       </article>
                     )}
                   </React.Fragment>
-                ))}
+                ))
+              ) : (
+                <p className="text-xl md:text-2xl text-center py-4 col-span-full text-red-500 font-bold font-serif">
+                  No Post Found !
+                </p>
+              )}
             </article>
           </article>
         </article>

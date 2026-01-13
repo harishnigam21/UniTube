@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import imageFallback from "../../assets/images/dummy_upload.jpg";
 import { MdDelete } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { deleteChannel } from "../../store/Slices/channelSlice";
+import { deleteChannelID } from "../../store/Slices/userSlice.js";
+import { deleteChannel } from "../../store/Slices/channelSlice.js";
 export default function ChannelCards({ channel }) {
   const dispatch = useDispatch();
   const handleDelete = async () => {
@@ -20,7 +21,9 @@ export default function ChannelCards({ channel }) {
         credentials: "include",
       });
       const responseData = await response.json();
+      console.log(responseData.message);
       if (response.ok) {
+        dispatch(deleteChannelID({ id: responseData.data }));
         dispatch(deleteChannel({ id: responseData.data }));
         return;
       }
