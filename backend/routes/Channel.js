@@ -21,7 +21,7 @@ const uploadMultiple = upload.fields([
   { name: "channelBanner", maxCount: 1 },
 ]);
 router.route("/my_channels").get(jwtVerifier, getChannels);
-router.route("/channel/:id").get(Validate, jwtVerifier, getChannel);
+router.route("/channel/:handler").get(handlerValidation, jwtVerifier, getChannel);
 router
   .route("/create_channel")
   .post(jwtVerifier, uploadMultiple, channelValidation, createChannel);

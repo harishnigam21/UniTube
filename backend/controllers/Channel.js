@@ -2,7 +2,201 @@ import Channel from "../models/Channel.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
-export const getChannel = async (req, res) => {};
+export const getChannel = async (req, res) => {
+  try {
+    const [ChannelData] = await Channel.aggregate([
+      {
+        $match: {
+          channelHandler: req.params.handler,
+        },
+      },
+      {
+        $addFields: {
+          isOwner: {
+            $eq: ["$user_id", new mongoose.Types.ObjectId(req.user.id)],
+          },
+          // NEW: Check if the current user ID exists in the subscribers array
+          isSubscribed: {
+            $cond: [
+              { $isArray: "$subscribers" },
+              {
+                $in: [new mongoose.Types.ObjectId(req.user.id), "$subscribers"],
+              },
+              false,
+            ],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          let: { user_id: "$user_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$_id", "$$user_id"] } } },
+            { $project: { firstname: 1, middlename: 1, lastname: 1, _id: 0 } },
+          ],
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "posts",
+          let: { channel_id: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$channel_id", "$$channel_id"] } } },
+            { $sort: { createdAt: -1 } },
+            {
+              $facet: {
+                videos: [{ $match: { type: "video" } }, { $limit: 6 }],
+                shorts: [{ $match: { type: "short" } }, { $limit: 6 }],
+                live: [{ $match: { type: "live" } }, { $limit: 6 }],
+                podcasts: [{ $match: { type: "podcast" } }, { $limit: 6 }],
+                playlists: [{ $match: { type: "playlist" } }, { $limit: 6 }],
+                posts: [{ $match: { type: "post" } }, { $limit: 6 }],
+                totalCount: [{ $count: "count" }],
+              },
+            },
+          ],
+          as: "postsData",
+        },
+      },
+      {
+        $unwind: "$postsData",
+      },
+      {
+        $addFields: {
+          totalPosts: {
+            $ifNull: [{ $arrayElemAt: ["$postsData.totalCount.count", 0] }, 0],
+          },
+          // Transform each facet into your required format { posts: [], nextCursor: '' }
+          videos: {
+            posts: { $slice: ["$postsData.videos", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.videos" }, 6] },
+                { $arrayElemAt: ["$postsData.videos._id", 5] },
+                null,
+              ],
+            },
+          },
+          shorts: {
+            posts: { $slice: ["$postsData.shorts", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.shorts" }, 6] },
+                { $arrayElemAt: ["$postsData.shorts._id", 5] },
+                null,
+              ],
+            },
+          },
+          live: {
+            posts: { $slice: ["$postsData.live", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.live" }, 6] },
+                { $arrayElemAt: ["$postsData.live._id", 5] },
+                null,
+              ],
+            },
+          },
+          podcasts: {
+            posts: { $slice: ["$postsData.podcasts", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.podcasts" }, 6] },
+                { $arrayElemAt: ["$postsData.podcasts._id", 5] },
+                null,
+              ],
+            },
+          },
+          playlists: {
+            posts: { $slice: ["$postsData.playlists", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.playlists" }, 6] },
+                { $arrayElemAt: ["$postsData.playlists._id", 5] },
+                null,
+              ],
+            },
+          },
+          communityPosts: {
+            // Renamed from 'posts' to avoid conflict with top-level naming
+            posts: { $slice: ["$postsData.posts", 5] },
+            nextCursor: {
+              $cond: [
+                { $gte: [{ $size: "$postsData.posts" }, 6] },
+                { $arrayElemAt: ["$postsData.posts._id", 5] },
+                null,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          // NEW: Extract the total count we just calculated
+          totalPosts: { $ifNull: ["$postsData.totalCount", 0] },
+
+          // Handle the postsArray for your existing cursor logic
+          postsArray: {
+            $slice: [
+              {
+                $sortArray: {
+                  input: "$postsData.docs",
+                  sortBy: { createdAt: -1 },
+                },
+              },
+              6,
+            ],
+          },
+          subscribersCount: { $size: { $ifNull: ["$subscribers", []] } },
+        },
+      },
+      {
+        $addFields: {
+          nextCursor: {
+            $cond: [
+              { $gte: [{ $size: { $ifNull: ["$postsArray", []] } }, 6] },
+              { $arrayElemAt: ["$postsArray._id", 5] },
+              null,
+            ],
+          },
+          posts: {
+            $slice: [{ $ifNull: ["$postsArray", []] }, 5],
+          },
+          subscribers: "$subscribersCount",
+        },
+      },
+      {
+        $project: {
+          postsArray: 0,
+          postsData: 0,
+          subscribersCount: 0,
+          user_id: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
+      },
+    ]);
+    if (ChannelData.length == 0) {
+      console.log("Channel not Found");
+      return res.status(404).json({ message: "Channel not Found" });
+    }
+    console.log("Successfully fetched Channel");
+    return res
+      .status(200)
+      .json({ message: "Successfully fetched Channel", data: ChannelData });
+  } catch (error) {
+    console.error("Error from getChannel controller : ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 export const getChannels = async (req, res) => {
   try {
     //TODO: optimize this aggregation later,using pipeline, not necessary now
