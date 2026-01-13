@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
@@ -13,68 +13,76 @@ export default function SignIn() {
     password: "",
   });
   const [passwordStatus, setPasswordStatus] = useState(false);
-  const errorRef = useRef(null);
+  const [showInfo, setShowInfo] = useState({
+    status: false,
+    message: "",
+    color: "white",
+  });
   const navigate = useNavigate();
-  function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      return "Email is required.";
+  const showInfoFunc = (color, message) => {
+    setShowInfo({ status: true, message, color });
+    setTimeout(() => {
+      setShowInfo({ status: false, message: "", color: "" });
+    }, 4000);
+  };
+  const validate = () => {
+    //  Email: Standard RFC format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userCredentials.email)) {
+      showInfoFunc(
+        "red",
+        "Please enter a valid email address (e.g., name@domain.com)."
+      );
+      return false;
     }
-    if (!emailRegex.test(email)) {
-      return "Invalid email format.";
-    }
-  }
+    return true;
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
-
-    const verifyUser = async () => {
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/login`;
-      try {
-        const response = await fetch(url, {
-          headers: { "content-type": "application/json" },
-          method: "POST",
-          body: JSON.stringify({
-            email: userCredentials.email,
-            password: userCredentials.password,
-          }),
-          credentials: "include",
-        });
-        const data = await response.json();
-        if (!response.ok) {
-          errorRef.current.textContent = data.message;
-          if (response.status === 403) {
-            setTimeout(() => {
-              navigate(`/signup`, { replace: true });
-            }, 2000);
-          }
-          return;
+    if (!validate()) {
+      setLoader(false);
+      return;
+    }
+    const url = `${import.meta.env.VITE_BACKEND_HOST}/login`;
+    try {
+      const response = await fetch(url, {
+        headers: { "content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify({
+          email: userCredentials.email,
+          password: userCredentials.password,
+        }),
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        showInfoFunc("red", data.message);
+        if (response.status === 403) {
+          setTimeout(() => {
+            navigate(`/signup`, { replace: true });
+          }, 2000);
         }
-        errorRef.current.style.color = "green";
-        errorRef.current.textContent = data.message;
-        data.actk &&
-          window.localStorage.setItem("acTk", JSON.stringify(data.actk));
-        if (data.user) {
-          dispatch(newUser({ userInfo: data.user }));
-          dispatch(changeLoginStatus({ status: true }));
-          window.localStorage.setItem("userInfo", JSON.stringify(data.user));
-        }
-        setTimeout(() => {
-          navigate(`/`, { replace: true });
-        }, 2000);
-      } catch (error) {
-        console.log(error.message);
-        errorRef.current.textContent = error.message;
-      } finally {
-        setLoader(false);
+        return;
       }
-    };
-
-    setTimeout(() => {
-      errorRef.current.textContent = validateEmail(userCredentials.email);
-      !validateEmail(userCredentials.email) ? verifyUser() : setLoader(false);
-    }, 1000);
+      showInfoFunc("green", data.message);
+      data.actk &&
+        window.localStorage.setItem("acTk", JSON.stringify(data.actk));
+      if (data.user) {
+        dispatch(newUser({ userInfo: data.user }));
+        dispatch(changeLoginStatus({ status: true }));
+        window.localStorage.setItem("userInfo", JSON.stringify(data.user));
+      }
+      setTimeout(() => {
+        navigate(`/`, { replace: true });
+      }, 2000);
+    } catch (error) {
+      console.log(error.message);
+      showInfoFunc("red", error.message);
+    } finally {
+      setLoader(false);
+    }
   };
   return (
     <section className="w-screen h-screen box-border flex flex-col justify-center items-center p-8 text-text">
@@ -157,7 +165,11 @@ export default function SignIn() {
             </div>
           </article>
         </form>
-        <p ref={errorRef} className="text-red-500 font-bold text-center"></p>
+        {showInfo.status && (
+          <p className={`text-center font-bold text-${showInfo.color}-500`}>
+            {showInfo.message}
+          </p>
+        )}
         <button
           className="py-2 px-8 rounded-md bg-primary text-white self-center focus:shadow-[0.1rem_0.1rem_1rem_0.5rem_green_inset] w-fit gap-2 flex justify-center items-center icon"
           onClick={(e) => {
@@ -174,7 +186,7 @@ export default function SignIn() {
         </Link>
         <span className="text-center">
           Don't have an account?{" "}
-          <Link to={"/registration"} className="text-primary font-semibold">
+          <Link to={"/register"} className="text-primary font-semibold">
             Sign up
           </Link>
         </span>

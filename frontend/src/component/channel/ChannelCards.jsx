@@ -35,7 +35,7 @@ export default function ChannelCards({ channel }) {
   };
   return (
     <article className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-1 md:grid-cols-2 gap-2 rounded-xl w-full border border-border overflow-hidden bg-center bg-cover ">
-      <Link to={`/channel/${channel._id}`}>
+      <Link to={`/channel/${channel.channelHandler}`}>
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${channel.channelBanner}`}
           alt="channel picture"

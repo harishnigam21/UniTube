@@ -79,7 +79,10 @@ button:disabled {
   --color-text: white;
   --color-txlight: #aaaaaa; /*light gray*/
 }
-
+input:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: white !important;
+}
 @keyframes fromLeft {
   0% {
     opacity: 0;

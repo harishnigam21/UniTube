@@ -1,140 +1,206 @@
 import logo from "../../assets/images/logo.png";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 export default function SignUp() {
   const [loader, setLoader] = useState(false);
   const [userCredentials, setUserCredentials] = useState({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
     gender: "",
-    mobile_no: "",
+    dob: "",
     email: "",
+    mobileno: "",
     password: "",
+    cnfPassword: "",
   });
-  const [cnfPassword, setCNFPassword] = useState("");
-  const errorRef = useRef(null);
+  const [showInfo, setShowInfo] = useState({
+    status: false,
+    message: "",
+    color: "white",
+  });
   const navigate = useNavigate();
 
-  const checkNames = (name) => {
-    const nameRegex = /^[a-zA-Z]+$/;
-    if (!name) {
-      return "Required Name.";
-    }
-    if (!nameRegex.test(name)) {
-      return "Invalid Name Format (hint:remove space if there any)";
-    }
+  const showInfoFunc = (color, message) => {
+    setShowInfo({ status: true, message, color });
+    setTimeout(() => {
+      setShowInfo({ status: false, message: "", color: "" });
+    }, 4000);
   };
-  const checkMobNo = (number) => {
-    const mobRegex = /^\d{10}$/;
-    if (!number) {
-      return "Mobile Number is required.";
+  const validate = () => {
+    //  Names: Only alphabets allowed
+    const nameRegex = /^[A-Za-z]+$/;
+    if (
+      !userCredentials.firstname.trim() ||
+      !nameRegex.test(userCredentials.firstname)
+    ) {
+      showInfoFunc(
+        "red",
+        "First name is required and should contain only letters."
+      );
+      return false;
     }
-    if (!mobRegex.test(number)) {
-      return "Invalid Mobile Number.";
+    if (
+      userCredentials.middlename.trim() &&
+      !nameRegex.test(userCredentials.middlename)
+    ) {
+      showInfoFunc(
+        "red",
+        "If entered middlename then it should contain only letters."
+      );
+      return false;
     }
+    if (
+      !userCredentials.lastname.trim() ||
+      !nameRegex.test(userCredentials.lastname)
+    ) {
+      showInfoFunc(
+        "red",
+        "Last name is required and should contain only letters."
+      );
+      return false;
+    }
+
+    //  Gender
+    if (!userCredentials.gender) {
+      showInfoFunc("red", "Please select a gender.");
+      return false;
+    }
+
+    //  Mobile: Exactly 10 digits, starts with 6-9 (Indian Standard)
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(userCredentials.mobileno)) {
+      showInfoFunc(
+        "red",
+        "Enter a valid 10-digit mobile number starting with 6-9."
+      );
+      return false;
+    }
+
+    //  Email: Standard RFC format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userCredentials.email)) {
+      showInfoFunc(
+        "red",
+        "Please enter a valid email address (e.g., name@domain.com)."
+      );
+      return false;
+    }
+
+    // DOB Specific Validation
+    const dobRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
+    if (!dobRegex.test(userCredentials.dob)) {
+      showInfoFunc("red", "Date of Birth must be in DD-MM-YYYY format.");
+      return false;
+    }
+    const [day, month, year] = userCredentials.dob.split("-").map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    if (
+      dateObj.getFullYear() !== year ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getDate() !== day
+    ) {
+      showInfoFunc(
+        "red",
+        "The date you entered does not exist (e.g., Feb 30)."
+      );
+      return false;
+    }
+    const today = new Date();
+    if (dateObj > today) {
+      showInfoFunc("red", "Date of Birth cannot be in the future.");
+      return false;
+    }
+    const age = today.getFullYear() - year;
+    if (age < 13) {
+      showInfoFunc("red", "You must be at least 13 years old to register.");
+      return false;
+    }
+
+    // Password Specific Validation
+    if (userCredentials.password.length < 8) {
+      showInfoFunc("red", "Password must be at least 8 characters long.");
+      return false;
+    }
+    if (!/[A-Z]/.test(userCredentials.password)) {
+      showInfoFunc(
+        "red",
+        "Password must contain at least one uppercase letter (A-Z)."
+      );
+      return false;
+    }
+    if (!/[a-z]/.test(userCredentials.password)) {
+      showInfoFunc(
+        "red",
+        "Password must contain at least one lowercase letter (a-z)."
+      );
+      return false;
+    }
+    if (!/[0-9]/.test(userCredentials.password)) {
+      showInfoFunc("red", "Password must contain at least one number (0-9).");
+      return false;
+    }
+    if (!/[@$!%*?&]/.test(userCredentials.password)) {
+      showInfoFunc(
+        "red",
+        "Password must contain at least one special character (e.g., @, $, !, %, *, ?, &)."
+      );
+      return false;
+    }
+    if (userCredentials.password !== userCredentials.cnfPassword) {
+      showInfoFunc("red", "Password does not match with original one.");
+      return false;
+    }
+
+    return true;
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      return "Email is required.";
-    }
-    if (!emailRegex.test(email)) {
-      return "Invalid email format.";
-    }
-  };
-
-  const validatePassword = (password) => {
-    const lowercase = /[a-z]/;
-    const uppercase = /[A-Z]/;
-    const digit = /\d/;
-    const specialChar = /[@$!%*?&]/;
-    const noSpace = /^\S+$/;
-    if (!password) {
-      return "Password is required.";
-    }
-    if (password.length < 8) {
-      return "Password must be at least 8 characters long.";
-    }
-    if (!lowercase.test(password)) {
-      return "Password must include at least one lowercase letter.";
-    }
-    if (!uppercase.test(password)) {
-      return "Password must include at least one uppercase letter.";
-    }
-    if (!digit.test(password)) {
-      return "Password must include at least one number.";
-    }
-    if (!specialChar.test(password)) {
-      return "Password must include at least one special character (@$!%*?&).";
-    }
-    if (!noSpace.test(password)) {
-      return "Password must not contain spaces.";
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
-
-    const verifyUser = async () => {
-      try {
-        const url = `${import.meta.env.VITE_BACKEND_HOST}/registration`;
-        const response = await fetch(url, {
-          headers: { "content-type": "application/json" },
-          method: "POST",
-          body: JSON.stringify(userCredentials),
+    if (!validate()) {
+      setLoader(false);
+      return;
+    }
+    try {
+      const url = `${import.meta.env.VITE_BACKEND_HOST}/register`;
+      const response = await fetch(url, {
+        headers: { "content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(userCredentials),
+      });
+      const data = await response.json();
+      console.log(data.message);
+      if (response.ok) {
+        showInfoFunc("green", data.message);
+        setUserCredentials({
+          firstname: "",
+          middlename: "",
+          lastname: "",
+          gender: "",
+          dob: "",
+          email: "",
+          mobileno: "",
+          password: "",
+          cnfPassword: "",
         });
-        const data = await response.json();
-        if (!response.ok) {
-          if (response.status === 409) {
-            setTimeout(() => {
-              navigate("/signin", { replace: true });
-            }, 2000);
-          }
-          errorRef.current.textContent = data.message;
-          return;
-        }
-        errorRef.current.style.color = "green";
-        errorRef.current.textContent = data.message;
         setTimeout(() => {
           navigate("/signin", { replace: true });
         }, 2000);
-      } catch (error) {
-        console.log(error.message);
-        errorRef.current.textContent = error.message;
-      } finally {
-        setLoader(false);
+        return;
       }
-    };
-
-    setTimeout(() => {
-      errorRef.current.textContent = checkNames(userCredentials.first_name)
-        ? checkNames(userCredentials.first_name)
-        : checkNames(userCredentials.last_name)
-        ? checkNames(userCredentials.last_name)
-        : checkMobNo(userCredentials.mobile_no)
-        ? checkMobNo(userCredentials.mobile_no)
-        : validateEmail(userCredentials.email)
-        ? validateEmail(userCredentials.email)
-        : validatePassword(userCredentials.password)
-        ? validatePassword(userCredentials.password)
-        : !userCredentials.gender
-        ? "Please select your gender"
-        : userCredentials.password === cnfPassword
-        ? null
-        : "Your confirm password doesn't match with original one";
-      !checkNames(userCredentials.first_name) &&
-        !checkNames(userCredentials.last_name) &&
-        !checkMobNo(userCredentials.mobile_no) &&
-        !validateEmail(userCredentials.email) &&
-        !validatePassword(userCredentials.password) &&
-        userCredentials.gender &&
-        userCredentials.password === cnfPassword &&
-        verifyUser();
+      showInfoFunc("red", data.message);
+      if (response.status === 409) {
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 2000);
+      }
+    } catch (error) {
+      console.log(error.message);
+      showInfoFunc("red", error.message);
+    } finally {
       setLoader(false);
-    }, 1000);
+    }
   };
   return (
     <section className="w-screen h-screen box-border flex flex-col min-[480px]:justify-center items-center p-8 overflow-y-scroll text-text">
@@ -169,14 +235,14 @@ export default function SignUp() {
                 type="first_name"
                 name="first_name"
                 id="first_name"
-                value={userCredentials.first_name}
+                value={userCredentials.firstname}
                 className="border border-border rounded-md p-2 -mt-3 w-full"
                 placeholder="Harish"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
                     ...props,
-                    first_name: e.target.value,
+                    firstname: e.target.value,
                   }))
                 }
               />
@@ -193,13 +259,12 @@ export default function SignUp() {
                 type="middle_name"
                 name="middle_name"
                 id="middle_name"
-                value={userCredentials.middle_name}
+                value={userCredentials.middlename}
                 className="border border-border rounded-md p-2 -mt-3 w-full"
-                aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
                     ...props,
-                    middle_name: e.target.value,
+                    middlename: e.target.value,
                   }))
                 }
               />
@@ -216,20 +281,20 @@ export default function SignUp() {
                 type="last_name"
                 name="last_name"
                 id="last_name"
-                value={userCredentials.last_name}
+                value={userCredentials.lastname}
                 className="border border-border rounded-md p-2 -mt-3 w-full"
                 placeholder="Nigam"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
                     ...props,
-                    last_name: e.target.value,
+                    lastname: e.target.value,
                   }))
                 }
               />
             </article>
           </article>
-          {/* gender & mobile number */}
+          {/* gender,dob, & mobile number */}
           <article className="whitespace-nowrap w-full flex flex-col items-center min-[480px]:flex-row min-[480px]:flex-nowrap min-[480px]:justify-between min-[480px]:items-center gap-4">
             <article className="whitespace-nowrap w-full flex flex-col items-center grow">
               <label
@@ -259,6 +324,33 @@ export default function SignUp() {
             </article>
             <article className="whitespace-nowrap w-full flex flex-col items-center grow">
               <label
+                htmlFor="dob"
+                id="dob_Label"
+                className="bg-bgprimary ml-4 z-2 w-fit self-start after:content-['*'] after:text-red-600"
+              >
+                DOB
+              </label>
+              <input
+                type="date"
+                name="dob"
+                id="dob"
+                className="border border-border rounded-md p-2 -mt-3 w-full"
+                aria-required
+                onChange={(e) => {
+                  const dateValue = e.target.value; // Format: "YYYY-MM-DD"
+                  if (!dateValue) return;
+                  // Reformat to DD-MM-YYYY for your state/backend requirements
+                  const [year, month, day] = dateValue.split("-");
+                  const formattedDate = `${day}-${month}-${year}`;
+                  setUserCredentials((props) => ({
+                    ...props,
+                    dob: formattedDate,
+                  }));
+                }}
+              />
+            </article>
+            <article className="whitespace-nowrap w-full flex flex-col items-center grow">
+              <label
                 htmlFor="mobile_no"
                 id="mobile_no_Label"
                 className="bg-bgprimary ml-4 z-2 w-fit self-start after:content-['*'] after:text-red-600"
@@ -269,14 +361,14 @@ export default function SignUp() {
                 type="mobile_no"
                 name="mobile_no"
                 id="mobile_no"
-                value={userCredentials.mobile_no}
+                value={userCredentials.mobileno}
                 className="border border-border rounded-md p-2 -mt-3 w-full"
                 placeholder="7894561230"
                 aria-required
                 onChange={(e) =>
                   setUserCredentials((props) => ({
                     ...props,
-                    mobile_no: e.target.value,
+                    mobileno: e.target.value,
                   }))
                 }
               />
@@ -347,17 +439,23 @@ export default function SignUp() {
                   type="text"
                   name="cnf_password"
                   id="cnf_password"
-                  value={cnfPassword}
+                  value={userCredentials.cnfPassword}
                   className="border border-border rounded-md p-2 w-full"
                   aria-required
-                  onChange={(e) => setCNFPassword(e.target.value)}
+                  onChange={(e) =>
+                    setUserCredentials((props) => ({
+                      ...props,
+                      cnfPassword: e.target.value,
+                    }))
+                  }
                 />
-                {userCredentials.password === cnfPassword ? (
-                  <small className="absolute flex items-center right-2 text-white font-extrabold bg-green-400 p-2 w-6 h-6 rounded-full">
+                {userCredentials.cnfPassword.length > 1 &&
+                userCredentials.password === userCredentials.cnfPassword ? (
+                  <small className="absolute flex items-center right-2 text-white font-extrabold bg-green-400 p-2 w-6 h-6 rounded-full z-3">
                     ✔
                   </small>
                 ) : (
-                  <small className="absolute flex items-center justify-center right-2 text-white font-extrabold bg-red-400 p-2 w-6 h-6 rounded-full">
+                  <small className="absolute flex items-center justify-center right-2 text-white font-extrabold bg-red-400 p-2 w-6 h-6 rounded-full z-3">
                     ✖
                   </small>
                 )}
@@ -365,7 +463,11 @@ export default function SignUp() {
             </article>
           </article>
         </form>
-        <p ref={errorRef} className="text-red-500 font-bold text-center"></p>
+        {showInfo.status && (
+          <p className={`text-center font-bold text-${showInfo.color}-500`}>
+            {showInfo.message}
+          </p>
+        )}
         <button
           className="py-2 px-8 rounded-md bg-primary text-white self-center focus:shadow-[0.1rem_0.1rem_1rem_0.5rem_green_inset] w-fit gap-2 flex justify-center items-center icon"
           onClick={(e) => {

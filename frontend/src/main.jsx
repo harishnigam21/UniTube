@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       { path: "post/create", element: <CreatePost /> },
       { path: "post/view", element: <ViewPost /> },
       {
-        path: "channel/:id",
+        path: "channel/:handler",
         element: <Channel />,
       },
       { path: "channel/create", element: <CreateChannel /> },
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
     element: <SignIn />,
   },
   {
-    path: "/registration",
+    path: "/register",
     element: <SignUp />,
   },
 ]);
