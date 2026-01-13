@@ -184,7 +184,7 @@ export const getChannel = async (req, res) => {
         },
       },
     ]);
-    if (ChannelData.length == 0) {
+    if (!ChannelData || ChannelData.length == 0) {
       console.log("Channel not Found");
       return res.status(404).json({ message: "Channel not Found" });
     }
@@ -344,7 +344,7 @@ export const deleteChannel = async (req, res) => {
       { user_id: req.user.id, channel_id: deleteChannel._id },
       { session }
     );
-
+//TODO:Also delete comment : priority-low
     await session.commitTransaction();
     console.log(`Channel ${deleteChannel._id} deleted by user ${req.user.id}`);
     return res.status(200).json({

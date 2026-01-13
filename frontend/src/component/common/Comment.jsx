@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { getDaysBetween } from "../../utils/getDate";
-import { SlLike, SlDislike } from "react-icons/sl";
 import { FaChevronDown } from "react-icons/fa";
 import PostComment from "./PostComment";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,14 +10,19 @@ import {
   deleteItemComment,
   updateItemComment,
 } from "../../store/Slices/videoSlice";
+import { BiSolidDislike, BiSolidLike } from "react-icons/bi";
+import { millifyNum } from "../../utils/millify";
 export default function Comment({ comm, postid }) {
   const dispatch = useDispatch();
+  const likeRef = useRef(null);
+  const dislikeRef = useRef(null);
   const [toggleReply, setToggleReply] = useState(false);
   const [toggleReplies, setToggleReplies] = useState(false);
   const [commentOption, seCommentOption] = useState(false);
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [updateCommentTxt, setUpdateCommentTxt] = useState(comm.commentText);
   const user = useSelector((store) => store.user.userInfo);
+  const [like, setLike] = useState(comm && comm.likes ? comm.likes : 0);
   const handleEdit = async () => {
     const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${comm._id}`;
     const token = window.localStorage.getItem("acTk");
@@ -63,6 +67,71 @@ export default function Comment({ comm, postid }) {
     }
   };
   const handleReport = async () => {}; //TODO:Complete it later, currently not necessary
+
+  const handleLike = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_HOST}/clike/${comm._id}`;
+    const token = window.localStorage.getItem("acTk");
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+      },
+      credentials: "include",
+    });
+    const responseData = await response.json();
+    console.log(responseData.message);
+    if (response.ok) {
+      if (!responseData.status) {
+        likeRef.current.style.color = "white";
+        likeRef.current.style.transform = "scale(0.5)";
+        setTimeout(() => {
+          likeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      if (responseData.status) {
+        dislikeRef.current.style.color = "white";
+        likeRef.current.style.color = "blue";
+        likeRef.current.style.transform = "scale(2)";
+        setTimeout(() => {
+          likeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      setLike(responseData.likes);
+    }
+  };
+  const handleDisLike = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_HOST}/cdislike/${comm._id}`;
+    const token = window.localStorage.getItem("acTk");
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
+      },
+      credentials: "include",
+    });
+    const responseData = await response.json();
+    console.log(responseData.message);
+    if (response.ok) {
+      if (!responseData.status) {
+        dislikeRef.current.style.color = "white";
+        dislikeRef.current.style.transform = "scale(0.5)";
+        setTimeout(() => {
+          dislikeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      if (responseData.status) {
+        likeRef.current.style.color = "white";
+        dislikeRef.current.style.color = "red";
+        dislikeRef.current.style.transform = "scale(2)";
+        setTimeout(() => {
+          dislikeRef.current.style.transform = "scale(1)";
+        }, 200);
+      }
+      setLike(responseData?.likes);
+    }
+  };
   return (
     <article className="flex gap-4 w-full">
       <div className="flex w-6 h-6 aspect-square items-center justify-center rounded-full border p-1 text-fit text-[10px] border-txlight">
@@ -132,12 +201,25 @@ export default function Comment({ comm, postid }) {
         </div>
         <p className="text-[16px]">{comm.commentText}</p>
         <div className="flex flex-wrap items-center gap-4 text-sm">
-          <div className="icon flex gap-2 items-center">
-            <SlLike />
-            <small>{comm.likes}</small>
+          <div className="icon flex gap-2 items-center" onClick={handleLike}>
+            <BiSolidLike
+              ref={likeRef}
+              className={`text-2xl transition-all ${
+                comm.isLiked && "text-blue-600"
+              }`}
+            />
+            <small>{millifyNum(like)}</small>
           </div>
-          <div className="icon flex gap-2 items-center icon">
-            <SlDislike />
+          <div
+            className="icon flex gap-2 items-center icon"
+            onClick={handleDisLike}
+          >
+            <BiSolidDislike
+              ref={dislikeRef}
+              className={`text-2xl transition-all ${
+                comm.isDisliked && "text-red-600"
+              }`}
+            />
           </div>
           <small
             className="font-medium icon"
@@ -176,7 +258,7 @@ export default function Comment({ comm, postid }) {
               </div>
             </div>
             {toggleReplies && (
-              <article className="flex flex-col gap-8 ml-4">
+              <article className="flex flex-col gap-8">
                 {comm.replies.map((item) => (
                   <Comment key={`subcomment/of/${item._id}`} comm={item} />
                 ))}

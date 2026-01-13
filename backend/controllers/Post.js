@@ -12,13 +12,17 @@ export const getPost = async (req, res) => {
       .select(
         "user_id channel_id title type category tags videoURL likes views description details thumbnail views postedAt duration"
       )
-      .populate("channel_id", "channelPicture channelName subscribers channelHandler")
+      .populate(
+        "channel_id",
+        "channelPicture channelName subscribers channelHandler"
+      )
       .populate("user_id", "firstname lastname")
       .lean();
     if (!post) {
       console.error(`${req.user.id} Post not found`);
       return res.status(404).json({ message: "Post not found" });
     }
+    //TODO:Now you no aggregation, you can switch it, priority-low
     const isLiked = await Like.findOne({
       post_id: req.params.id,
       user_id: req.user.id,
@@ -193,6 +197,7 @@ export const deletePost = async (req, res) => {
     console.log(
       `${req.user.email} has successfully deleted post : ${req.params.id}`
     );
+    //TODO:also delete comment, likes and dislikes of this post, priority-low
     return res.status(200).json({ message: "Successfully deleted Post" });
   } catch (error) {
     console.error("Error from deletePost controller : ", error);

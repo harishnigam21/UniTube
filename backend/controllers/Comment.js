@@ -4,12 +4,91 @@ import { getNextDate } from "../utils/getDate.js";
 import mongoose from "mongoose";
 export const getComment = async (req, res) => {
   try {
-    const allComment = await Comment.find({ post_id: req.params.id })
-      .populate("user_id", "firstname lastname email")
-      .sort({
-        createdAt: -1,
-      })
-      .lean();
+    const allComment = await Comment.aggregate([
+      {
+        $match: {
+          post_id: new mongoose.Types.ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "commentlikes",
+          let: { commentId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$comment_id", "$$commentId"] },
+                    {
+                      $eq: [
+                        "$user_id",
+                        new mongoose.Types.ObjectId(req.user.id),
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "likeStatus",
+        },
+      },
+      {
+        $lookup: {
+          from: "commentdislikes",
+          let: { commentId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$comment_id", "$$commentId"] },
+                    {
+                      $eq: [
+                        "$user_id",
+                        new mongoose.Types.ObjectId(req.user.id),
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "dislikeStatus",
+        },
+      },
+      {
+        $addFields: {
+          isLiked: { $gt: [{ $size: "$likeStatus" }, 0] },
+          isDisliked: { $gt: [{ $size: "$dislikeStatus" }, 0] },
+          user_id: {
+            firstname: "$user.firstname",
+            lastname: "$user.lastname",
+            email: "$user.email",
+          },
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $project: {
+          likeStatus: 0,
+          dislikeStatus: 0,
+          user: 0,
+        },
+      },
+    ]);
     const root = [];
     const map = {};
     allComment.forEach((c) => {
@@ -135,12 +214,10 @@ export const updateComment = async (req, res) => {
       return res.status(404).json({ message: "No such comment exist" });
     }
     console.log("Successfully updated comment");
-    return res
-      .status(200)
-      .json({
-        message: "Successfully updated comment",
-        txt: updateComment.commentText,
-      });
+    return res.status(200).json({
+      message: "Successfully updated comment",
+      txt: updateComment.commentText,
+    });
   } catch (error) {
     console.error("Error from updateComment controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });

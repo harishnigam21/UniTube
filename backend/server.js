@@ -9,6 +9,7 @@ import Channel from "./routes/Channel.js";
 import Post from "./routes/Post.js";
 import Comment from "./routes/Comment.js";
 import PostInteraction from "./routes/PostInteraction.js";
+import CommentInteraction from "./routes/CommentInteraction.js";
 const PORT = process.env.PORT || 5000;
 const app = express();
 configDotenv();
@@ -26,6 +27,7 @@ app.use("/", Auth);
 app.use("/", Channel);
 app.use("/", Post);
 app.use("/", PostInteraction);
+app.use("/", CommentInteraction);
 app.use("/", Comment);
 
 app.get("/", (req, res) =>
