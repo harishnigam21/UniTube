@@ -29,7 +29,6 @@ export default function App() {
           credentials: "include",
         });
         const responseData = await response.json();
-        console.log(responseData.message);
         if (!response.ok) {
           navigate("/login");
           return;

@@ -90,7 +90,7 @@ export default function VideoPlayer({ url }) {
     >
       <video
         ref={videoRef}
-        src={url}
+        src={`${import.meta.env.VITE_BACKEND_HOST}/${url}`}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onClick={togglePlay} // Click video to play/pause
