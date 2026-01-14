@@ -39,6 +39,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       default: "Newly Registered User",
+      select: false,
     },
     subscription: [
       {

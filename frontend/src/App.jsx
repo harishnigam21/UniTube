@@ -1,11 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
 import "./App.css";
+import { useDispatch } from "react-redux";
+import { changeLoginStatus, newUser } from "./store/Slices/userSlice";
 export default function App() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [navToggle, setNavToggle] = useState(false);
   const [sidebarToggle, setSidebarToggle] = useState({
     status: true,
@@ -15,6 +19,30 @@ export default function App() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  useEffect(() => {
+    const onRefresh = async () => {
+      const url = `${import.meta.env.VITE_BACKEND_HOST}/refresh`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { "content-type": "application/json" },
+          credentials: "include",
+        });
+        const responseData = await response.json();
+        console.log(responseData.message);
+        if (!response.ok) {
+          navigate("/login");
+          return;
+        }
+        dispatch(newUser({ userInfo: responseData.userInfo }));
+        dispatch(changeLoginStatus({ status: true }));
+        window.localStorage.setItem("acTk", JSON.stringify(responseData.acTk));
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    onRefresh();
+  }, [dispatch, navigate]);
   useEffect(() => {
     const handleResize = () => {
       setScreenSize({ width: window.innerWidth, height: window.innerHeight });

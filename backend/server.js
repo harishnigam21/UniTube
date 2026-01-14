@@ -1,6 +1,7 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import corsOptions from "./config/cors.js";
 import credentials from "./middlewares/credentials/credentials.js";
 import connectDB from "./DB/DBConnection.js";
@@ -20,6 +21,7 @@ app.use("/uploads", express.static("uploads"));
 app.use(credentials);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(cors(corsOptions));
 
 //App level Routes

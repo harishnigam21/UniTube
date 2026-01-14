@@ -10,7 +10,7 @@ const jwtVerifier = async (req, res, next) => {
     }
     const token = header.split(" ")[1]; // bearer token...
     if (!token) {
-      return res.status(401).json({ message: "Invalid token format" });
+      return res.status(403).json({ message: "Invalid token format" });
     }
     console.log("1.1 Verifying Token...");
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
@@ -19,7 +19,7 @@ const jwtVerifier = async (req, res, next) => {
     const UserExist = await User.findById(decoded.id);
     if (!UserExist) {
       console.error("2.2 User no longer exists");
-      return res.status(401).json({ message: "User no longer exists" });
+      return res.status(404).json({ message: "User no longer exists" });
     }
     console.log("2.2 User Existence passed");
     req.user = UserExist;
