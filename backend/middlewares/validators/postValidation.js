@@ -1,19 +1,19 @@
+import fs from "fs";
 const postValidation = (req, res, next) => {
-  const {
-    channel_id,
-    title,
-    type,
-    category,
-    tags,
-    thumbnail,
-    videoURL,
-    description,
-    details,
-  } = req.body;
+  const { channel_id, title, type, category, tags, description, details } =
+    req.body;
+  const files = req.files;
 
   // Helper to send response and stop execution immediately
   const sendError = (error) => {
-    return res.status(422).json({ success: false, message:error });
+    if (req.files) {
+      Object.values(req.files)
+        .flat()
+        .forEach((file) => {
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        });
+    }
+    return res.status(422).json({ success: false, message: error });
   };
 
   // 1. Channel ID (MongoDB ObjectId format)
@@ -28,44 +28,34 @@ const postValidation = (req, res, next) => {
   }
 
   // 3. Type
-  const allowedTypes = ["video", "short", "audio", "news", "podcast"];
+  const allowedTypes = [
+    "video",
+    "short",
+    "audio",
+    "news",
+    "podcast",
+    "playlist",
+  ];
   if (!type || !allowedTypes.includes(type.toLowerCase())) {
     return sendError(`Invalid type. Allowed types: ${allowedTypes.join(", ")}`);
   }
 
   // 4. Category
-  const allowedCategory = [
-    "music",
-    "education",
-    "travel",
-    "food",
-    "fitness",
-    "gaming",
-    "news",
-    "comedy",
-  ];
-  if (!category || !allowedCategory.includes(category.toLowerCase())) {
-    return sendError(
-      `Invalid category selected. Allowed category : ${allowedCategory.join(
-        ", "
-      )}`
-    );
+  if (!category || category.length < 2) {
+    return sendError("Missing or Invalid Category");
   }
 
   // 5. Tags (Checking if it's an array using the method we discussed)
-  if (tags && !Array.isArray(tags)) {
+  if (tags && !Array.isArray(tags.split(","))) {
     return sendError("Tags must be provided as an array");
   }
 
   // 6. Thumbnail and Video URL
-  const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|mp4|mp3|mkv|mov))$/i;
-
-  if (!thumbnail || !urlRegex.test(thumbnail)) {
-    return sendError("A valid thumbnail image URL is required");
+  if (!files || !files.thumbnail) {
+    return sendError("Thumbnail is required.");
   }
-
-  if (!videoURL || !urlRegex.test(videoURL)) {
-    return sendError("A valid video or media URL is required");
+  if (!files || !files.videoURL) {
+    return sendError("Video is required.");
   }
 
   // 7. Description (optional)
@@ -74,11 +64,23 @@ const postValidation = (req, res, next) => {
   }
 
   // 8. Details (optional object for extra metadata)
-  if (
-    details !== undefined &&
-    (typeof details !== "object" || Array.isArray(details))
-  ) {
-    return sendError("Details must be a valid object");
+  let parsedDetails;
+
+  // Check if details exists at all
+  if (req.body.details) {
+    try {
+      //  Convert the string back into a JavaScript Array
+      parsedDetails = JSON.parse(req.body.details);
+      //  Validate that the result is actually an Array
+      if (!Array.isArray(parsedDetails)) {
+        return sendError("Details must be provided as an array format.");
+      }
+    } catch (err) {
+      // This catches cases where req.body.details is not valid JSON
+      return sendError("Invalid data format for details.");
+    }
+  } else {
+    parsedDetails = []; // Default to empty if nothing was sent
   }
 
   // If it reaches here, everything is valid

@@ -86,17 +86,14 @@ export const getMorePost = async (req, res) => {
   }
 };
 export const createPost = async (req, res) => {
-  const {
-    channel_id,
-    title,
-    type,
-    category,
-    tags,
-    thumbnail,
-    videoURL,
-    description,
-    details,
-  } = req.body;
+  const { channel_id, title, type, category, tags, description, details } =
+    req.body;
+  const thumbnail = req.files?.thumbnail
+    ? req.files.thumbnail[0].path.replace(/\\/g, "/")
+    : null;
+  const videoURL = req.files?.videoURL
+    ? req.files.videoURL[0].path.replace(/\\/g, "/")
+    : null;
   try {
     const channel = await Channel.findOne({
       _id: channel_id,
@@ -123,13 +120,13 @@ export const createPost = async (req, res) => {
       title,
       type,
       category,
-      tags,
+      tags: tags.split(","),
       thumbnail,
       videoURL,
       postedAt: getNextDate(),
       duration: formatDuration(durationInSeconds),
       description,
-      details,
+      details: JSON.parse(details),
     });
     console.log(`${req.user.email} created new post`);
     return res

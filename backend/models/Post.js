@@ -19,22 +19,19 @@ const postSchema = mongoose.Schema(
       //video,short,audio,news,podcast
       type: String,
       set: (v) => v.toLowerCase(),
-      enum: ["video", "short", "audio", "news", "podcast"],
+      enum: [
+        "video",
+        "short",
+        "audio",
+        "news",
+        "podcast",
+        "playlist",
+        "course",
+      ],
       required: true,
     },
     category: {
       type: String,
-      set: (v) => v.toLowerCase(),
-      enum: [
-        "music",
-        "education",
-        "travel",
-        "food",
-        "fitness",
-        "gaming",
-        "news",
-        "comedy",
-      ],
       required: true,
     },
 
@@ -71,9 +68,7 @@ const postSchema = mongoose.Schema(
       type: String,
       default: "Description not provided",
     },
-    details: {
-      type: mongoose.Schema.Types.Mixed,
-    },
+    details: [mongoose.Schema.Types.Mixed],
   },
   { timestamps: true }
 );
