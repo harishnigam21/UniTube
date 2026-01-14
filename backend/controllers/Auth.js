@@ -42,12 +42,11 @@ export const LogIn = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     }); //TODO: add secure:true at production level
-    const { password, refreshToken, ...other } = ExistingUser;
     console.log("Successfully Verified User : ", ExistingUser.email);
     return res.status(200).json({
       message: "Successfully Verified User",
       actk: access_token,
-      user: other,
+      user: updateRefreshToken,
     });
   } catch (error) {
     console.error("Error from LogIn controller : ", error);
@@ -124,7 +123,31 @@ export const handleRefresh = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error("Error from getUser controller : ", error);
+    console.error("Error from handleRefresh controller : ", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+export const logOut = async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(401);
+    const findUser = await Users.findOne({ refreshToken: cookies.jwt })
+      .select("+refreshToken +_id")
+      .lean();
+    if (!findUser) {
+      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
+      return res.sendStatus(204);
+    }
+    await Users.findOneAndUpdate(
+      {
+        refreshToken: findUser.refreshToken,
+      },
+      { $set: { refreshToken: "" } }
+    );
+    res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
+    return res.sendStatus(204);
+  } catch (error) {
+    console.error("Error from logOut controller : ", error);
     return res.status(500).json({ message: error.message });
   }
 };
