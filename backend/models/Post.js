@@ -68,7 +68,10 @@ const postSchema = mongoose.Schema(
       type: String,
       default: "Description not provided",
     },
-    details: [mongoose.Schema.Types.Mixed],
+    details: {
+      type: Map,
+      of: String, // This means values will be strings
+    },
   },
   { timestamps: true }
 );

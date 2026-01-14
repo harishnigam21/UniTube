@@ -200,14 +200,15 @@ export default function Channel() {
                     selectedChannel[item].posts.length > 0 && (
                       <article className="flex flex-col gap-4">
                         <strong>{item.toUpperCase()}</strong>
-                        {selectedChannel[item].posts.map((item) => (
-                          <article
-                            key={`channel/posts/fields/items/${item._id}`}
-                            className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"
-                          >
-                            <Video vid={item} type={"channel"} />
-                          </article>
-                        ))}
+                        <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+                          {selectedChannel[item].posts.map((item) => (
+                            <Video
+                              key={`channel/posts/fields/items/${item._id}`}
+                              vid={item}
+                              type={"channel"}
+                            />
+                          ))}
+                        </article>
                       </article>
                     )}
                 </article>
@@ -221,14 +222,15 @@ export default function Channel() {
           ) : selectedChannel[fieldSelected] &&
             selectedChannel[fieldSelected].posts.length > 0 ? (
             <article className="flex flex-col">
-              {selectedChannel[fieldSelected].posts.map((item) => (
-                <article
-                  key={`channel/posts/fields/items/inthereSelection/${item._id}`}
-                  className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"
-                >
-                  <Video vid={item} type={"channel"} />
-                </article>
-              ))}
+              <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+                {selectedChannel[fieldSelected].posts.map((item) => (
+                  <Video
+                    key={`channel/posts/fields/items/inthereSelection/${item._id}`}
+                    vid={item}
+                    type={"channel"}
+                  />
+                ))}
+              </article>
               {!selectedChannel[fieldSelected].nextCursor && (
                 //TODO:Add functionality to load more by fetching API
                 <button className="self-center justify-self-center bg-primary rounded-xl text-text py-1 px-3 icon">
