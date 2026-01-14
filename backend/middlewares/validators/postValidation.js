@@ -64,23 +64,11 @@ const postValidation = (req, res, next) => {
   }
 
   // 8. Details (optional object for extra metadata)
-  let parsedDetails;
-
-  // Check if details exists at all
-  if (req.body.details) {
-    try {
-      //  Convert the string back into a JavaScript Array
-      parsedDetails = JSON.parse(req.body.details);
-      //  Validate that the result is actually an Array
-      if (!Array.isArray(parsedDetails)) {
-        return sendError("Details must be provided as an array format.");
-      }
-    } catch (err) {
-      // This catches cases where req.body.details is not valid JSON
-      return sendError("Invalid data format for details.");
-    }
-  } else {
-    parsedDetails = []; // Default to empty if nothing was sent
+  if (
+    typeof JSON.parse(details) !== "object" ||
+    Object.keys(JSON.parse(details)).length == 0
+  ) {
+    return sendError("Either it is not object or may it is empty");
   }
 
   // If it reaches here, everything is valid

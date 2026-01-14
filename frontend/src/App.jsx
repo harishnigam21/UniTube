@@ -30,7 +30,7 @@ export default function App() {
         });
         const responseData = await response.json();
         if (!response.ok) {
-          navigate("/login");
+          navigate("/login");//TODO:page not redirecting to login
           return;
         }
         dispatch(newUser({ userInfo: responseData.userInfo }));

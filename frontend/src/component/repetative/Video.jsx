@@ -10,7 +10,7 @@ export default function Video({ vid, type }) {
     >
       <div className="relative">
         <img
-          src={vid.thumbnail}
+          src={`${import.meta.env.VITE_BACKEND_HOST}/${vid.thumbnail}`}
           alt={`thumbnail for video ${vid._id}`}
           className="w-full rounded-xl object-cover object-center"
         />

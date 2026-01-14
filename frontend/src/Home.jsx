@@ -10,6 +10,7 @@ import { setItems } from "./store/Slices/videoSlice";
 export default function Home() {
   const { short, setSidebarToggle } = useOutletContext();
   const video = useSelector((store) => store.videos.items);
+  const nextCursor = useSelector((store) => store.videos.nextCursor);
   const [category, setCategory] = useState([]);
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(true); //TODO:just to switch between skeleton, delete after testing and also update below code
@@ -88,54 +89,64 @@ export default function Home() {
             ))}
           </article>
           <article className="w-full text-text">
-            <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+            <article className="flex flex-col gap-8">
               {video.length > 0 ? (
-                video.map((video, index) => (
-                  <React.Fragment key={video._id}>
-                    <Video
-                      key={`video/${video._id}`}
-                      vid={video}
-                      type={"home"}
-                    />
-                    {index === 1 && (
-                      <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
-                        <article className="flex items-center justify-between mb-4 px-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-red-600 text-3xl font-bold italic">
-                              S
-                            </span>
-                            <h2 className="text-xl font-bold">Shorts</h2>
-                          </div>
-                          <div className="hidden md:flex gap-2">
-                            <button
-                              onClick={() => scrollShorts("left")}
-                              className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
-                            >
-                              ←
-                            </button>
-                            <button
-                              onClick={() => scrollShorts("right")}
-                              className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
-                            >
-                              →
-                            </button>
-                          </div>
+                <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {video.map((video, index) => (
+                    <React.Fragment key={video._id}>
+                      <Video
+                        key={`video/${video._id}`}
+                        vid={video}
+                        type={"home"}
+                      />
+                      {index === 1 && (
+                        <article className="w-full max-w-full overflow-x-hidden col-span-full py-6 border-y border-zinc-800/50 my-6 relative">
+                          <article className="flex items-center justify-between mb-4 px-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-red-600 text-3xl font-bold italic">
+                                S
+                              </span>
+                              <h2 className="text-xl font-bold">Shorts</h2>
+                            </div>
+                            <div className="hidden md:flex gap-2">
+                              <button
+                                onClick={() => scrollShorts("left")}
+                                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                              >
+                                ←
+                              </button>
+                              <button
+                                onClick={() => scrollShorts("right")}
+                                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                              >
+                                →
+                              </button>
+                            </div>
+                          </article>
+                          <article
+                            ref={scrollRef}
+                            className="flex overflow-x-auto gap-4 pb-4 scroll-smooth scrollbar-hide"
+                          >
+                            {short.slice(0, 10).map((short) => (
+                              <Shorts key={`short/${short.id}`} srt={short} />
+                            ))}
+                            <div className="flex items-center justify-center whitespace-nowrap icon">
+                              View All →
+                            </div>
+                          </article>
                         </article>
-                        <article
-                          ref={scrollRef}
-                          className="flex overflow-x-auto gap-4 pb-4 scroll-smooth scrollbar-hide"
-                        >
-                          {short.slice(0, 10).map((short) => (
-                            <Shorts key={`short/${short.id}`} srt={short} />
-                          ))}
-                          <div className="flex items-center justify-center whitespace-nowrap icon">
-                            View All →
-                          </div>
-                        </article>
-                      </article>
-                    )}
-                  </React.Fragment>
-                ))
+                      )}
+                    </React.Fragment>
+                  ))}
+                  {
+                    //TODO:Add functionality to load more by fetching API
+                    nextCursor && (
+                      <button className="self-center justify-self-center bg-primary rounded-xl text-text py-1.5 font-bold px-3 icon">
+                        Load More
+                      </button>
+                    )
+                  }
+                </article>
               ) : (
                 <p className="text-xl md:text-2xl text-center py-4 col-span-full text-red-500 font-bold font-serif">
                   No Post Found !
