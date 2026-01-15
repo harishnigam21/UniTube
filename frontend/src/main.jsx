@@ -17,6 +17,9 @@ import Post from "./component/post/Post.jsx";
 import ViewPost from "./component/post/ViewPost.jsx";
 import Channel from "./component/channel/Channel.jsx";
 import Login from "./component/User_friendly_Error/Login.jsx";
+import NotFound from "./component/User_friendly_Error/NotFound.jsx";
+import BadRequest from "./component/User_friendly_Error/BadRequest.jsx";
+import ServerError from "./component/User_friendly_Error/ServerError.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,8 +39,10 @@ const router = createBrowserRouter([
       },
       { path: "channel/create", element: <CreateChannel /> },
       { path: "channel/view", element: <ViewChannel /> },
-
       { path: "msg/login", element: <Login /> },
+      { path: "msg/not-found", element: <NotFound /> },
+      { path: "msg/bad-request", element: <BadRequest /> },
+      { path: "msg/server-error", element: <ServerError /> },
     ],
   },
   {
