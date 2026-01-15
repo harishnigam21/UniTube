@@ -7,7 +7,9 @@ import SlideBar from "./component/common/SlideBar";
 import "./App.css";
 import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "./store/Slices/userSlice";
+import items from "./assets/data/static/header";
 import useApi from "./hooks/Api";
+import Search from "./component/common/Search";
 export default function App() {
   const { sendRequest } = useApi();
   const navigate = useNavigate();
@@ -369,6 +371,7 @@ export default function App() {
     <main className="flex relative flex-col box-border ">
       <Header
         navToggle={navToggle}
+        screenSize={screenSize}
         setNavToggle={setNavToggle}
         setSidebarToggle={setSidebarToggle}
       />
@@ -377,8 +380,14 @@ export default function App() {
           navToggle={navToggle}
           setNavToggle={setNavToggle}
           sidebarToggle={sidebarToggle}
+          screenSize={screenSize}
         />
         <article className="flex flex-col w-full max-w-full pt-13">
+          {screenSize.width < 768 && (
+            <article className="flex items-center justify-center py-2 px-4">
+              <Search items={items} />
+            </article>
+          )}
           <Outlet context={{ short, setSidebarToggle, screenSize }} />
         </article>
       </section>

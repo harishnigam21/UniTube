@@ -2,7 +2,13 @@ import { useSelector } from "react-redux";
 import items from "../../assets/data/static/header";
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
+import Search from "./Search";
+export default function Header({
+  navToggle,
+  setNavToggle,
+  setSidebarToggle,
+  screenSize,
+}) {
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [expandProfile, setExpandProfile] = useState(false);
@@ -21,9 +27,9 @@ export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
   return (
     <header
       ref={headerRef}
-      className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 z-50 bg-bgprimary overflow-hidden" //TODO:and remove this hidden and settle down header
+      className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 z-50 bg-bgprimary" //TODO:and remove this hidden and settle down header
     >
-      <article className="flex gap-8 justify-between items-center">
+      <article className="flex gap-4 justify-between items-center">
         <article className="flex gap-4 items-center">
           {items
             .filter((item) => item.id == 0)
@@ -50,35 +56,7 @@ export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
             />
           </Link>
         </article>
-        <article className="flex gap-4 items-center justify-center grow">
-          {items.slice(2, 4).map((item) =>
-            item.name == "search" ? (
-              <div
-                key={`header/item/${item.id}`}
-                className="flex items-center rounded-full overflow-hidden relative border border-border text-text grow w-full md:max-w-3/4 lg:max-w-1/2 min-w-56"
-              >
-                <input
-                  id="search"
-                  name="search"
-                  placeholder="Search"
-                  className="w-full py-2 px-4"
-                />
-                <div className="flex items-center absolute right-0 bg-border h-full icon">
-                  <item.icon className="text-2xl my-2 mx-4 icon" />
-                </div>
-              </div>
-            ) : item.name == "mic" ? (
-              <div
-                key={`header/item/${item.id}`}
-                className="flex items-center rounded-full bg-border text-text icon"
-              >
-                <item.icon className="text-2xl m-2" />
-              </div>
-            ) : (
-              <></>
-            )
-          )}
-        </article>
+        {screenSize.width >= 768 && <Search items={items} />}
         <article className="flex gap-4 items-center text-text">
           {login
             ? items.slice(-4, -1).map((item) =>
@@ -87,9 +65,12 @@ export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
                     to={item.path}
                     key={`header/item/${item.id}`}
                     className="flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-border icon"
+                    title={item.name}
                   >
                     <item.icon className="text-2xl icon" />
-                    <span className="whitespace-nowrap">{item.name}</span>
+                    {screenSize.width > 420 && (
+                      <span className="whitespace-nowrap">{item.name}</span>
+                    )}
                   </Link>
                 ) : item.name == "profile" ? (
                   <div

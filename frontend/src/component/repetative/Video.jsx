@@ -12,7 +12,7 @@ export default function Video({ vid, type }) {
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${vid.thumbnail}`}
           alt={`thumbnail for video ${vid._id}`}
-          className="w-full rounded-xl object-cover object-center"
+          className="w-full rounded-xl object-cover object-center aspect-video"
         />
         <small className="absolute bottom-2 right-2 bg-black/60 rounded-md text-white py-0.5 px-3 font-medium">
           {vid.duration}
@@ -49,7 +49,7 @@ export default function Video({ vid, type }) {
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${vid.thumbnail}`}
           alt="backdrop"
-          className="w-full h-full blur-[200px]"
+          className="w-full h-full blur-[200px] aspect-video"
         />
       </div>
     </Link>
