@@ -1,15 +1,18 @@
 import { useSelector } from "react-redux";
 import items from "../../assets/data/static/header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Search from "./Search";
+import useApi from "../../hooks/Api";
 export default function Header({
   navToggle,
   setNavToggle,
   setSidebarToggle,
   screenSize,
 }) {
+  const { sendRequest } = useApi();
   const headerRef = useRef(null);
+  const navigate = useNavigate();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [expandProfile, setExpandProfile] = useState(false);
   const login = useSelector((store) => store.user.loginStatus);
@@ -18,6 +21,14 @@ export default function Header({
       let need = headerRef.current.getBoundingClientRect();
       setHeaderHeight(need.height);
     }
+  };
+  const handleLogout = async () => {
+    await sendRequest("logout", "GET").then((result) => {
+      if (result && result.success) {
+        window.localStorage.clear();
+        navigate("/login");
+      }
+    });
   };
   useEffect(() => {
     handleHeight();
@@ -85,15 +96,30 @@ export default function Header({
                     />
                     {expandProfile && (
                       <article
-                        className="flex flex-col absolute right-0 top-0 gap-4 rounded-b-xl p-4 z-50 bg-bgprimary min-w-fit whitespace-nowrap border border-border border-t-0"
+                        className="flex flex-col absolute right-0 top-0 rounded-b-xl z-50 bg-bgprimary min-w-fit whitespace-nowrap border border-border border-t-0 overflow-hidden"
                         style={{ marginTop: `${headerHeight}px` }}
                         onMouseLeave={() => {
                           setExpandProfile(false);
                         }}
                       >
-                        <strong>My Posts</strong>
-                        <strong>My Channel</strong>
-                        <strong>Log Out</strong>
+                        <Link
+                          to={"/post/view"}
+                          className="icon py-2 px-8 hover:bg-border transition-all"
+                        >
+                          My Posts
+                        </Link>
+                        <Link
+                          to={"/channel/view"}
+                          className="icon py-2 px-8 hover:bg-border transition-all"
+                        >
+                          My Channel
+                        </Link>
+                        <p
+                          className="icon py-2 px-8 hover:bg-border transition-all"
+                          onClick={handleLogout}
+                        >
+                          Log Out
+                        </p>
                       </article>
                     )}
                   </div>

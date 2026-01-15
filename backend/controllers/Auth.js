@@ -103,17 +103,19 @@ export const ForgotPassword = async (req, res) => {};
 export const handleRefresh = async (req, res) => {
   try {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
+    if (!cookies?.jwt)
+      return res.status(401).json({ message: "Cookie missing" });
     const findUser = await Users.findOne({ refreshToken: cookies.jwt })
       .select("+refreshToken +_id")
       .lean();
-    if (!findUser) return res.sendStatus(403);
+    if (!findUser) return res.status(403).json({ message: "Invalid payload" });
     const { refreshToken, ...other } = findUser;
     jwt.verify(
       findUser.refreshToken,
       process.env.REFRESH_TOKEN_KEY,
       (err, decoded) => {
-        if (err || findUser._id != decoded.id) return res.sendStatus(403);
+        if (err || findUser._id != decoded.id)
+          return res.status(403).json({ status: false });
         const access_token = jwt.sign(
           { id: decoded.id },
           process.env.ACCESS_TOKEN_KEY,
@@ -130,13 +132,14 @@ export const handleRefresh = async (req, res) => {
 export const logOut = async (req, res) => {
   try {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
+    if (!cookies?.jwt)
+      return res.status(401).json({ message: "Cookie missing" });
     const findUser = await Users.findOne({ refreshToken: cookies.jwt })
       .select("+refreshToken +_id")
       .lean();
     if (!findUser) {
       res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
-      return res.sendStatus(204);
+      return res.status(200).json({ status: true });
     }
     await Users.findOneAndUpdate(
       {
@@ -145,7 +148,7 @@ export const logOut = async (req, res) => {
       { $set: { refreshToken: "" } }
     );
     res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
-    return res.sendStatus(204);
+    return res.status(200).json({ status: true });
   } catch (error) {
     console.error("Error from logOut controller : ", error);
     return res.status(500).json({ message: error.message });
