@@ -24,8 +24,26 @@ const jwtVerifier = async (req, res, next) => {
     console.log("2.2 User Existence passed");
     req.user = UserExist;
     next();
-  } catch (error) {
-    console.error("Verifier Side Error : ", error);
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return res
+        .status(401)
+        .send({ error: "Auth token expired. Please refresh." });
+    }
+    if (err instanceof jwt.JsonWebTokenError) {
+      if (err.message === "invalid signature") {
+        return res
+          .status(403)
+          .send({ error: "Security alert: Invalid signature." });
+      }
+      return res.status(400).send({ error: "Token is malformed or invalid." });
+    }
+    if (err instanceof jwt.NotBeforeError) {
+      return res
+        .status(403)
+        .send({ error: "Token not active yet. Check your system clock." });
+    }
+    console.error("Verifier Side Error : ", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

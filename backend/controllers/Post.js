@@ -54,7 +54,7 @@ export const getPost = async (req, res) => {
 };
 export const getMorePost = async (req, res) => {
   const { cursor } = req.query;
-  const parsedLimit = Math.min(parseInt(req.query.limit) || 10, 20);
+  const parsedLimit = Math.min(parseInt(req.query.limit) || 5, 10);
   try {
     const query = {};
     if (cursor) {
@@ -62,7 +62,7 @@ export const getMorePost = async (req, res) => {
     }
     const posts = await Post.find(query)
       .select(
-        "user_id channel_id title thumbnail category views postedAt duration"
+        "user_id channel_id title thumbnail category views postedAt duration createdAt"
       )
       .populate("channel_id", "channelPicture channelName")
       .populate("user_id", "firstname lastname")

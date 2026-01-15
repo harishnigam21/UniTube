@@ -231,7 +231,7 @@ export default function CreatePost() {
             >
               Type
             </p>
-            <div className="grid grid-cols-3 gap-3 border-border border -mt-3 rounded-md px-2 pt-5 pb-2">
+            <div className="flex flex-wrap gap-3 border-border border -mt-3 rounded-md px-2 pt-5 pb-2">
               {typeAllowed.map((cat) => (
                 <label
                   key={cat.toLowerCase()}
@@ -299,6 +299,7 @@ export default function CreatePost() {
                   }))
                 }
               >
+                <option selected value="none">select</option>
                 {channel.map((item, index) => (
                   <option
                     key={`channelHandler/option/${index}`}

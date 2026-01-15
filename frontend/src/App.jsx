@@ -29,13 +29,17 @@ export default function App() {
           credentials: "include",
         });
         const responseData = await response.json();
-        if (!response.ok) {
-          navigate("/login");//TODO:page not redirecting to login
+        if (response.ok) {
+          dispatch(newUser({ userInfo: responseData.userInfo }));
+          dispatch(changeLoginStatus({ status: true }));
+          window.localStorage.setItem(
+            "acTk",
+            JSON.stringify(responseData.acTk)
+          );
           return;
         }
-        dispatch(newUser({ userInfo: responseData.userInfo }));
-        dispatch(changeLoginStatus({ status: true }));
-        window.localStorage.setItem("acTk", JSON.stringify(responseData.acTk));
+        navigate("/login", { replace: true }); //TODO:page not redirecting to login
+        return;
       } catch (error) {
         console.log(error.message);
       }

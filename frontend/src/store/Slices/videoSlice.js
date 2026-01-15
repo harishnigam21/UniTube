@@ -498,6 +498,10 @@ const videoSlice = createSlice({
       state.items = action.payload.posts;
       state.nextCursor = action.payload.nextCursor;
     },
+    addItems: (state, action) => {
+      state.items = [...state.items, ...action.payload.posts];
+      state.nextCursor = action.payload.nextCursor;
+    },
     setSelectedItem: (state, action) => {
       state.selectedItem = action.payload.selectedItem;
     },
@@ -573,6 +577,7 @@ export const {
   addCategory,
   addSearch,
   setItems,
+  addItems,
   setSelectedItem,
   setSelectedItemComment,
   addItemComment,
