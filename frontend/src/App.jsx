@@ -7,7 +7,9 @@ import SlideBar from "./component/common/SlideBar";
 import "./App.css";
 import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "./store/Slices/userSlice";
+import useApi from "./hooks/Api";
 export default function App() {
+  const { sendRequest } = useApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [navToggle, setNavToggle] = useState(false);
@@ -20,34 +22,14 @@ export default function App() {
     height: window.innerHeight,
   });
   useEffect(() => {
-    const onRefresh = async () => {
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/refresh`;
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: { "content-type": "application/json" },
-          credentials: "include",
-        });
-        const responseData = await response.json();
-        if (response.ok) {
-          dispatch(newUser({ userInfo: responseData.userInfo }));
-          dispatch(changeLoginStatus({ status: true }));
-          window.localStorage.setItem(
-            "acTk",
-            JSON.stringify(responseData.acTk)
-          );
-          return;
-        }
-        if (response.status == 401 || response.status == 403) {
-          navigate("/msg/login", { replace: true });
-          return;
-        }
-      } catch (error) {
-        console.log(error.message);
+    sendRequest("refresh", "GET").then((result) => {
+      if (result && result.success) {
+        dispatch(newUser({ userInfo: result.data.userInfo }));
+        dispatch(changeLoginStatus({ status: true }));
+        window.localStorage.setItem("acTk", JSON.stringify(result.data.acTk));
       }
-    };
-    onRefresh();
-  }, [dispatch, navigate]);
+    });
+  }, [dispatch, navigate, sendRequest]);
   useEffect(() => {
     const handleResize = () => {
       setScreenSize({ width: window.innerWidth, height: window.innerHeight });

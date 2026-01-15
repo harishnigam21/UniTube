@@ -107,8 +107,8 @@ export const handleRefresh = async (req, res) => {
     const findUser = await Users.findOne({ refreshToken: cookies.jwt })
       .select("+refreshToken +_id")
       .lean();
-    const { refreshToken, ...other } = findUser;
     if (!findUser) return res.sendStatus(403);
+    const { refreshToken, ...other } = findUser;
     jwt.verify(
       findUser.refreshToken,
       process.env.REFRESH_TOKEN_KEY,

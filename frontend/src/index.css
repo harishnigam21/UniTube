@@ -83,6 +83,12 @@ input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-text-fill-color: white !important;
 }
+@layer components {
+  .spinner {
+    @apply w-5 aspect-square rounded-full border-4 animate-[spin_0.3s_linear_infinite];
+    @apply border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500;
+  }
+}
 @keyframes fromLeft {
   0% {
     opacity: 0;

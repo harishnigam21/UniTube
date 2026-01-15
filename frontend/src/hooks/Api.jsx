@@ -17,13 +17,16 @@ const useApi = () => {
         case 401:
         case 403:
           dispatch(changeLoginStatus(false));
-          navigate("/login");
+          navigate("/msg/login");
           break;
         case 404:
-          navigate("/not-found");
+          navigate("/msg/not-found");
+          break;
+        case 400:
+          navigate("/msg/bad-request");
           break;
         case 500:
-          navigate("/server-error");
+          navigate("/msg/server-error");
           break;
         default:
           break;
@@ -33,23 +36,36 @@ const useApi = () => {
   );
 
   const sendRequest = useCallback(
-    async (url, method = "GET", body = null, customHeaders = {}) => {
+    async (
+      url,
+      method = "GET",
+      body = null,
+      customHeaders = {},
+      redirect = true
+    ) => {
       setLoading(true);
       setError(null);
       setStatus(null);
       const updateUrl = `${import.meta.env.VITE_BACKEND_HOST}/${url}`;
+      const headers = {
+        Authorization: localStorage.getItem("acTk")
+          ? `Bearer ${JSON.parse(localStorage.getItem("acTk"))}`
+          : "",
+        ...customHeaders,
+      };
+      if (!(body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
+      }
       try {
         const options = {
           method,
-          headers: {
-            "Content-Type": "application/json",
-            // Automatically pull token if it exists in localStorage
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem("acTk"))}`,
-            ...customHeaders,
-          },
-          // Don't send a body for GET or DELETE requests
+          headers,
+          credentials: "include",
+          // Not sending body for GET or DELETE requests
           body:
-            body && ["POST", "PUT", "PATCH"].includes(method)
+            body instanceof FormData
+              ? body
+              : body
               ? JSON.stringify(body)
               : null,
         };
@@ -58,14 +74,19 @@ const useApi = () => {
         setStatus(response.status);
 
         // 1. Handle critical redirects
-        handleGlobalStatus(response.status);
+        redirect && handleGlobalStatus(response.status);
 
         // 2. Parse the JSON
         const result = await response.json();
 
         // 3. Handle non-ok responses (400, 401, etc.)
         if (!response.ok) {
-          throw new Error(result.message || "API request failed");
+          return {
+            success: false,
+            data: result, // We still pass data so you can read the error message
+            status: response.status,
+            error: result.message || "Request failed",
+          };
         }
 
         setData(result);
@@ -74,11 +95,14 @@ const useApi = () => {
         console.error("API Error Caught:", err.message);
         const internalErrorStatus = 500;
         setStatus(internalErrorStatus);
-        setError("Something went wrong on our end. Redirecting...");
+        setError(err.message || "An unexpected error occurred");
         // Force navigation to server-error page so the UI doesn't look "broken"
-        handleGlobalStatus(internalErrorStatus);
+        if (redirect) {
+          handleGlobalStatus(internalErrorStatus);
+        }
         return {
           success: false,
+          data: null,
           error: err.message,
           status: internalErrorStatus,
         };

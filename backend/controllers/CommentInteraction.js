@@ -130,19 +130,23 @@ export const commentDislike = async (req, res) => {
       });
     }
     await Dislike.deleteOne({ _id: checkDisLike.id }).session(session);
-    await Comment.updateOne(
+    const updatedComment = await Comment.findOneAndUpdate(
       {
         _id: findComment.id,
         dislikes: { $gt: 0 },
       },
       { $inc: { dislikes: -1 } },
-      { session }
+      { new: true, runValidators: true, session }
     );
     await session.commitTransaction();
     console.log(
       `${req.user.id} take back its dislike from comment:${findComment.id}`
     );
-    return res.status(200).json({ message: "Dislike removed", status: false });
+    return res.status(200).json({
+      message: "Dislike removed",
+      status: false,
+      likes: updatedComment.likes,
+    });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from commentDisLike Controller : ", error);

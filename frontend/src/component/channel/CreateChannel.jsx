@@ -9,15 +9,16 @@ import { useDispatch } from "react-redux";
 import { updateChannel } from "../../store/Slices/userSlice.js";
 import { addChannel } from "../../store/Slices/channelSlice.js";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../hooks/Api.jsx";
 export default function CreateChannel() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, sendRequest } = useApi();
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
-  const [loader, setLoader] = useState(false);
   const [handlerAvailability, setHandlerAvailability] = useState(false);
   const [channelName, setChannelName] = useState("");
   const [channelHandler, setChannelHandler] = useState("");
@@ -78,83 +79,55 @@ export default function CreateChannel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoader(true);
     // Only proceed if validateData returns TRUE
     if (!validateData()) {
-      setLoader(false);
       return; // Stop the function here
     }
     console.log("validation completed..");
-    try {
-      const data = new FormData();
-      data.append("channelName", channelName);
-      data.append("channelHandler", channelHandler);
-      data.append("channelBanner", channelBanner);
-      data.append("channelPicture", channelPicture);
-      data.append("channelDescription", channelDescription);
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/create_channel`;
-      const token = window.localStorage.getItem("acTk");
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        body: data,
-        credentials: "include",
+    const data = new FormData();
+    data.append("channelName", channelName);
+    data.append("channelHandler", channelHandler);
+    data.append("channelBanner", channelBanner);
+    data.append("channelPicture", channelPicture);
+    data.append("channelDescription", channelDescription);
+    sendRequest("create_channel", "POST", data, {}, false)
+      .then((result) => {
+        const data = result?.data;
+        showInfoFunc(result.success ? "green" : "red", data.message);
+        if (result && result.success) {
+          dispatch(updateChannel({ id: data.data._id }));
+          dispatch(addChannel({ item: data.data }));
+          setHandlerAvailability(false);
+          setChannelName("");
+          setChannelHandler("");
+          setChannelDescription("");
+          setChannelBanner(null);
+          setChannelPicture(null);
+          setPreview({ banner: dummyUpload, picture: dummyUpload });
+          setTimeout(() => {
+            navigate("/channel/view");
+          }, 4000);
+        }
+      })
+      .finally(() => {
+        URL.revokeObjectURL(preview.banner);
+        URL.revokeObjectURL(preview.picture);
       });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (response.ok) {
-        dispatch(updateChannel({ id: responseData.data._id }));
-        dispatch(addChannel({ item: responseData.data }));
-        setHandlerAvailability(false);
-        setChannelName("");
-        setChannelHandler("");
-        setChannelDescription("");
-        setChannelBanner(null);
-        setChannelPicture(null);
-        setPreview({ banner: dummyUpload, picture: dummyUpload });
-        setTimeout(() => {
-          navigate("/channel/view");
-        }, 4000);
-      }
-      showInfoFunc(response.ok ? "green" : "red", responseData.message);
-    } catch (error) {
-      console.log(error);
-      showInfoFunc("red", error.message);
-    } finally {
-      URL.revokeObjectURL(preview.banner);
-      URL.revokeObjectURL(preview.picture);
-      setLoader(false);
-    }
   };
   const checkhandlerAvailabilty = async (e) => {
     e.preventDefault();
-    setLoader(true);
     if (!validateHandler(channelHandler)) {
-      setLoader(false);
       return;
     }
-    try {
-      const url = `${
-        import.meta.env.VITE_BACKEND_HOST
-      }/validatehandler/${channelHandler}`;
-      const token = window.localStorage.getItem("acTk");
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        credentials: "include",
-      });
-      const responseData = await response.json();
-      showInfoFunc(response.ok ? "green" : "red", responseData.message);
-      setHandlerAvailability(responseData.status);
-    } catch (error) {
-      showInfoFunc("red", error.message);
-    } finally {
-      setLoader(false);
-    }
+    await sendRequest(`validatehandler/${channelHandler}`, "GET").then(
+      (result) => {
+        const data = result?.data;
+        showInfoFunc(result.success ? "green" : "red", data?.message);
+        if (result && result.success) {
+          setHandlerAvailability(data.status);
+        }
+      }
+    );
   };
   return (
     <section className="text-text flex flex-col gap-4 p-2 md:p-4">
@@ -333,7 +306,7 @@ export default function CreateChannel() {
             className="flex items-center justify-center gap-2 font-medium py-2 px-6 rounded-md border border-border self-center shadow-[0.1px_0.1px_10px_0.1px_#222222_inset] icon"
           >
             <p>Submit</p>
-            {loader && (
+            {loading && (
               <p className="w-5 aspect-square rounded-full border-2 border-l-bgprimary border-r-primary border-b-secondary border-t-bgprimary animate-[spin_0.3s_linear_infinite]"></p>
             )}
           </button>

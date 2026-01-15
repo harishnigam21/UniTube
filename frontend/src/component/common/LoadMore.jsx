@@ -24,7 +24,7 @@ export default function LoadMore({ nextCursor }) {
       >
         <p>Load more</p>
         {loading && (
-          <p className="w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
+          <p className="spinner"></p>
         )}
       </button>
     </article>

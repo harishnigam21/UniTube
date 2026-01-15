@@ -12,7 +12,9 @@ import {
 } from "../../store/Slices/videoSlice";
 import { BiSolidDislike, BiSolidLike } from "react-icons/bi";
 import { millifyNum } from "../../utils/millify";
+import useApi from "../../hooks/Api";
 export default function Comment({ comm, postid }) {
+  const { sendRequest } = useApi();
   const dispatch = useDispatch();
   const likeRef = useRef(null);
   const dislikeRef = useRef(null);
@@ -24,113 +26,77 @@ export default function Comment({ comm, postid }) {
   const user = useSelector((store) => store.user.userInfo);
   const [like, setLike] = useState(comm && comm.likes ? comm.likes : 0);
   const handleEdit = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${comm._id}`;
-    const token = window.localStorage.getItem("acTk");
     if (updateCommentTxt.length > 1) {
-      const response = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          "content-type": "application/json",
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        body: JSON.stringify({ txt: updateCommentTxt }),
-        credentials: "include",
+      await sendRequest(`comment/${comm._id}`, "PATCH", {
+        txt: updateCommentTxt,
+      }).then((result) => {
+        const data = result?.data;
+        if (result && result.success) {
+          dispatch(
+            updateItemComment({
+              commentId: comm._id,
+              updatedText: data.txt,
+            })
+          );
+          setShowUpdateSection(false);
+        }
       });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (response.ok) {
-        dispatch(
-          updateItemComment({
-            commentId: comm._id,
-            updatedText: responseData.txt,
-          })
-        );
-        setShowUpdateSection(false);
-      }
-    }
+    } //TODO:handle if input field is empty
   };
   const handleDelete = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${comm._id}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`comment/${comm._id}`, "DELETE").then((result) => {
+      if (result && result.success) {
+        dispatch(deleteItemComment({ commentIdToDelete: comm._id }));
+      }
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      dispatch(deleteItemComment({ commentIdToDelete: comm._id }));
-    }
   };
   const handleReport = async () => {}; //TODO:Complete it later, currently not necessary
 
   const handleLike = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/clike/${comm._id}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`clike/${comm._id}`, "PATCH").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        if (!data.status) {
+          likeRef.current.style.color = "white";
+          likeRef.current.style.transform = "scale(0.5)";
+          setTimeout(() => {
+            likeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        if (data.status) {
+          dislikeRef.current.style.color = "white";
+          likeRef.current.style.color = "blue";
+          likeRef.current.style.transform = "scale(2)";
+          setTimeout(() => {
+            likeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        setLike(data.likes);
+      }
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      if (!responseData.status) {
-        likeRef.current.style.color = "white";
-        likeRef.current.style.transform = "scale(0.5)";
-        setTimeout(() => {
-          likeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      if (responseData.status) {
-        dislikeRef.current.style.color = "white";
-        likeRef.current.style.color = "blue";
-        likeRef.current.style.transform = "scale(2)";
-        setTimeout(() => {
-          likeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      setLike(responseData.likes);
-    }
   };
   const handleDisLike = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/cdislike/${comm._id}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`cdislike/${comm._id}`, "PATCH").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        if (!data.status) {
+          dislikeRef.current.style.color = "white";
+          dislikeRef.current.style.transform = "scale(0.5)";
+          setTimeout(() => {
+            dislikeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        if (data.status) {
+          likeRef.current.style.color = "white";
+          dislikeRef.current.style.color = "red";
+          dislikeRef.current.style.transform = "scale(2)";
+          setTimeout(() => {
+            dislikeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+      }
+      setLike(data?.likes);
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      if (!responseData.status) {
-        dislikeRef.current.style.color = "white";
-        dislikeRef.current.style.transform = "scale(0.5)";
-        setTimeout(() => {
-          dislikeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      if (responseData.status) {
-        likeRef.current.style.color = "white";
-        dislikeRef.current.style.color = "red";
-        dislikeRef.current.style.transform = "scale(2)";
-        setTimeout(() => {
-          dislikeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      setLike(responseData?.likes);
-    }
   };
   return (
     <article className="flex gap-4 w-full">
@@ -142,7 +108,7 @@ export default function Comment({ comm, postid }) {
         <div className="flex gap-4 justify-between w-full items-center">
           <div className="flex gap-2 items-center">
             <span className="font-medium">
-              {comm.user_id._id == user._id
+              {comm.user_id.email == user.email
                 ? "you"
                 : comm.user_id.email.split("@")[0]}
             </span>

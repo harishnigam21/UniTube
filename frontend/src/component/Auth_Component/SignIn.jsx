@@ -5,9 +5,10 @@ import { IoMdEyeOff } from "react-icons/io";
 import logo from "../../assets/images/logo.png";
 import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "../../store/Slices/userSlice";
+import useApi from "../../hooks/Api";
 export default function SignIn() {
   const dispatch = useDispatch();
-  const [loader, setLoader] = useState(false);
+  const { loading, sendRequest } = useApi();
   const [userCredentials, setUserCredentials] = useState({
     email: "",
     password: "",
@@ -40,49 +41,43 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoader(true);
     if (!validate()) {
-      setLoader(false);
       return;
     }
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/login`;
-    try {
-      const response = await fetch(url, {
-        headers: { "content-type": "application/json" },
-        method: "POST",
-        body: JSON.stringify({
-          email: userCredentials.email,
-          password: userCredentials.password,
-        }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        showInfoFunc("red", data.message);
-        if (response.status === 403) {
+    await sendRequest(
+      "login",
+      "POST",
+      {
+        email: userCredentials.email,
+        password: userCredentials.password,
+      },
+      {},
+      false
+    ).then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        showInfoFunc("green", data?.message || "Successfully Authorized");
+        data.actk &&
+          window.localStorage.setItem("acTk", JSON.stringify(data.actk));
+        if (data.user) {
+          dispatch(newUser({ userInfo: data.user }));
+          dispatch(changeLoginStatus({ status: true }));
+          window.localStorage.setItem("userInfo", JSON.stringify(data.user));
+        }
+        setTimeout(() => {
+          navigate(`/`, { replace: true });
+        }, 2000);
+      } else {
+        const errorMessage =
+          result?.error || data?.message || "An error occurred";
+        showInfoFunc("red", errorMessage);
+        if (result.status === 403 || result.status === 404) {
           setTimeout(() => {
-            navigate(`/signup`, { replace: true });
+            navigate(`/register`, { replace: true });
           }, 2000);
         }
-        return;
       }
-      showInfoFunc("green", data.message);
-      data.actk &&
-        window.localStorage.setItem("acTk", JSON.stringify(data.actk));
-      if (data.user) {
-        dispatch(newUser({ userInfo: data.user }));
-        dispatch(changeLoginStatus({ status: true }));
-        window.localStorage.setItem("userInfo", JSON.stringify(data.user));
-      }
-      setTimeout(() => {
-        navigate(`/`, { replace: true });
-      }, 2000);
-    } catch (error) {
-      console.log(error.message);
-      showInfoFunc("red", error.message);
-    } finally {
-      setLoader(false);
-    }
+    });
   };
   return (
     <section className="w-screen h-screen box-border flex flex-col justify-center items-center p-8 text-text">
@@ -177,9 +172,7 @@ export default function SignIn() {
           }}
         >
           <p>Sign In</p>
-          {loader && (
-            <p className="w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
-          )}
+          {loading && <p className="spinner"></p>}
         </button>
         <Link to={"/forgot_password"} className="text-primary self-center">
           Forgot your password?

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BsEmojiLaughing } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemComment } from "../../store/Slices/videoSlice";
+import useApi from "../../hooks/Api";
 export default function PostComment({
   size,
   submitText,
@@ -11,32 +12,28 @@ export default function PostComment({
   setToggleReply,
   setToggleReplies,
 }) {
+  const { sendRequest } = useApi();
   const postid = useSelector((store) => store.videos.selectedItem._id);
   const user = useSelector((store) => store.user.userInfo);
   const dispatch = useDispatch();
   const [showBtn, setShowBtn] = useState(false);
   const [commentIpt, setCommentIpt] = useState("");
   const handleCommentPost = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${postid}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      body: JSON.stringify({ parent_id: parent, commentText: commentIpt }),
-      credentials: "include",
-    });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      dispatch(addItemComment({ newComment: responseData.data }));
-      setToggleReply(false);
-      setToggleReplies(true);
-      setCommentIpt("");
-      setShowBtn(false);
-    }
+    if (commentIpt.length > 1) {
+      await sendRequest(`comment/${postid}`, "POST", {
+        parent_id: parent,
+        commentText: commentIpt,
+      }).then((result) => {
+        const data = result?.data;
+        if (result && result.success) {
+          dispatch(addItemComment({ newComment: data.data }));
+          setToggleReply(false);
+          setToggleReplies(true);
+          setCommentIpt("");
+          setShowBtn(false);
+        }
+      });
+    }//TODO:handle for field with 0 length
   };
   return (
     <article className="flex gap-4 items-center w-full">

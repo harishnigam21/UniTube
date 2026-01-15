@@ -5,46 +5,26 @@ import { millifyNum } from "../../utils/millify";
 import Comment from "../common/Comment";
 import PostComment from "../common/PostComment";
 import { setSelectedItemComment } from "../../store/Slices/videoSlice";
-import { changeLoginStatus } from "../../store/Slices/userSlice";
+import Loading from "../other/Loading";
+import useApi from "../../hooks/Api";
 
 export default function VideoComment({ postid }) {
+  const { loading, sendRequest } = useApi();
   const [toggleReply, setToggleReply] = useState(false);
   const comments = useSelector((store) => store.videos.selectedItemComment);
   const dispatch = useDispatch();
-  const [loader, setLoader] = useState(true);
   useEffect(() => {
-    const getComment = async () => {
-      setLoader(true);
-      const token = window.localStorage.getItem("acTk");
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/comment/${postid}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        credentials: "include",
-      });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (!response.ok) {
-        if (response.status == 401 || response.status == 400) {
-          dispatch(changeLoginStatus({ status: false }));
-          window.localStorage.removeItem("acTk");
-          return;
-        }
-        alert(responseData.message);
-        return;
+    sendRequest(`comment/${postid}`, "GET").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        dispatch(setSelectedItemComment({ selectedItemComment: data.data }));
       }
-      dispatch(
-        setSelectedItemComment({ selectedItemComment: responseData.data })
-      );
-      setLoader(false);
-    };
-    getComment();
-  }, [postid, dispatch]);
-  return loader ? (
-    <p className="text-xl text-red">Loading...</p>
+    });
+  }, [postid, dispatch, sendRequest]);
+  return loading ? (
+    <div className="flex w-screen h-screen justify-center items-center">
+      <Loading />
+    </div>
   ) : (
     <article className="flex flex-col gap-8">
       <div className="flex gap-4">

@@ -7,6 +7,7 @@ import { MdFileDownload, MdOutlinedFlag } from "react-icons/md";
 import { HiDotsHorizontal, HiScissors } from "react-icons/hi";
 import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import useApi from "../../hooks/Api";
 
 export default function VideoInteractiveBar({
   channelid,
@@ -20,6 +21,7 @@ export default function VideoInteractiveBar({
   isliked,
   isDisLiked,
 }) {
+  const { sendRequest } = useApi();
   const [showExtra, setShowExtra] = useState(false);
   const [like, setLike] = useState(likes);
   const [subscribers, setSubscribers] = useState(subscriber);
@@ -47,88 +49,59 @@ export default function VideoInteractiveBar({
     return () => window.removeEventListener("resize", handleAlignment);
   }, []);
   const handleLike = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/like/${postid}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`like/${postid}`, "PATCH").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        if (!data.status) {
+          likeRef.current.style.color = "white";
+          likeRef.current.style.transform = "scale(0.5)";
+          setTimeout(() => {
+            likeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        if (data.status) {
+          dislikeRef.current.style.color = "white";
+          likeRef.current.style.color = "blue";
+          likeRef.current.style.transform = "scale(2)";
+          setTimeout(() => {
+            likeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        setLike(data.likes);
+      }
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      if (!responseData.status) {
-        likeRef.current.style.color = "white";
-        likeRef.current.style.transform = "scale(0.5)";
-        setTimeout(() => {
-          likeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      if (responseData.status) {
-        dislikeRef.current.style.color = "white";
-        likeRef.current.style.color = "blue";
-        likeRef.current.style.transform = "scale(2)";
-        setTimeout(() => {
-          likeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      setLike(responseData.likes);
-    }
   };
   const handleDisLike = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/dislike/${postid}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`dislike/${postid}`, "PATCH").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        if (!data.status) {
+          dislikeRef.current.style.color = "white";
+          dislikeRef.current.style.transform = "scale(0.5)";
+          setTimeout(() => {
+            dislikeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        if (data.status) {
+          likeRef.current.style.color = "white";
+          dislikeRef.current.style.color = "red";
+          dislikeRef.current.style.transform = "scale(2)";
+          setTimeout(() => {
+            dislikeRef.current.style.transform = "scale(1)";
+          }, 200);
+        }
+        setLike(data?.likes);
+      }
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      if (!responseData.status) {
-        dislikeRef.current.style.color = "white";
-        dislikeRef.current.style.transform = "scale(0.5)";
-        setTimeout(() => {
-          dislikeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      if (responseData.status) {
-        likeRef.current.style.color = "white";
-        dislikeRef.current.style.color = "red";
-        dislikeRef.current.style.transform = "scale(2)";
-        setTimeout(() => {
-          dislikeRef.current.style.transform = "scale(1)";
-        }, 200);
-      }
-      setLike(responseData?.likes);
-    }
   };
   const handleSubscribe = async () => {
-    const url = `${
-      import.meta.env.VITE_BACKEND_HOST
-    }/new_subscriber/${channelid}`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
+    await sendRequest(`new_subscriber/${channelid}`, "PATCH").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        setSubscribers(data.subscriber);
+        setIsSubscribe(data.status);
+      }
     });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      setSubscribers(responseData.subscriber);
-      setIsSubscribe(responseData.status);
-    }
   };
   return (
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">

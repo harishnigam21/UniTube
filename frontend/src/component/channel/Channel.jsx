@@ -9,10 +9,12 @@ import {
 import { BsDot } from "react-icons/bs";
 import { formatDateTime, getDaysBetween } from "../../utils/getDate";
 import Video from "../repetative/Video";
+import useApi from "../../hooks/Api";
+import Loading from "../other/Loading";
 
 export default function Channel() {
+  const { loading, sendRequest } = useApi();
   const { setSidebarToggle } = useOutletContext();
-  const [loading, setLoading] = useState(true);
   const [fieldSelected, setFieldSelected] = useState("home");
   const fieldListed = [
     "home",
@@ -28,61 +30,29 @@ export default function Channel() {
   const selectedChannel = useSelector((store) => store.channels.selectedItems);
 
   useEffect(() => {
-    const fetchChannel = async () => {
-      setLoading(true);
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/channel/${
-        params.handler
-      }`;
-      const token = window.localStorage.getItem("acTk");
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "content-type": "application/json",
-            authorization: `bearer ${token ? JSON.parse(token) : ""}`, //TODO:check this format for all request at client side
-          },
-          credentials: "include",
-        });
-        const responseData = await response.json();
-        console.log(responseData.message);
-        if (response.ok) {
-          dispatch(setSelectedChannel({ items: responseData.data }));
-        } //TODO:handle for other status also
-      } catch (error) {
-        //TODO: handle error at user interface
-        console.log(error.message);
-      } finally {
-        setLoading(false);
+    sendRequest(`channel/${params.handler}`, "GET").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        dispatch(setSelectedChannel({ items: data?.data }));
       }
-    };
-    fetchChannel();
-  }, [dispatch, params.handler]);
+    });
+  }, [dispatch, params.handler, sendRequest]);
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
   const handleSubscribe = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/new_subscriber/${
-      selectedChannel._id
-    }`;
-    const token = window.localStorage.getItem("acTk");
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-      },
-      credentials: "include",
-    });
-    const responseData = await response.json();
-    console.log(responseData.message);
-    if (response.ok) {
-      dispatch(updateSelectedChannelSubscribe());
-    }
+    await sendRequest(`new_subscriber/${selectedChannel._id}`, "PATCH").then(
+      (result) => {
+        if (result && result.success) {
+          dispatch(updateSelectedChannelSubscribe());
+        }
+      }
+    );
   };
   return loading ? (
-    <p className="text-center text-xl text-red-500 font-bold font-serif md:text-2xl py-8">
-      Loading...
-    </p>
+    <div className="w-screen h-screen flex justify-center items-center">
+      <Loading />
+    </div>
   ) : selectedChannel ? (
     <section className="flex flex-col gap-8 p-4 text-text">
       {/* banner */}

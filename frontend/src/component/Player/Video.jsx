@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useOutletContext } from "react-router-dom";
@@ -8,53 +8,37 @@ import VideoInteractiveBar from "./VideoInteractiveBar";
 import VideoPlayer from "./VideoPlayer";
 import VideoRecommendation from "./VideoRecommendation";
 import { setSelectedItem } from "../../store/Slices/videoSlice";
-import { changeLoginStatus } from "../../store/Slices/userSlice";
+import useApi from "../../hooks/Api";
+import Loading from "../other/Loading";
 export default function Video() {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
+  const { loading, sendRequest } = useApi();
   const { setSidebarToggle, screenSize } = useOutletContext();
   const VideoInfo = useSelector((store) => store.videos.selectedItem);
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
 
   useEffect(() => {
-    const getPost = async () => {
-      setLoading(true);
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/post/${videoId}`;
-      const token = window.localStorage.getItem("acTk");
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        credentials: "include",
-      });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (!response.ok) {
-        if (response.status == 401) {
-          dispatch(changeLoginStatus(false));
-        }
-        alert(responseData.message);
-        return;
+    sendRequest(`post/${videoId}`, "GET").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        dispatch(
+          setSelectedItem({
+            selectedItem: data.data,
+          })
+        );
       }
-      dispatch(
-        setSelectedItem({
-          selectedItem: responseData.data,
-        })
-      );
-      setLoading(false);
-    };
-    getPost();
-  }, [dispatch, videoId]);
+    });
+  }, [dispatch, videoId, sendRequest]);
 
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
 
-  return loading ? (
-    <p className="text-xl text-red">Loading...</p>
+  return loading && Object.keys(VideoInfo).length === 0 ? (
+    <div className="flex w-screen h-screen justify-center items-center">
+      <Loading />
+    </div>
   ) : (
     <section className="w-full overflow-y-auto overflow-x-hidden text-text flex flex-col gap-4">
       {/* THE ACTUAL VIDEO */}
@@ -82,7 +66,8 @@ export default function Video() {
             details={VideoInfo.details}
           />
           {/* comments */}
-          <VideoComment postid={VideoInfo._id} />
+          {VideoInfo._id && <VideoComment postid={VideoInfo._id} />}
+          {/* TODO:Check later that why this component API calls first then its parent API*/}
         </article>
         <VideoRecommendation
           tags={VideoInfo.tags}

@@ -1,8 +1,9 @@
 import logo from "../../assets/images/logo.png";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useApi from "../../hooks/Api";
 export default function SignUp() {
-  const [loader, setLoader] = useState(false);
+  const { sendRequest, loading } = useApi();
   const [userCredentials, setUserCredentials] = useState({
     firstname: "",
     middlename: "",
@@ -157,50 +158,40 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoader(true);
     if (!validate()) {
-      setLoader(false);
       return;
     }
-    try {
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/register`;
-      const response = await fetch(url, {
-        headers: { "content-type": "application/json" },
-        method: "POST",
-        body: JSON.stringify(userCredentials),
-      });
-      const data = await response.json();
-      console.log(data.message);
-      if (response.ok) {
-        showInfoFunc("green", data.message);
-        setUserCredentials({
-          firstname: "",
-          middlename: "",
-          lastname: "",
-          gender: "",
-          dob: "",
-          email: "",
-          mobileno: "",
-          password: "",
-          cnfPassword: "",
-        });
-        setTimeout(() => {
-          navigate("/signin", { replace: true });
-        }, 2000);
-        return;
+    await sendRequest("register", "POST", userCredentials, {}, false).then(
+      (result) => {
+        const data = result?.data;
+        if (result && result.success) {
+          showInfoFunc("green", data?.message || "Successfully Registered");
+          setUserCredentials({
+            firstname: "",
+            middlename: "",
+            lastname: "",
+            gender: "",
+            dob: "",
+            email: "",
+            mobileno: "",
+            password: "",
+            cnfPassword: "",
+          });
+          setTimeout(() => {
+            navigate("/login", { replace: true });
+          }, 2000);
+        } else {
+          const errorMessage =
+            result?.error || data?.message || "An error occurred";
+          showInfoFunc("red", errorMessage);
+          if (result.status === 409) {
+            setTimeout(() => {
+              navigate(`/signin`, { replace: true });
+            }, 2000);
+          }
+        }
       }
-      showInfoFunc("red", data.message);
-      if (response.status === 409) {
-        setTimeout(() => {
-          navigate("/login", { replace: true });
-        }, 2000);
-      }
-    } catch (error) {
-      console.log(error.message);
-      showInfoFunc("red", error.message);
-    } finally {
-      setLoader(false);
-    }
+    );
   };
   return (
     <section className="w-screen h-screen box-border flex flex-col min-[480px]:justify-center items-center p-8 overflow-y-scroll text-text">
@@ -475,9 +466,7 @@ export default function SignUp() {
           }}
         >
           <p>Sign Up</p>
-          {loader && (
-            <p className="w-5 aspect-square rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]"></p>
-          )}
+          {loading && <p className="spinner"></p>}
         </button>
         <span className="text-center">
           Already have an account?{" "}

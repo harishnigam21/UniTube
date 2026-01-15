@@ -122,19 +122,25 @@ export const postDislike = async (req, res) => {
       });
     }
     await Dislike.deleteOne({ _id: checkDisLike.id }).session(session);
-    await Post.updateOne(
+    const updatePost = await Post.findOneAndUpdate(
       {
         _id: findPost.id,
         dislikes: { $gt: 0 },
       },
       { $inc: { dislikes: -1 } },
-      { session }
+      { session, new: true, runValidators: true }
     );
     await session.commitTransaction();
     console.log(
       `${req.user.id} take back its dislike from post:${findPost.id}`
     );
-    return res.status(200).json({ message: "Dislike removed", status: false });
+    return res
+      .status(200)
+      .json({
+        message: "Dislike removed",
+        status: false,
+        likes: updatePost.likes,
+      });
   } catch (error) {
     await session.abortTransaction();
     console.error("Error from videoDisLike Controller : ", error);

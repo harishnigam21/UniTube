@@ -6,15 +6,16 @@ import { ImCross } from "react-icons/im";
 
 import dummyUpload from "../../assets/images/dummy_upload.jpg";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../hooks/Api";
+import Loading from "../other/Loading";
 export default function CreatePost() {
+  const { loading, sendRequest } = useApi();
   const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
-  const [loader, setLoader] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [channel, setChannels] = useState([]);
   const [postInfo, setPostInfo] = useState({
     channel_id: null,
@@ -92,105 +93,64 @@ export default function CreatePost() {
     return true;
   };
   useEffect(() => {
-    const getChannels = async () => {
-      setLoading(true);
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/my_channels`;
-      const token = window.localStorage.getItem("acTk");
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            authorization: `bearer ${JSON.parse(token)}`,
-            "content-type": "application/json",
-          },
-          credentials: "include",
-        });
-        const responseData = await response.json();
-        if (response.ok) {
-          setChannels(responseData.data);
-          if (responseData.data.length == 0) {
-            setTimeout(() => {
-              navigate("/channel/create");
-            }, 2000);
-          }
-          return;
+    sendRequest("my_channels", "GET").then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        setChannels(data.data);
+        if (data.data.length == 0) {
+          setTimeout(() => {
+            navigate("/channel/create");
+          }, 2000);
         }
-        alert(responseData.message);
-        //TODO:handle for not response ok
-      } catch (error) {
-        console.log(error.message);
-        //TODO:handle popup here for errors
-      } finally {
-        setLoading(false);
       }
-    };
-    getChannels();
-  }, [navigate]);
+    });
+  }, [navigate, sendRequest]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoader(true);
     // Only proceed if validateData returns TRUE
     if (!validateData()) {
-      setLoader(false);
       return; // Stop the function here
     }
     console.log("validation completed..");
-    try {
-      const data = new FormData();
-      data.append("channel_id", postInfo.channel_id);
-      data.append("title", postInfo.title);
-      data.append("type", postInfo.type);
-      data.append("category", postInfo.category);
-      data.append("tags", postInfo.tags);
-      data.append("thumbnail", postInfo.thumbnail);
-      data.append("videoURL", postInfo.videoURL);
-      data.append("description", postInfo.description);
-      data.append("details", JSON.stringify(postInfo.details));
-      const url = `${import.meta.env.VITE_BACKEND_HOST}/create_post`;
-      const token = window.localStorage.getItem("acTk");
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          authorization: `bearer ${token ? JSON.parse(token) : ""}`,
-        },
-        body: data,
-        credentials: "include",
+    const data = new FormData();
+    data.append("channel_id", postInfo.channel_id);
+    data.append("title", postInfo.title);
+    data.append("type", postInfo.type);
+    data.append("category", postInfo.category);
+    data.append("tags", postInfo.tags);
+    data.append("thumbnail", postInfo.thumbnail);
+    data.append("videoURL", postInfo.videoURL);
+    data.append("description", postInfo.description);
+    data.append("details", JSON.stringify(postInfo.details));
+    await sendRequest("create_post", "POST", data)
+      .then((result) => {
+        const data = result?.data;
+        showInfoFunc(result.success ? "green" : "red", data.message);
+        if (result && result.success) {
+          setPostInfo({
+            channel_id: "",
+            title: "",
+            type: "",
+            category: "",
+            tags: [],
+            thumbnail: "",
+            videoURL: "",
+            description: "",
+            details: {},
+          });
+          setPreview({ thumbnail: dummyUpload, video: dummyUpload });
+          setTimeout(() => {
+            navigate("/post/view");
+          }, 4000);
+        }
+      })
+      .finally(() => {
+        URL.revokeObjectURL(preview.thumbnail);
+        URL.revokeObjectURL(preview.video);
       });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (response.ok) {
-        setPostInfo({
-          channel_id: "",
-          title: "",
-          type: "",
-          category: "",
-          tags: [],
-          thumbnail: "",
-          videoURL: "",
-          description: "",
-          details: {},
-        });
-        setPreview({ thumbnail: dummyUpload, video: dummyUpload });
-        setTimeout(() => {
-          navigate("/post/view");
-        }, 4000);
-      }
-      showInfoFunc(response.ok ? "green" : "red", responseData.message);
-    } catch (error) {
-      console.log(error);
-      showInfoFunc("red", error.message);
-    } finally {
-      URL.revokeObjectURL(preview.thumbnail);
-      URL.revokeObjectURL(preview.video);
-      setLoader(false);
-    }
   };
 
-  return loading ? (
-    <p className="text-center self-center justify-self-center text-red-500 font-bold font-serif">
-      Loading...
-    </p>
-  ) : channel.length > 0 ? (
+  return channel.length > 0 ? (
     <section className="text-text flex flex-col gap-4 p-8 md:p-4">
       <h1 className="text-2xl md:text-3xl text-center font-medium font-serif py-4 md:py-8">
         Create Post
@@ -299,7 +259,9 @@ export default function CreatePost() {
                   }))
                 }
               >
-                <option selected value="none">select</option>
+                <option selected value="none">
+                  select
+                </option>
                 {channel.map((item, index) => (
                   <option
                     key={`channelHandler/option/${index}`}
@@ -565,7 +527,7 @@ export default function CreatePost() {
             className="flex items-center justify-center gap-2 font-medium py-2 px-6 rounded-md border border-border self-center shadow-[0.1px_0.1px_10px_0.1px_#222222_inset] icon"
           >
             <p>Submit</p>
-            {loader && (
+            {loading && (
               <p className="w-5 aspect-square rounded-full border-2 border-l-bgprimary border-r-primary border-b-secondary border-t-bgprimary animate-[spin_0.3s_linear_infinite]"></p>
             )}
           </button>

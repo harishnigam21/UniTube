@@ -4,37 +4,28 @@ import { MdDelete } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { deleteChannelID } from "../../store/Slices/userSlice.js";
 import { deleteChannel } from "../../store/Slices/channelSlice.js";
+import useApi from "../../hooks/Api.jsx";
+import Loading from "../other/Loading.jsx";
 export default function ChannelCards({ channel }) {
   const dispatch = useDispatch();
+  const { loading, sendRequest } = useApi();
   const handleDelete = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_HOST}/delete_channel/${
-      channel._id
-    }`;
-    const token = window.localStorage.getItem("acTk");
-    try {
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          authorization: `bearer ${JSON.parse(token)}`,
-          "content-type": "application/json",
-        },
-        credentials: "include",
-      });
-      const responseData = await response.json();
-      console.log(responseData.message);
-      if (response.ok) {
-        dispatch(deleteChannelID({ id: responseData.data }));
-        dispatch(deleteChannel({ id: responseData.data }));
-        return;
+    await sendRequest(`delete_channel/${channel._id}`, "DELETE").then(
+      (result) => {
+        const data = result?.data;
+        if (result && result.success) {
+          dispatch(deleteChannelID({ id: data.data }));
+          dispatch(deleteChannel({ id: data.data }));
+        }
       }
-      //TODO:handle for not response ok
-    } catch (error) {
-      console.log(error.message);
-      //TODO:handle popup here for errors
-    }
+    );
   };
-  return (
-    <article className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-1 md:grid-cols-2 gap-2 rounded-xl w-full border border-border overflow-hidden bg-center bg-cover ">
+  return loading ? (
+    <div className="w-ful h-full flex items-center justify-center">
+      <Loading />
+    </div>
+  ) : (
+    <article className="relative grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-1 md:grid-cols-2 gap-2 rounded-xl w-full border border-border overflow-hidden bg-center bg-cover ">
       <Link to={`/channel/${channel.channelHandler}`}>
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${channel.channelBanner}`}
@@ -62,6 +53,13 @@ export default function ChannelCards({ channel }) {
         </div>
         <p>Subscribers : {channel.subscribers}</p>
         <p>Posts : {channel.posts}</p>
+      </div>
+      <div
+        className={`absolute bg-black/60 w-full h-full ${
+          loading ? "flex" : "hidden"
+        } items-center justify-center`}
+      >
+        <Loading />
       </div>
     </article>
   );
