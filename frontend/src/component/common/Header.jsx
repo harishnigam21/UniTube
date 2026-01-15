@@ -21,7 +21,7 @@ export default function Header({ navToggle, setNavToggle, setSidebarToggle }) {
   return (
     <header
       ref={headerRef}
-      className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 z-50 bg-bgprimary"
+      className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 z-50 bg-bgprimary overflow-hidden" //TODO:and remove this hidden and settle down header
     >
       <article className="flex gap-8 justify-between items-center">
         <article className="flex gap-4 items-center">

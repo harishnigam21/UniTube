@@ -38,8 +38,10 @@ export default function App() {
           );
           return;
         }
-        navigate("/login", { replace: true }); //TODO:page not redirecting to login
-        return;
+        if (response.status == 401 || response.status == 403) {
+          navigate("/msg/login", { replace: true });
+          return;
+        }
       } catch (error) {
         console.log(error.message);
       }
