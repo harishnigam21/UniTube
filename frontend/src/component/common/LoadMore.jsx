@@ -1,31 +1,27 @@
-import { useDispatch } from "react-redux";
-import useApi from "../../hooks/Api.jsx";
-import { addItems } from "../../store/Slices/videoSlice.js";
-export default function LoadMore({ nextCursor }) {
-  const { loading, sendRequest } = useApi();
-  const dispatch = useDispatch();
-  const loadMore = async (cursor) => {
-    await sendRequest(`posts?cursor=${cursor}`, "GET").then((result) => {
-      if (result && result.success) {
-        dispatch(
-          addItems({
-            posts: result.data.data,
-            nextCursor: result.data.nextCursor,
-          })
-        );
-      }
-    });
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+export default function LoadMore({ nextCursor, loading }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const categoryParams = searchParams.get("category");
+
+  const handleLoadMore = () => {
+    const params = new URLSearchParams();
+    if (categoryParams) params.append("category", categoryParams);
+    if (nextCursor) params.append("cursor", nextCursor);
+
+    // replace: true prevents filling the history with dozens of "pages" of the same list
+    navigate(`?${params.toString()}`, { replace: true });
   };
+
   return (
-    <article>
+    <article className="w-full flex justify-center">
       <button
-        className="py-2 px-4 rounded-md bg-primary text-white  my-6 w-fit gap-2 flex justify-center items-center icon"
-        onClick={() => loadMore(nextCursor)}
+        className="py-2 px-6 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white my-6 flex items-center gap-2 transition-all active:scale-95 icon"
+        onClick={handleLoadMore}
       >
-        <p>Load more</p>
-        {loading && (
-          <p className="spinner"></p>
-        )}
+        <span>Load more</span>
+        {loading && <p className="spinner"></p>}
       </button>
     </article>
   );

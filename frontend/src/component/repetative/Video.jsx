@@ -2,7 +2,8 @@ import { HiDotsVertical } from "react-icons/hi";
 import { getDaysBetween } from "../../utils/getDate";
 import { millifyNum } from "../../utils/millify";
 import { Link } from "react-router-dom";
-export default function Video({ vid, type }) {
+import { memo } from "react";
+const Video = memo(function Video({ vid, type }) {
   return (
     <Link
       to={`/watch?v=${vid._id}`}
@@ -54,4 +55,5 @@ export default function Video({ vid, type }) {
       </div>
     </Link>
   );
-}
+});
+export default Video;

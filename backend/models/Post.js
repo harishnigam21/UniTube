@@ -78,4 +78,5 @@ const postSchema = mongoose.Schema(
 postSchema.index({ channel_id: 1, createdAt: -1 });
 postSchema.index({ category: 1 });
 postSchema.index({ tags: 1 });
+postSchema.index({ category: 1, createdAt: -1 });
 export default mongoose.model("posts", postSchema);

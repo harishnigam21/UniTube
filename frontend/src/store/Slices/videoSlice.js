@@ -473,6 +473,7 @@ const videoSlice = createSlice({
     //   },
     // ],
     items: [],
+    itemsCategories: [],
     filterItems: {
       category: [],
       search: [],
@@ -498,8 +499,16 @@ const videoSlice = createSlice({
       state.items = action.payload.posts;
       state.nextCursor = action.payload.nextCursor;
     },
+    setCategories: (state, action) => {
+      state.itemsCategories = ["All", ...action.payload.categories];
+    },
     addItems: (state, action) => {
-      state.items = [...state.items, ...action.payload.posts];
+      const incomingPosts = action.payload.posts || [];
+      const existingIds = new Set(state.items.map((i) => i._id));
+      const uniquePosts = incomingPosts.filter(
+        (post) => !existingIds.has(post._id)
+      );
+      state.items = [...state.items, ...uniquePosts];
       state.nextCursor = action.payload.nextCursor;
     },
     setSelectedItem: (state, action) => {
@@ -583,5 +592,6 @@ export const {
   addItemComment,
   deleteItemComment,
   updateItemComment,
+  setCategories,
 } = videoSlice.actions;
 export default videoSlice.reducer;

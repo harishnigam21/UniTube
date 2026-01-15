@@ -1,11 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useOutletContext } from "react-router-dom";
+import {
+  useNavigate,
+  useOutletContext,
+  useSearchParams,
+} from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
-import { setItems } from "./store/Slices/videoSlice";
+import { setCategories, setItems, addItems } from "./store/Slices/videoSlice";
 import useApi from "./hooks/Api";
 import LoadMore from "./component/common/LoadMore";
 export default function Home() {
@@ -13,31 +17,44 @@ export default function Home() {
   const { short, setSidebarToggle } = useOutletContext();
   const video = useSelector((store) => store.videos.items);
   const nextCursor = useSelector((store) => store.videos.nextCursor);
-  const [category, setCategory] = useState([]);
+  const categories = useSelector((store) => store.videos.itemsCategories);
   const dispatch = useDispatch();
-  useEffect(() => {
-    sendRequest("posts", "GET").then((result) => {
-      if (result && result.success) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const cursorParams = searchParams.get("cursor");
+  const categoryParams = searchParams.get("category");
+  const handlePostFetch = async () => {
+    const params = new URLSearchParams();
+    if (categoryParams) params.append("category", categoryParams);
+    if (cursorParams) params.append("cursor", cursorParams);
+    const result = await sendRequest(`posts?${params.toString()}`, "GET");
+    const data = result?.data;
+    if (result && result.success) {
+      if (cursorParams && video.length > 0) {
+        dispatch(
+          addItems({
+            posts: data?.data,
+            nextCursor: data?.nextCursor,
+          })
+        );
+      } else {
         dispatch(
           setItems({
-            posts: result.data.data,
-            nextCursor: result.data.nextCursor,
+            posts: data?.data,
+            nextCursor: data?.nextCursor,
           })
         );
       }
-    });
-  }, []);
+
+      dispatch(setCategories({ categories: data?.categories }));
+    }
+  };
+  useEffect(() => {
+    handlePostFetch();
+  }, [searchParams]);
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
   }, [setSidebarToggle]);
-  useEffect(() => {
-    const loadLoader = async () => {
-      const ctg = video.map((item) => item.category);
-      ctg.unshift("All");
-      setCategory(ctg);
-    };
-    loadLoader();
-  }, [video]);
   const scrollRef = useRef(null);
   const scrollShorts = (direction) => {
     if (scrollRef.current) {
@@ -53,19 +70,23 @@ export default function Home() {
 
   return (
     <section className="flex flex-col gap-3 px-2 h-screen w-full overflow-y-auto overflow-x-hidden">
-      {loading ? (
+      {loading && video.length == 0 ? (
         <HomeSkeleton />
       ) : (
-        <article className="relative flex flex-col w-full">
-          <article className="min-w-0 w-full max-w-full flex flex-wrap sticky bg-bgprimary top-0 z-10 py-5 px-2 overflow-x-auto noscrollbar gap-4">
-            {category.map((categ, index) => (
-              <span
-                key={`home/filterby/category/${index}`}
-                className="rounded-md bg-border text-text py-1 px-3 icon"
-              >
-                {categ}
-              </span>
-            ))}
+        <article className="flex flex-col w-full">
+          <article className="w-full flex flex-wrap sticky bg-bgprimary top-0 z-10 py-5 px-2 overflow-x-auto noscrollbar gap-4">
+            {categories &&
+              categories.map((categ, index) => (
+                <span
+                  key={`home/filterby/category/${index}`}
+                  className="rounded-md bg-border text-text py-1 px-3 icon"
+                  onClick={() => {
+                    navigate(`?category=${categ}`, { replace: true });
+                  }}
+                >
+                  {categ}
+                </span>
+              ))}
           </article>
           <article className="w-full text-text">
             <article className="flex flex-col gap-8">
@@ -119,7 +140,7 @@ export default function Home() {
                   ))}
                   {nextCursor && (
                     <div className="col-span-full justify-self-center">
-                      <LoadMore nextCursor={nextCursor} />
+                      <LoadMore nextCursor={nextCursor} loading={loading} />
                     </div>
                   )}
                 </article>

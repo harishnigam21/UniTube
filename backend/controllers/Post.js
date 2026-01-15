@@ -1,51 +1,107 @@
 import { getVideoDurationInSeconds } from "get-video-duration";
 import Post from "../models/Post.js";
-import Like from "../models/PostLike.js";
-import DisLike from "../models/PostDislike.js";
+import mongoose from "mongoose";
 import Channel from "../models/Channel.js";
 import { getNextDate } from "../utils/getDate.js";
 import formatDuration from "../utils/getTime.js";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
 export const getPost = async (req, res) => {
+  const postId = new mongoose.Types.ObjectId(req.params.id);
+  const userId = new mongoose.Types.ObjectId(req.user.id);
   try {
-    const post = await Post.findById(req.params.id)
-      .select(
-        "user_id channel_id title type category tags videoURL likes views description details thumbnail views postedAt duration"
-      )
-      .populate(
-        "channel_id",
-        "channelPicture channelName subscribers channelHandler"
-      )
-      .populate("user_id", "firstname lastname")
-      .lean();
+    const result = await Post.aggregate([
+      { $match: { _id: postId } },
+      {
+        $lookup: {
+          from: "channels",
+          localField: "channel_id",
+          foreignField: "_id",
+          as: "channel_id",
+        },
+      },
+      { $unwind: "$channel_id" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user_id",
+        },
+      },
+      { $unwind: "$user_id" },
+      {
+        $lookup: {
+          from: "likes",
+          let: { pId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$post_id", "$$pId"] },
+                    { $eq: ["$user_id", userId] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "likeStatus",
+        },
+      },
+      {
+        $lookup: {
+          from: "dislikes",
+          let: { pId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$post_id", "$$pId"] },
+                    { $eq: ["$user_id", userId] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "dislikeStatus",
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          type: 1,
+          category: 1,
+          tags: 1,
+          videoURL: 1,
+          likes: 1,
+          views: 1,
+          description: 1,
+          details: 1,
+          thumbnail: 1,
+          postedAt: 1,
+          duration: 1,
+          user_id: { firstname: 1, lastname: 1 },
+          channel_id: {
+            channelPicture: 1,
+            channelName: 1,
+            channelHandler: 1,
+            subscribers: { $size: "$channel_id.subscribers" },
+            isSubscribed: { $in: [userId, "$channel_id.subscribers"] },
+          },
+          isliked: { $gt: [{ $size: "$likeStatus" }, 0] },
+          isDisLiked: { $gt: [{ $size: "$dislikeStatus" }, 0] },
+        },
+      },
+    ]);
+    const post = result[0];
     if (!post) {
-      console.error(`${req.user.id} Post not found`);
       return res.status(404).json({ message: "Post not found" });
     }
-    //TODO:Now you no aggregation, you can switch it, priority-low
-    const isLiked = await Like.findOne({
-      post_id: req.params.id,
-      user_id: req.user.id,
-    });
-    const isDisLiked = await DisLike.findOne({
-      post_id: req.params.id,
-      user_id: req.user.id,
-    });
     console.log("Successfully fetched post");
     return res.status(200).json({
       message: "Successfully fetched post",
-      data: {
-        ...post,
-        channel_id: {
-          ...post.channel_id,
-          subscribers: post.channel_id.subscribers.length,
-          isSubscribed: post.channel_id.subscribers.some((subs) =>
-            subs.equals(req.user.id)
-          ),
-        },
-        isliked: isLiked ? true : false,
-        isDisLiked: isDisLiked ? true : false,
-      },
+      data: post,
     });
   } catch (error) {
     console.error("Error Occurred at getPost controller : ", error);
@@ -53,33 +109,86 @@ export const getPost = async (req, res) => {
   }
 };
 export const getMorePost = async (req, res) => {
-  const { cursor } = req.query;
+  const { cursor, category } = req.query;
   const parsedLimit = Math.min(parseInt(req.query.limit) || 5, 10);
   try {
-    const query = {};
-    if (cursor) {
-      query.createdAt = { $lt: new Date(cursor) };
-    }
-    const posts = await Post.find(query)
-      .select(
-        "user_id channel_id title thumbnail category views postedAt duration createdAt"
-      )
-      .populate("channel_id", "channelPicture channelName")
-      .populate("user_id", "firstname lastname")
-      .sort({
-        createdAt: -1,
-      })
-      .limit(parsedLimit + 1)
-      .lean();
+    const result = await Post.aggregate([
+      {
+        $facet: {
+          posts: [
+            {
+              $match: {
+                ...(cursor && { createdAt: { $lt: new Date(cursor) } }),
+                ...(category && category !== "All" && { category: category }),
+              },
+            },
+            { $sort: { createdAt: -1 } },
+            { $limit: parsedLimit + 1 },
+            {
+              $lookup: {
+                from: "channels",
+                localField: "channel_id",
+                foreignField: "_id",
+                as: "channel_id",
+              },
+            },
+            {
+              $unwind: {
+                path: "$channel_id",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "user_id",
+                foreignField: "_id",
+                as: "user_id",
+              },
+            },
+            { $unwind: { path: "$user_id", preserveNullAndEmptyArrays: true } },
+            {
+              $project: {
+                title: 1,
+                thumbnail: 1,
+                category: 1,
+                views: 1,
+                postedAt: 1,
+                duration: 1,
+                createdAt: 1,
+                "channel_id.channelPicture": 1,
+                "channel_id.channelName": 1,
+                "user_id.firstname": 1,
+                "user_id.lastname": 1,
+              },
+            },
+          ],
+          allCategories: [
+            { $group: { _id: "$category" } },
+            { $match: { _id: { $ne: null } } },
+            { $sort: { _id: 1 } },
+            { $group: { _id: null, categories: { $push: "$_id" } } },
+          ],
+        },
+      },
+    ]);
+
+    const facetResult = result[0];
+    let posts = facetResult.posts || [];
+    const categories = facetResult.allCategories[0]?.categories || [];
+
     let nextCursor = null;
     if (posts.length > parsedLimit) {
       const lastPost = posts.pop();
       nextCursor = lastPost.createdAt.toISOString();
     }
-    console.log("Successfully fetch Post");
-    return res
-      .status(200)
-      .json({ message: "Successfully fetched Post", data: posts, nextCursor });
+
+    return res.status(200).json({
+      message: "Successfully fetched Post",
+      data: posts,
+      nextCursor,
+      categories,
+    });
   } catch (error) {
     console.error("Error from getMorePost Controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
