@@ -1,15 +1,15 @@
-import { useMemo } from "react";
 import { inthereRecommendations } from "../../store/Selectors/videoSelectors";
 import { useSelector } from "react-redux";
 import Video from "../repetative/Video";
 import VideoRow from "../repetative/VideoRow";
+import { useMemo } from "react";
 
 export default function VideoRecommendation({ id, tags, screenSize }) {
-  const recommendationSelector = useMemo(
-    () => inthereRecommendations(tags, id),
-    [tags, id]
+  const memoTags = useMemo(() => tags, [tags]);
+
+  const RecommendVideos = useSelector((state) =>
+    inthereRecommendations(state, memoTags, id)
   );
-  const RecommendVideos = useSelector(recommendationSelector);
   return (
     <article className="flex flex-col">
       <strong className="text-xl">Recommended</strong>

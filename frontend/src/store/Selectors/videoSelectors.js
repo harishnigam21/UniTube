@@ -44,17 +44,23 @@ export const recommendedItems = createSelector([interestItems], (items) => {
 });
 
 //role of tags here
-export const inthereRecommendations = (tags, id) =>
-  createSelector([selectItems], (items) => {
-    if (!tags || tags.length == 0) {
-      return items;
-    }
+export const inthereRecommendations = createSelector(
+  [selectItems, (state, tags) => tags, (state, tags, id) => id],
+  (items, tags, id) => {
+    if (!tags || tags.length === 0) return items;
+
     return items.filter((item) => {
-      if (item.id != id) {
-        return item.tags?.some((tag) => tags.includes(tag));
-      }
+      // 1. Use _id for MongoDB compatibility
+      // 2. Ensure item._id is a string for comparison
+      const isNotCurrentVideo = item._id.toString() !== id.toString();
+
+      // 3. Check if at least one tag overlaps
+      const hasMatchingTags = item.tags?.some((tag) => tags.includes(tag));
+
+      return isNotCurrentVideo && hasMatchingTags;
     });
-  });
+  }
+);
 
 //temporary, in future this will be fetched from DB
 export const getVideoInfo = (id) =>
