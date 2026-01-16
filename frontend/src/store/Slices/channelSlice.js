@@ -12,6 +12,40 @@ const channelSlice = createSlice({
     setSelectedChannel: (state, action) => {
       state.selectedItems = action.payload.items;
     },
+    deleteSelectedChannelItem: (state, action) => {
+      const id = action.payload.id;
+      const type = action.payload.type;
+      if (
+        state.selectedItems[type]["posts"] &&
+        state.selectedItems[type]["posts"].length > 0
+      ) {
+        state.selectedItems[type]["posts"] = state.selectedItems[type][
+          "posts"
+        ].filter((item) => item._id != id);
+      } else {
+        console.log(`${type} not found`);
+      }
+      // Also update totalPosts count if necessary
+      if (state.selectedItems.totalPosts[0].count) {
+        state.selectedItems.totalPosts[0].count -= 1;
+      } else {
+        console.log("Unable to get totalPosts");
+      }
+    },
+    updateSelectedChannelItem: (state, action) => {
+      const updatedData = action.payload.data; // Full object containing _id
+      if (state.selectedItems[updatedData.type]) {
+        state.selectedItems[updatedData.type]["posts"] = state.selectedItems[
+          updatedData.type
+        ].posts.map((item) => {
+          if (item._id == updatedData._id) {
+            return updatedData;
+          } else {
+            item;
+          }
+        });
+      }
+    },
     addChannel: (state, action) => {
       state.items = state.items.push(action.payload.item);
     },
@@ -45,5 +79,7 @@ export const {
   updateChannel,
   setSelectedChannel,
   updateSelectedChannelSubscribe,
+  deleteSelectedChannelItem,
+  updateSelectedChannelItem,
 } = channelSlice.actions;
 export default channelSlice.reducer;

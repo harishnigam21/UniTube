@@ -93,7 +93,7 @@ export default function Home() {
           <article className="w-full text-text">
             <article className="flex flex-col gap-8">
               {video.length > 0 ? (
-                <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+                <article className="w-full grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
                   {video.map((video, index) => (
                     <React.Fragment key={video._id}>
                       <Video

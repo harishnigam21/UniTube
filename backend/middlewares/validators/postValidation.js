@@ -45,9 +45,18 @@ const postValidation = (req, res, next) => {
     return sendError("Missing or Invalid Category");
   }
 
-  // 5. Tags (Checking if it's an array using the method we discussed)
-  if (tags && !Array.isArray(tags.split(","))) {
-    return sendError("Tags must be provided as an array");
+  // 5. Tags
+  if (!tags || typeof tags !== "string") {
+    return sendError("Tags must be provided");
+  }
+  // Split and clean the data
+  const tagArray = tags
+    .split(",")
+    .map((t) => t.trim())
+    .filter((t) => t !== "");
+  //  Check if we actually have tags after cleaning
+  if (tagArray.length === 0) {
+    return sendError("At least one valid tag must be provided");
   }
 
   // 6. Thumbnail and Video URL

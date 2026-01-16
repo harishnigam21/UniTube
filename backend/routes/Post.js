@@ -15,12 +15,19 @@ const uploadMultiple = upload.fields([
   { name: "thumbnail", maxCount: 1 },
   { name: "videoURL", maxCount: 1 },
 ]);
+const updateThumbnail = upload.single("thumbnail");
 const router = express.Router();
 router
   .route("/post/:id")
   .get(Validate, jwtVerifier, getPost)
   .delete(Validate, jwtVerifier, deletePost)
-  .patch(Validate, jwtVerifier, postUpdateValidation, updatePost);
+  .patch(
+    Validate,
+    jwtVerifier,
+    updateThumbnail,
+    postUpdateValidation,
+    updatePost
+  );
 router.route("/posts").get(jwtVerifier, getMorePost);
 router
   .route("/create_post")

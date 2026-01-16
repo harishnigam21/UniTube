@@ -128,7 +128,7 @@ export default function Comment({ comm, postid }) {
                 className="flex flex-col justify-center absolute min-w-fit py-2 px-6 bg-border mt-6 right-0 rounded-md overflow-hidden"
                 onMouseLeave={() => seCommentOption(false)}
               >
-                {comm.user_id._id == user._id ? (
+                {comm.user_id.email == user.email ? (
                   <>
                     <div
                       className="pb-2 flex flex-nowrap items-center gap-2 icon"

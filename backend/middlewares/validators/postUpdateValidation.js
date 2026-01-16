@@ -1,64 +1,73 @@
-const postUpdateValidation = (req, res, next) => {
-  const { thumbnail, description, details, tags, category } = req.body;
+import fs from 'fs';
 
-  // Helper to send response and stop execution immediately
+const postUpdateValidation = (req, res, next) => {
+  const { category, tags, description, details } = req.body;
+  const files = req.files;
+
   const sendError = (error) => {
-    return res.status(422).json({ success: false, message:error });
+    if (req.files) {
+      Object.values(req.files)
+        .flat()
+        .forEach((file) => {
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        });
+    }
+    return res.status(422).json({ success: false, message: error });
   };
 
-  // 1. Thumbnail URL check (only if provided)
-  if (thumbnail) {
-    const urlRegex = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i;
-    if (!urlRegex.test(thumbnail)) {
-      return sendError("Invalid thumbnail URL format.");
+  // 1. Thumbnail Check
+  // Only validate if 'files' exists (Multer populated it)
+  if (files && Object.keys(files).length > 0) {
+    if (!files.thumbnail) {
+      return sendError("Invalid file field. Please upload to 'thumbnail'.");
     }
   }
 
-  // 2. Category check (only if provided)
-  if (category) {
-    const allowedCategory = [
-      "Music",
-      "Education",
-      "Travel",
-      "Food",
-      "Fitness",
-      "Gaming",
-      "News",
-      "Comedy",
-    ];
-    if (!allowedCategory.includes(category)) {
-      return sendError(
-        `Invalid category. Must be one of: ${allowedCategory.join(", ")}`
-      );
+  // 2. Category (Optional: only validate if provided)
+  if (category !== undefined) {
+    if (typeof category !== 'string' || category.trim().length < 2) {
+      return sendError("Category must be at least 2 characters.");
     }
   }
 
-  // 3. Tags check (must be an array if provided)
-  if (tags) {
-    if (!Array.isArray(tags)) {
-      return sendError("Tags must be an array of strings.");
+  // 3. Tags (Optional: only validate if provided)
+  if (tags !== undefined) {
+    if (typeof tags !== "string") {
+      return sendError("Tags must be a comma-separated string.");
     }
+    const tagArray = tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t !== "");
+
+    if (tagArray.length === 0) {
+      return sendError("If providing tags, at least one valid tag is required.");
+    }
+    // Update req.body with the cleaned array so the controller can use it directly
+    req.body.tags = tagArray;
   }
 
-  // 4. Description check (must be a string if provided)
+  // 4. Description (Optional)
   if (description !== undefined) {
     if (typeof description !== "string") {
       return sendError("Description must be a string.");
     }
   }
 
-  // 5. Details check (must be an object and NOT an array)
+  // 5. Details (Parsing required!)
+  // Since FormData stringifies objects, 'details' is a string here.
   if (details !== undefined) {
-    if (
-      typeof details !== "object" ||
-      Array.isArray(details) ||
-      details === null
-    ) {
-      return sendError("Details must be a valid object.");
+    try {
+      const parsedDetails = JSON.parse(details);
+      if (typeof parsedDetails !== "object" || Array.isArray(parsedDetails) || parsedDetails === null) {
+        throw new Error();
+      }
+      // Put the parsed object back into req.body for the database logic
+      req.body.details = parsedDetails;
+    } catch (err) {
+      return sendError("Details must be a valid JSON object.");
     }
   }
-
-  // Success
   console.log("Post Update Validation Passed");
   next();
 };

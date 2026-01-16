@@ -33,18 +33,18 @@ export default function PostComment({
           setShowBtn(false);
         }
       });
-    }//TODO:handle for field with 0 length
+    } //TODO:handle for field with 0 length
   };
   return (
     <article className="flex gap-4 items-center w-full">
       {/* //TODO: Replace below div with signed user profile image*/}
       <div
-        className={`w-${size} h-${size} rounded-full aspect-square border flex items-center justify-center`}
+        className={`w-${size} h-${size} rounded-full overflow-hidden border flex items-center justify-center`}
       >
         {user.pic ? (
           <img
-            src={user.pic}
-            className="object-center object-cover"
+            src={`${import.meta.env.VITE_BACKEND_HOST}/${user.pic}`}
+            className="min-w-full object-center aspect-square rounded-full object-cover"
             alt="user pic"
           />
         ) : (

@@ -16,14 +16,7 @@ export default function Channel() {
   const { loading, sendRequest } = useApi();
   const { setSidebarToggle } = useOutletContext();
   const [fieldSelected, setFieldSelected] = useState("home");
-  const fieldListed = [
-    "home",
-    "videos",
-    "shorts",
-    "live",
-    "podcasts",
-    "playlists",
-  ];
+  const fieldListed = ["home", "video", "short", "live", "podcast", "playlist"];
   const [showDescription, setShowDescription] = useState(false);
   const params = useParams();
   const dispatch = useDispatch();
@@ -104,7 +97,7 @@ export default function Channel() {
                 {selectedChannel.totalPosts.length == 0
                   ? 0
                   : selectedChannel.totalPosts[0].count}{" "}
-                videos
+                posts
               </span>
             </div>
           </div>
@@ -190,7 +183,8 @@ export default function Channel() {
               )}
             </article>
           ) : selectedChannel[fieldSelected] &&
-            selectedChannel[fieldSelected].posts.length > 0 ? (
+            selectedChannel[fieldSelected].posts.length > 0 &&
+            selectedChannel._id ? (
             <article className="flex flex-col">
               <article className="w-full grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
                 {selectedChannel[fieldSelected].posts.map((item) => (

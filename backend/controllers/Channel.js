@@ -53,12 +53,120 @@ export const getChannel = async (req, res) => {
             { $sort: { createdAt: -1 } },
             {
               $facet: {
-                videos: [{ $match: { type: "video" } }, { $limit: 6 }],
-                shorts: [{ $match: { type: "short" } }, { $limit: 6 }],
-                live: [{ $match: { type: "live" } }, { $limit: 6 }],
-                podcasts: [{ $match: { type: "podcast" } }, { $limit: 6 }],
-                playlists: [{ $match: { type: "playlist" } }, { $limit: 6 }],
-                posts: [{ $match: { type: "post" } }, { $limit: 6 }],
+                videos: [
+                  { $match: { type: "video" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
+                shorts: [
+                  { $match: { type: "short" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
+                live: [
+                  { $match: { type: "live" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
+                podcasts: [
+                  { $match: { type: "podcast" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
+                playlists: [
+                  { $match: { type: "playlist" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
+                posts: [
+                  { $match: { type: "post" } },
+                  { $limit: 6 },
+                  {
+                    $project: {
+                      title: 1,
+                      thumbnail: 1,
+                      category: 1,
+                      duaration: 1,
+                      views: 1,
+                      postedAt: 1,
+                      _id: 1,
+                      channel_id: 1,
+                      tags: 1,
+                      details: 1,
+                      description: 1,
+                    },
+                  },
+                ],
                 totalCount: [{ $count: "count" }],
               },
             },
@@ -75,7 +183,7 @@ export const getChannel = async (req, res) => {
             $ifNull: [{ $arrayElemAt: ["$postsData.totalCount.count", 0] }, 0],
           },
           // Transform each facet into your required format { posts: [], nextCursor: '' }
-          videos: {
+          video: {
             posts: { $slice: ["$postsData.videos", 5] },
             nextCursor: {
               $cond: [
@@ -85,7 +193,7 @@ export const getChannel = async (req, res) => {
               ],
             },
           },
-          shorts: {
+          short: {
             posts: { $slice: ["$postsData.shorts", 5] },
             nextCursor: {
               $cond: [
@@ -105,7 +213,7 @@ export const getChannel = async (req, res) => {
               ],
             },
           },
-          podcasts: {
+          podcast: {
             posts: { $slice: ["$postsData.podcasts", 5] },
             nextCursor: {
               $cond: [
@@ -115,7 +223,7 @@ export const getChannel = async (req, res) => {
               ],
             },
           },
-          playlists: {
+          playlist: {
             posts: { $slice: ["$postsData.playlists", 5] },
             nextCursor: {
               $cond: [
@@ -125,7 +233,7 @@ export const getChannel = async (req, res) => {
               ],
             },
           },
-          communityPosts: {
+          communityPost: {
             // Renamed from 'posts' to avoid conflict with top-level naming
             posts: { $slice: ["$postsData.posts", 5] },
             nextCursor: {
@@ -344,7 +452,7 @@ export const deleteChannel = async (req, res) => {
       { user_id: req.user.id, channel_id: deleteChannel._id },
       { session }
     );
-//TODO:Also delete comment : priority-low
+    //TODO:Also delete comment : priority-low
     await session.commitTransaction();
     console.log(`Channel ${deleteChannel._id} deleted by user ${req.user.id}`);
     return res.status(200).json({

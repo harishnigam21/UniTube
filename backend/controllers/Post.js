@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import Channel from "../models/Channel.js";
 import { getNextDate } from "../utils/getDate.js";
 import formatDuration from "../utils/getTime.js";
+import fs from "fs";
+import path from "path";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
 export const getPost = async (req, res) => {
   const postId = new mongoose.Types.ObjectId(req.params.id);
@@ -209,6 +211,12 @@ export const createPost = async (req, res) => {
       user_id: req.user.id,
     });
     if (!channel) {
+      if (req.files?.thumbnail) {
+        safeUnlink(oldPost.thumbnail);
+      }
+      if (req.files?.videoURL) {
+        safeUnlink(oldPost.videoURL);
+      }
       console.warn(
         `${req.user.id} is trying to create post on unknown channel`
       );
@@ -227,8 +235,8 @@ export const createPost = async (req, res) => {
       user_id: req.user.id,
       channel_id,
       title,
-      type,
-      category,
+      type: type.toLowerCase(),
+      category: category.toLowerCase(),
       tags: tags.split(","),
       thumbnail,
       videoURL,
@@ -242,50 +250,79 @@ export const createPost = async (req, res) => {
       message: "Successfully created new post",
     });
   } catch (error) {
+    if (req.files?.thumbnail) {
+      safeUnlink(oldPost.thumbnail);
+    }
+    if (req.files?.videoURL) {
+      safeUnlink(oldPost.videoURL);
+    }
     console.error("Error from createPost controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 export const updatePost = async (req, res) => {
   try {
-    //remove unwanted payloads
-    const acceptedKey = [
-      "thumbnail",
-      "description",
-      "details",
-      "category",
-      "tags",
-    ];
+    const acceptedKey = ["description", "details", "category", "tags"];
     const updatedPayLoad = {};
     for (const key of acceptedKey) {
       if (req.body[key] !== undefined) {
-        updatedPayLoad[key] = req.body[key];
+        if (key == "category" || key == "type") {
+          updatedPayLoad[key] = req.body[key].toLowerCase();
+        } else {
+          updatedPayLoad[key] = req.body[key];
+        }
       }
     }
-    const updatePost = await Post.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        user_id: req.user.id,
-      },
+    if (req.file) {
+      updatedPayLoad.thumbnail = req.file.path.replace(/\\/g, "/");
+    }
+    const oldPost = await Post.findOne({
+      _id: req.params.id,
+      user_id: req.user.id,
+    });
+    if (!oldPost) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found or unauthorized" });
+    }
+
+    const oldThumbnailPath = oldPost.thumbnail;
+
+    // Update the Database
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
       { $set: updatedPayLoad },
       { new: true, runValidators: true }
-    );
-    if (!updatePost) {
-      console.error(
-        `User : ${req.user.email} trying to update Post : ${req.params.id} that does not exist or might user is not authorized`
-      );
-      return res.status(404).json({
-        message: "Post no longer exists",
-      });
+    )
+      .lean()
+      .select("thumbnail category title views postedAt channel_id _id tags details description type");
+
+    // Cleanup: If a NEW file was uploaded, delete the OLD one
+    if (req.file && oldThumbnailPath) {
+      // Avoid deleting if the path is somehow the same or default
+      if (oldThumbnailPath !== req.file.path) {
+        const fullPath = path.resolve(oldThumbnailPath);
+        if (fs.existsSync(fullPath)) {
+          fs.unlink(fullPath, (err) => {
+            if (err) console.error("Error deleting old file:", err);
+          });
+        }
+      }
     }
-    console.log("Successfully Post has been updated", updatePost);
+
     return res.status(200).json({
+      success: true,
       message: "Successfully Post has been updated",
-      data: updatePost,
+      data: updatedPost,
     });
   } catch (error) {
-    console.error("Error from updatePost controller : ", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    // If something crashes, don't leave the new file hanging
+    if (req.file) fs.unlinkSync(req.file.path);
+    console.error("Update Controller Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
 export const deletePost = async (req, res) => {
@@ -304,7 +341,10 @@ export const deletePost = async (req, res) => {
       `${req.user.email} has successfully deleted post : ${req.params.id}`
     );
     //TODO:also delete comment, likes and dislikes of this post, priority-low
-    return res.status(200).json({ message: "Successfully deleted Post" });
+    return res.status(200).json({
+      message: "Successfully deleted Post",
+      data: { id: dltPost._id, type: dltPost.type },
+    });
   } catch (error) {
     console.error("Error from deletePost controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
