@@ -38,6 +38,7 @@ export default function CreatePost() {
     "live",
     "podcast",
   ];
+  const [handler, setHandler] = useState("select");
   const [preview, setPreview] = useState({
     thumbnail: dummyUpload,
     video: dummyUpload,
@@ -140,8 +141,8 @@ export default function CreatePost() {
           });
           setPreview({ thumbnail: dummyUpload, video: dummyUpload });
           setTimeout(() => {
-            navigate("/post/view");
-          }, 4000);
+            navigate(`/channel/${handler.channelHandler}`);
+          }, 2000);
         }
       })
       .finally(() => {
@@ -252,16 +253,18 @@ export default function CreatePost() {
                 className="border border-border rounded-md w-full py-4 -mt-3 bg-bgprimary text-text"
                 name="channelID"
                 id="channelID"
-                onClick={(e) =>
+                defaultValue={postInfo.channel_id}
+                onClick={(e) => {
                   setPostInfo((prev) => ({
                     ...prev,
                     channel_id: e.target.value,
-                  }))
-                }
+                  }));
+                  setHandler(
+                    channel.find((item) => item._id == e.target.value)
+                  );
+                }}
               >
-                <option selected value="none">
-                  select
-                </option>
+                <option value="select">select</option>
                 {channel.map((item, index) => (
                   <option
                     key={`channelHandler/option/${index}`}
@@ -299,7 +302,7 @@ export default function CreatePost() {
                 type="file"
                 name="postThumbnail"
                 id="postThumbnail"
-                accept="image/png, image/jpeg, image/webp,image/jpg"
+                accept="image/png, image/jpeg, image/webp,image/jpg,image/avif"
                 onChange={(e) => {
                   setPostInfo((prev) => ({
                     ...prev,
@@ -535,7 +538,7 @@ export default function CreatePost() {
       </form>
     </section>
   ) : (
-    <p className="text-center self-center justify-self-center text-red-500 font-bold font-serif">
+    <p className="text-center text-2xl py-4 self-center justify-self-center text-red-500 font-bold font-serif">
       No channel found
     </p>
   );

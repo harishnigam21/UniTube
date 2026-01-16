@@ -223,7 +223,7 @@ export const createPost = async (req, res) => {
         message: "Unable to fetch video duration",
       });
     }
-    const createPost = await Post.create({
+    await Post.create({
       user_id: req.user.id,
       channel_id,
       title,
@@ -238,9 +238,9 @@ export const createPost = async (req, res) => {
       details: JSON.parse(details),
     });
     console.log(`${req.user.email} created new post`);
-    return res
-      .status(201)
-      .json({ message: "Successfully created new post", data: createPost });
+    return res.status(201).json({
+      message: "Successfully created new post",
+    });
   } catch (error) {
     console.error("Error from createPost controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });

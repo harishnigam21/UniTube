@@ -68,7 +68,7 @@ const postValidation = (req, res, next) => {
     typeof JSON.parse(details) !== "object" ||
     Object.keys(JSON.parse(details)).length == 0
   ) {
-    return sendError("Either it is not object or may it is empty");
+    return sendError("Details is not valid or may it is empty");
   }
 
   // If it reaches here, everything is valid

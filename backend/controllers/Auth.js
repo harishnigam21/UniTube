@@ -108,7 +108,10 @@ export const handleRefresh = async (req, res) => {
     const findUser = await Users.findOne({ refreshToken: cookies.jwt })
       .select("+refreshToken +_id")
       .lean();
-    if (!findUser) return res.status(403).json({ message: "Invalid payload" });
+    if (!findUser) {
+      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      return res.status(403).json({ message: "Invalid payload" });
+    }
     const { refreshToken, ...other } = findUser;
     jwt.verify(
       findUser.refreshToken,
