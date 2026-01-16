@@ -14,7 +14,7 @@ import useApi from "./hooks/Api";
 import LoadMore from "./component/common/LoadMore";
 export default function Home() {
   const { loading, sendRequest } = useApi();
-  const { short, setSidebarToggle } = useOutletContext();
+  const { short, setSidebarToggle, screenSize } = useOutletContext();
   const video = useSelector((store) => store.videos.items);
   const nextCursor = useSelector((store) => store.videos.nextCursor);
   const categories = useSelector((store) => store.videos.itemsCategories);
@@ -53,8 +53,10 @@ export default function Home() {
     handlePostFetch();
   }, [searchParams]);
   useEffect(() => {
-    setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }));
-  }, [setSidebarToggle]);
+    screenSize.width >= 768
+      ? setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }))
+      : setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+  }, [setSidebarToggle, screenSize]);
   const scrollRef = useRef(null);
   const scrollShorts = (direction) => {
     if (scrollRef.current) {
@@ -111,13 +113,13 @@ export default function Home() {
                             <div className="hidden md:flex gap-2">
                               <button
                                 onClick={() => scrollShorts("left")}
-                                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                                className="w-10 h-10 flex items-center justify-center bg-border text-text hover:bg-zinc-700 rounded-full transition-colors"
                               >
                                 ←
                               </button>
                               <button
                                 onClick={() => scrollShorts("right")}
-                                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                                className="w-10 h-10 flex items-center justify-center bg-border text-text hover:bg-zinc-700 rounded-full transition-colors"
                               >
                                 →
                               </button>

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
-import logo from "../../assets/images/logo.png";
+import logoDark from "../../assets/images/logo-dark.png";
+import logoLight from "../../assets/images/logo-light.png";
 import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "../../store/Slices/userSlice";
 import useApi from "../../hooks/Api";
@@ -79,11 +80,14 @@ export default function SignIn() {
       }
     });
   };
+  const [isDark, setIsDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   return (
-    <section className="w-screen h-screen box-border flex flex-col justify-center items-center p-8 text-text">
+    <section className="w-screen h-screen bg-bgprimary box-border flex flex-col justify-center items-center p-8 text-text">
       <Link to={"/"}>
         <img
-          src={logo}
+          src={isDark ? logoDark : logoLight}
           alt="home"
           title="back to home"
           className="aspect-video w-36 m-4"

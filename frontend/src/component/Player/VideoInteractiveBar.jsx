@@ -122,7 +122,7 @@ export default function VideoInteractiveBar({
           </small>
         </div>
         <button
-          className="rounded-full bg-text text-black py-1.5 px-3 font-medium icon"
+          className="rounded-full bg-text text-bgprimary py-1.5 px-3 font-medium icon"
           onClick={handleSubscribe}
         >
           {isSubscribe ? "UnSubscibe" : "Subscribe"}

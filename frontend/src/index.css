@@ -49,7 +49,8 @@ body,
 #root {
   margin: 0px;
   padding: 0px;
-  background-color: #0f0f0f;
+  background-color: var(--color-bgprimary);
+  color: var(--color-text);
 }
 
 *,
@@ -60,7 +61,7 @@ body,
 
 div,
 section {
-  transition: all 0.5s ease;
+  transition: all 0.3s ease;
 }
 
 button:disabled {
@@ -71,13 +72,45 @@ button:disabled {
   height: 0;
 }
 @theme {
-  --color-bgprimary: #0f0f0f; /*slightly black*/
-  --color-primary: #ff0033; /*slightly red*/
+  /* --- Light Mode  --- */
+  --color-bgprimary: #ffffff;
+  --color-primary: #ff0033;
+  --color-secondary: #0f0f0f;
+  --color-tertiary: #2da6ff;
+  --color-border: #e5e7eb;
+  --color-text: #0f0f0f;
+  --color-txlight: #666666;
+}
+@media (prefers-color-scheme: dark) {
+  /* ---Dark Mode --- */
+  :root:not(.light):not(.dark) {
+    --color-bgprimary: #0f0f0f;
+    --color-primary: #ff0033;
+    --color-secondary: white;
+    --color-tertiary: #2da6ff;
+    --color-border: #222222;
+    --color-text: white;
+    --color-txlight: #aaaaaa;
+  }
+}
+.dark {
+  --color-bgprimary: #0f0f0f;
+  --color-primary: #ff0033;
   --color-secondary: white;
-  --color-tertiary: #2da6ff; /*slightly sky blue*/
-  --color-border: #222222; /*slightly gray*/
+  --color-tertiary: #2da6ff;
+  --color-border: #222222;
   --color-text: white;
-  --color-txlight: #aaaaaa; /*light gray*/
+  --color-txlight: #aaaaaa;
+}
+
+.light {
+  --color-bgprimary: #ffffff;
+  --color-primary: #ff0033;
+  --color-secondary: #0f0f0f;
+  --color-tertiary: #2da6ff;
+  --color-border: #e5e7eb;
+  --color-text: #0f0f0f;
+  --color-txlight: #666666;
 }
 input:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;

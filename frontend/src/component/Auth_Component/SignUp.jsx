@@ -1,6 +1,7 @@
-import logo from "../../assets/images/logo.png";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logoDark from "../../assets/images/logo-dark.png";
+import logoLight from "../../assets/images/logo-light.png";
 import useApi from "../../hooks/Api";
 export default function SignUp() {
   const { sendRequest, loading } = useApi();
@@ -155,7 +156,9 @@ export default function SignUp() {
 
     return true;
   };
-
+  const [isDark, setIsDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
@@ -197,7 +200,7 @@ export default function SignUp() {
     <section className="w-screen h-screen box-border flex flex-col min-[480px]:justify-center items-center p-8 overflow-y-scroll text-text">
       <Link to={"/"}>
         <img
-          src={logo}
+          src={isDark ? logoDark : logoLight}
           alt="home"
           title="back to home"
           className="aspect-video w-36 m-4"

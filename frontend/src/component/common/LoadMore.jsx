@@ -17,7 +17,7 @@ export default function LoadMore({ nextCursor, loading }) {
   return (
     <article className="w-full flex justify-center">
       <button
-        className="py-2 px-6 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white my-6 flex items-center gap-2 transition-all active:scale-95 icon"
+        className="py-2 px-6 rounded-full bg-border hover:bg-zinc-700 text-text my-6 flex items-center gap-2 transition-all active:scale-95 icon"
         onClick={handleLoadMore}
       >
         <span>Load more</span>

@@ -5,10 +5,11 @@ import { MdDelete } from "react-icons/md";
 import { ImCross } from "react-icons/im";
 
 import dummyUpload from "../../assets/images/dummy_upload.jpg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import useApi from "../../hooks/Api";
 import Loading from "../other/Loading";
 export default function CreatePost() {
+  const { setSidebarToggle } = useOutletContext();
   const { loading, sendRequest } = useApi();
   const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState({
@@ -93,6 +94,9 @@ export default function CreatePost() {
     }
     return true;
   };
+  useEffect(() => {
+    setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+  }, [setSidebarToggle]);
   useEffect(() => {
     sendRequest("my_channels", "GET").then((result) => {
       const data = result?.data;
@@ -283,7 +287,7 @@ export default function CreatePost() {
           {/* Thumbnail */}
           <article className="relative flex gap-2 items-center justify-center">
             <div
-              className="border border-border w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center opacity-10"
+              className="border border-border w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center"
               style={{ backgroundImage: `url(${preview.thumbnail})` }}
             ></div>
             <div className="absolute bg-bgprimary border border-border min-w-fit p-2 rounded-xl overflow-hidden">
@@ -320,7 +324,7 @@ export default function CreatePost() {
           <article className="relative flex gap-2 items-center justify-center">
             <video
               src={preview.video}
-              className="border border-txlight aspect-video w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center opacity-10"
+              className="border border-txlight aspect-video w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center"
             />
             <div className="absolute bg-bgprimary border border-border min-w-fit p-2 rounded-xl overflow-hidden">
               <label
@@ -334,7 +338,7 @@ export default function CreatePost() {
                 </div>
               </label>
               <input
-                className="hidden"
+                className="hidden rounded-md border-border"
                 type="file"
                 name="postVideo"
                 id="postVideo"

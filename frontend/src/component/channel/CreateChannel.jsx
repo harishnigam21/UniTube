@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IoCloudUpload,
   IoEnterSharp,
@@ -8,9 +8,10 @@ import dummyUpload from "../../assets/images/dummy_upload.jpg";
 import { useDispatch } from "react-redux";
 import { updateChannel } from "../../store/Slices/userSlice.js";
 import { addChannel } from "../../store/Slices/channelSlice.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import useApi from "../../hooks/Api.jsx";
 export default function CreateChannel() {
+  const { setSidebarToggle } = useOutletContext();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, sendRequest } = useApi();
@@ -29,7 +30,9 @@ export default function CreateChannel() {
     picture: dummyUpload,
   });
   const [channelDescription, setChannelDescription] = useState("");
-
+  useEffect(() => {
+    setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+  }, [setSidebarToggle]);
   const showInfoFunc = (color, message) => {
     setShowInfo({ status: true, message, color });
     setTimeout(() => {
@@ -204,7 +207,7 @@ export default function CreateChannel() {
           <article className="flex w-full max-w-full gap-2 items-center">
             <div
               style={{ backgroundImage: `url(${preview.picture})` }}
-              className={`border border-border w-full min-w-20 max-w-50 aspect-square rounded-full bg-cover bg-center opacity-10`}
+              className={`border border-border w-full min-w-20 max-w-50 aspect-square rounded-full bg-cover bg-center`}
             ></div>
             <div className="border border-border min-w-fit p-2 rounded-xl overflow-hidden">
               <label
@@ -236,7 +239,7 @@ export default function CreateChannel() {
           {/* channel banner */}
           <article className="relative flex gap-2 items-center justify-center">
             <div
-              className="border border-border w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center opacity-10"
+              className="border border-border w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center"
               style={{ backgroundImage: `url(${preview.banner})` }}
             ></div>
             <div className="absolute bg-bgprimary border border-border min-w-fit p-2 rounded-xl overflow-hidden">

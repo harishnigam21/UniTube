@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Search from "./Search";
 import useApi from "../../hooks/Api";
+import { LuSun, LuMoon } from "react-icons/lu";
+import logoDark from "../../assets/images/logo-dark.png";
+import logoLight from "../../assets/images/logo-light.png";
 export default function Header({
   navToggle,
   setNavToggle,
@@ -16,6 +19,26 @@ export default function Header({
   const [headerHeight, setHeaderHeight] = useState(0);
   const [expandProfile, setExpandProfile] = useState(false);
   const login = useSelector((store) => store.user.loginStatus);
+  const [logo, setLogo] = useState(logoDark);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      setLogo(logoDark);
+      root.classList.add("dark");
+      root.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+    } else {
+      setLogo(logoLight);
+      root.classList.add("light");
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
   const handleHeight = () => {
     if (headerRef.current) {
       let need = headerRef.current.getBoundingClientRect();
@@ -61,7 +84,7 @@ export default function Header({
             ))}
           <Link to={items[1].path}>
             <img
-              src={items[1].icon}
+              src={logo}
               alt={items[1].name}
               className="max-w-20 min-w-16 max-h-10 min-h-8 object-center object-cover"
             />
@@ -69,6 +92,17 @@ export default function Header({
         </article>
         {screenSize.width >= 768 && <Search items={items} />}
         <article className="flex gap-4 items-center text-text">
+          <p
+            onClick={() => setIsDark(!isDark)}
+            className="p-2 rounded-full bg-border hover:opacity-80 transition-all icon"
+            aria-label="Toggle Theme"
+          >
+            {isDark ? (
+              <LuSun className="text-primary w-5 h-5" />
+            ) : (
+              <LuMoon className="text-secondary w-5 h-5" />
+            )}
+          </p>
           {login
             ? items.slice(-4, -1).map((item) =>
                 item.name.toLowerCase() == "create" ? (

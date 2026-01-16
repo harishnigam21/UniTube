@@ -11,7 +11,7 @@ export default function VideoRecommendation({ id, tags, screenSize }) {
     inthereRecommendations(state, memoTags, id)
   );
   return (
-    <article className="flex flex-col">
+    <article className="flex flex-col border-border border-t pt-2 lg:border-l lg:border-t-0 lg:pl-2">
       <strong className="text-xl">Recommended</strong>
       <article className="grid grid-cols-1 gap-4 sm:grid-cols-2 min-[930px]:grid-cols-3 lg:flex lg:flex-col lg:gap-4">
         {RecommendVideos.length == 0 || !RecommendVideos ? (

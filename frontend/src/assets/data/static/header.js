@@ -3,10 +3,23 @@ import { MdAdd } from "react-icons/md";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 
-import logo from "../../images/logo.png";
+import logoDark from "../../images/logo-dark.png";
+import logoLight from "../../images/logo-light.png";
+
+const theme =
+  localStorage.getItem("theme") === "dark" ||
+  (!localStorage.getItem("theme") &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ? "dark"
+    : "light";
 const items = [
   { id: 0, name: "navbar", icon: LuMenu, path: "/navbar" },
-  { id: 1, name: "logo", icon: logo, path: "/" },
+  {
+    id: 1,
+    name: "logo",
+    icon: theme == "dark" ? logoDark : logoLight,
+    path: "/",
+  },
   { id: 2, name: "search", icon: LuSearch, path: "/" },
   { id: 3, name: "mic", icon: LuMic, path: "/" },
   { id: 4, name: "Create", icon: MdAdd, path: "/post/create" },
