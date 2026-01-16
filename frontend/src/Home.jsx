@@ -15,9 +15,12 @@ import LoadMore from "./component/common/LoadMore";
 export default function Home() {
   const { loading, sendRequest } = useApi();
   const { short, setSidebarToggle, screenSize } = useOutletContext();
-  const video = useSelector((store) => store.videos.items);
   const nextCursor = useSelector((store) => store.videos.nextCursor);
   const categories = useSelector((store) => store.videos.itemsCategories);
+  const searchStatus = useSelector((store) => store.videos.searchStatus);
+  const video = useSelector((store) =>
+    searchStatus ? store.videos.searchItems : store.videos.items
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

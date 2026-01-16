@@ -474,10 +474,8 @@ const videoSlice = createSlice({
     // ],
     items: [],
     itemsCategories: [],
-    filterItems: {
-      category: [],
-      search: [],
-    },
+    searchItems: [],
+    searchStatus: false,
     selectedItem: {},
     selectedItemComment: [],
     nextCursor: null,
@@ -489,11 +487,16 @@ const videoSlice = createSlice({
         action.payload.data,
       ];
     },
-    addSearch: (state, action) => {
-      state.filterItems.search = [
-        ...state.filterItems.search,
-        action.payload.data,
-      ];
+    setSearchItems: (state, action) => {
+      state.searchItems = state.items.filter((post) =>
+        post.title.toLowerCase().includes(action.payload.search.toLowerCase())
+      );
+    },
+    setSearchStatus: (state, action) => {
+      state.searchStatus = action.payload.status;
+      if (!action.payload.status) {
+        state.searchItems = [];
+      }
     },
     setItems: (state, action) => {
       state.items = action.payload.posts;
@@ -583,8 +586,9 @@ const videoSlice = createSlice({
   },
 });
 export const {
+  setSearchItems,
+  setSearchStatus,
   addCategory,
-  addSearch,
   setItems,
   addItems,
   setSelectedItem,
