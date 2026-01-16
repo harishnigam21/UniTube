@@ -318,10 +318,10 @@ export default function CreatePost() {
           </article>
           {/* Video */}
           <article className="relative flex gap-2 items-center justify-center">
-            <div
-              className="border border-border w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center opacity-10"
-              style={{ backgroundImage: `url(${preview.video})` }}
-            ></div>
+            <video
+              src={preview.video}
+              className="border border-txlight aspect-video w-full h-full min-h-50 rounded-md overflow-hidden bg-cover bg-center opacity-10"
+            />
             <div className="absolute bg-bgprimary border border-border min-w-fit p-2 rounded-xl overflow-hidden">
               <label
                 htmlFor="postVideo"
@@ -346,7 +346,7 @@ export default function CreatePost() {
                   }));
                   setPreview((prev) => ({
                     ...prev,
-                    video: URL.createObjectURL(e.target.files[0]),
+                    video: `${URL.createObjectURL(e.target.files[0])}#0.5`,
                   }));
                 }}
               />
