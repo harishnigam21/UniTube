@@ -5,11 +5,10 @@ import { Link } from "react-router-dom";
 import { memo } from "react";
 const Video = memo(function Video({ vid, type }) {
   return (
-    <Link
-      to={`/watch?v=${vid._id}`}
+    <article
       className={`relative group flex flex-col gap-2 p-2 rounded-xl overflow-hidden text-text icon backdrop-blur-2xl w-full`}
     >
-      <div className="relative">
+      <Link to={`/watch?v=${vid._id}`} className="relative">
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${vid.thumbnail}`}
           alt={`thumbnail for video ${vid._id}`}
@@ -18,7 +17,7 @@ const Video = memo(function Video({ vid, type }) {
         <small className="absolute bottom-2 right-2 bg-black/60 rounded-md text-white py-0.5 px-3 font-medium">
           {vid.duration}
         </small>
-      </div>
+      </Link>
 
       <article className="flex gap-4">
         {type == "home" && (
@@ -53,7 +52,7 @@ const Video = memo(function Video({ vid, type }) {
           className="w-full h-full blur-[200px] aspect-video"
         />
       </div>
-    </Link>
+    </article>
   );
 });
 export default Video;

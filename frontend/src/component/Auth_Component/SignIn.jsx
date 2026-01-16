@@ -67,7 +67,7 @@ export default function SignIn() {
         }
         setTimeout(() => {
           navigate(`/`, { replace: true });
-        }, 2000);
+        }, 1000);
       } else {
         const errorMessage =
           result?.error || data?.message || "An error occurred";

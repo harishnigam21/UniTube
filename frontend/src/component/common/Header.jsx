@@ -19,6 +19,7 @@ export default function Header({
   const [headerHeight, setHeaderHeight] = useState(0);
   const [expandProfile, setExpandProfile] = useState(false);
   const login = useSelector((store) => store.user.loginStatus);
+  const user = useSelector((store) => store.user.userInfo);
   const [logo, setLogo] = useState(logoDark);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -122,12 +123,23 @@ export default function Header({
                     key={`header/item/${item.id}`}
                     className="flex items-center"
                   >
-                    <item.icon
-                      className={`text-3xl icon`}
-                      onClick={() => {
-                        setExpandProfile((prev) => !prev);
-                      }}
-                    />
+                    {login && user?.pic ? (
+                      <img
+                        src={`${import.meta.env.VITE_BACKEND_HOST}/${user.pic}`}
+                        alt="userpic"
+                        className="w-10 aspect-square rounded-full icon"
+                        onClick={() => {
+                          setExpandProfile((prev) => !prev);
+                        }}
+                      />
+                    ) : (
+                      <item.icon
+                        className={`text-4xl icon`}
+                        onClick={() => {
+                          setExpandProfile((prev) => !prev);
+                        }}
+                      />
+                    )}
                     {expandProfile && (
                       <article
                         className="flex flex-col absolute right-0 top-0 rounded-b-xl z-50 bg-bgprimary min-w-fit whitespace-nowrap border border-border border-t-0 overflow-hidden"
@@ -136,20 +148,25 @@ export default function Header({
                           setExpandProfile(false);
                         }}
                       >
+                        {login && user.firstname && user.lastname && (
+                          <strong className="py-2 px-8 uppercase font-black text-transparent bg-clip-text bg-linear-to-r from-primary via-tertiary to-primary bg-size-[200%_auto] animate-gradient">
+                            {user.firstname} {user.lastname}
+                          </strong>
+                        )}
                         <Link
                           to={"/post/view"}
-                          className="icon py-2 px-8 hover:bg-border transition-all"
+                          className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
                         >
                           My Posts
                         </Link>
                         <Link
                           to={"/channel/view"}
-                          className="icon py-2 px-8 hover:bg-border transition-all"
+                          className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
                         >
                           My Channel
                         </Link>
                         <p
-                          className="icon py-2 px-8 hover:bg-border transition-all"
+                          className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
                           onClick={handleLogout}
                         >
                           Log Out

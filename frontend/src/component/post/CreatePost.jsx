@@ -515,6 +515,27 @@ export default function CreatePost() {
             )}
           </article>
         </article>
+        {/* 5th row Description */}
+        <article className="whitespace-nowrap flex flex-col items-center w-full">
+          <label
+            htmlFor="pdescription"
+            id="pdescriptionLabel"
+            className="bg-bgprimary ml-4 z-2 w-fit self-start after:ml-1"
+          >
+            Post Description
+          </label>
+          <textarea
+            type="text"
+            name="pdescription"
+            id="pdescription"
+            value={postInfo.description}
+            className="border border-border rounded-md p-2 -mt-3 w-full"
+            placeholder="...."
+            onChange={(e) =>
+              setPostInfo((prev) => ({ ...prev, description: e.target.value }))
+            }
+          />
+        </article>
         {/*backend information handler */}
         {showInfo.status && (
           <p className={`text-center font-bold text-${showInfo.color}-500`}>
