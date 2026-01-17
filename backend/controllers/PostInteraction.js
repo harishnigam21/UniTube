@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Post from "../models/Post.js";
 import Like from "../models/PostLike.js";
 import Dislike from "../models/PostDislike.js";
+// This controller, simply handles likes in toggle manner, if liked then remove like and if not liked then like, using transaction to add/delete document from postlikes collection when adding like and removing like, parallel updating likes count in posts collection for particular post 
 export const postLike = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -74,6 +75,7 @@ export const postLike = async (req, res) => {
     await session.endSession();
   }
 };
+// This controller, simply handles dislikes in toggle manner, if disliked then remove dislike and if not disliked then dislike, using transaction to add/delete document from postdislikes collection when adding dislike and removing dislike, parallel updating dislikes count in posts collection for particular post 
 export const postDislike = async (req, res) => {
   const session = await mongoose.startSession();
   try {

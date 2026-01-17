@@ -2,6 +2,10 @@ import Comment from "../models/Comment.js";
 import Post from "../models/Post.js";
 import { getNextDate } from "../utils/getDate.js";
 import mongoose from "mongoose";
+
+// This fetch the all comments of that post,  using aggregation for some joining anf mapping fields we need some from user, commentdislikes and commentlikes to get number of likes and dislikes and status that which comment this user is liked and disliked.
+//Algorithm to map nested comment, we simply creating root and map, where root will be having who's parent_id is null and map to map all comments with new field in object of replies.
+//After it finishes root is sended as response and furthur is done at frontend side to map it.
 export const getComment = async (req, res) => {
   try {
     const allComment = await Comment.aggregate([
@@ -112,6 +116,7 @@ export const getComment = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+//We have separate collection for comment, so it is simple creating comment, by taking parent_id and commentText from body and user_id from req.user.id
 export const postComment = async (req, res) => {
   const { parent_id, commentText } = req.body;
   try {
@@ -160,6 +165,8 @@ export const postComment = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+//This handles the deletion of comment, transaction is used to delete comment for that id is provided and delete all replies of that comment.
 export const deleteComment = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -192,6 +199,8 @@ export const deleteComment = async (req, res) => {
     await session.endSession();
   }
 };
+
+//This handler just updates the comment by taking txt from body
 export const updateComment = async (req, res) => {
   const { txt } = req.body;
   try {

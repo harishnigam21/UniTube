@@ -1,3 +1,4 @@
+// cor file that will be checking that req origin exist in our whishlist or not
 import { whitelist } from "./whitelist.js";
 const corsOptions = {
   origin: (origin, callback) => {

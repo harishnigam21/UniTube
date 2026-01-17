@@ -7,6 +7,8 @@ import formatDuration from "../utils/getTime.js";
 import fs from "fs";
 import path from "path";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
+
+//This controller  provides the post based on id, which is provided in req.params
 export const getPost = async (req, res) => {
   const postId = new mongoose.Types.ObjectId(req.params.id);
   const userId = new mongoose.Types.ObjectId(req.user.id);

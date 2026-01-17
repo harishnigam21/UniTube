@@ -1,6 +1,8 @@
 import Users from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+// login controller that takes will be taking email and password from body, check user availability if user exist then check for password using bcrypt because in DB password is encrypted and here in body it is plain text, after successful login it will generate two tokens access and refresh using jwt with user id payload, both will be provided to user access token direct with response and refresh with cookie, refresh have longer live time and access token have shorter time, refresh token helps to generate access token again, refresh is defer with access in terms of access time and also refresh token is stored in DB, so whenever access token expired refresh request will be send it wil check in DB for same refresh token and for valid user it i=will regenerate refresh token
 export const LogIn = async (req, res) => {
   const { email } = req.body;
   try {
@@ -53,6 +55,8 @@ export const LogIn = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+//Register controller this will take all necessary field from body, check for user existence if not available then encrypt the password using bcrypt and store whole information in DB
 export const Register = async (req, res) => {
   try {
     const {
@@ -99,7 +103,10 @@ export const Register = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+//TODO: Not necessary now, priority-low
 export const ForgotPassword = async (req, res) => {};
+
+//This controller will handle the regeneartion of access token until refresh token is valid, if all thinks good, it will take refresh token from cookie, match refresh token in DB to find out user, if got valid user then verifying it using jwt, if verified regenerating access token for that user and sending it through response
 export const handleRefresh = async (req, res) => {
   try {
     const cookies = req.cookies;
@@ -132,6 +139,8 @@ export const handleRefresh = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+//This controller handles user logout, which will validated user, in both cases it will wipe out refresh token from cookie, so that further access token generation can be avoided
 export const logOut = async (req, res) => {
   try {
     const cookies = req.cookies;

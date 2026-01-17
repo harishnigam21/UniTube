@@ -1,0 +1,21 @@
+name: Deploy UniTube
+on:
+  push:
+    branches:
+      - main  # This triggers the script every time you push to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Execute Remote Deploy Script
+        uses: appleboy/ssh-action@master
+        with:
+          host: 72.60.222.234
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          # This line tells GitHub to run the script we made on your VPS
+          script: bash ~/deploy.sh

@@ -2,6 +2,9 @@ import Channel from "../models/Channel.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
+
+// This controller, providing one channel info using id, id will be fetched from params.
+// Here aggregation will join the tables using lookup to get common info we will be needed for ex joining channels and users to get user info like firstname,...., I have designed aggregation in such manner , such that no extra load should be attached in response and all data should be fetched from DB in one instance..
 export const getChannel = async (req, res) => {
   try {
     const [ChannelData] = await Channel.aggregate([
@@ -305,6 +308,7 @@ export const getChannel = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+//This controller, provides all channels for particular user, with some extra fields other then channel it join post table to get post count and get only subscribers length from DB and other common fields from channel
 export const getChannels = async (req, res) => {
   try {
     //TODO: optimize this aggregation later,using pipeline, not necessary now
@@ -344,7 +348,9 @@ export const getChannels = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-// require all mandatory fields
+// This controller will take data from body and files, body will be having all field like name,handler,... and files will be having banner and pictures, both will be available info only when multer runs, Transaction in used to follow the protocol either one or full.
+// Because when channel is created, along with new document in channels, it also have to update channels array in users model
+// also checks that channel create limit exceed or not.
 export const createChannel = async (req, res) => {
   const { channelName, channelHandler, channelDescription } = req.body;
   const bannerPath = req.files?.channelBanner
@@ -419,7 +425,7 @@ export const createChannel = async (req, res) => {
     await session.endSession();
   }
 };
-//require id
+//This controller will handle deletion of channel, Transaction is used to remove document from channels and pop channel id from id from users channels fields
 export const deleteChannel = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -469,6 +475,7 @@ export const deleteChannel = async (req, res) => {
 };
 //require id and update data info, using PATCH here instead of PUT
 //available only for channel creator
+//Only updates the field which has been updated
 export const updateChannel = async (req, res) => {
   try {
     //remove unwanted payloads
@@ -522,6 +529,7 @@ export const updateChannel = async (req, res) => {
 };
 
 //require id of subscriber, update subscriber array in Channel
+//Checks if subscribed then unsubscribe it and unsubscribed then subscribe it, Using transaction to update subscribed array and subscription array from both end from channels and users
 export const subscriberToggle = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -581,6 +589,8 @@ export const subscriberToggle = async (req, res) => {
   }
 };
 
+
+//Handler that notify user that handler he want to use it already existing or ready to use.
 export const validateHandler = async (req, res) => {
   try {
     const handlerExist = await Channel.findOne({
