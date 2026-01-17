@@ -2,7 +2,7 @@ name: Deploy UniTube
 on:
   push:
     branches:
-      - main  # This triggers the script every time you push to main
+      - main
 
 jobs:
   deploy:
@@ -16,5 +16,9 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }} # This must match the name in your image
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          timeout: 60s             # Wait longer for the handshake
+          command_timeout: 10m     # Give time for npm install to finish
+          debug: true              # This is critical to see WHY it fails
           script: bash ~/deploy.sh
