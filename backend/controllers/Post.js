@@ -8,7 +8,7 @@ import fs from "fs";
 import path from "path";
 //TODO: Add views functionality and video public, private property, for this you have to update model and then in controller
 
-//This controller  provides the post based on id, which is provided in req.params
+//This controller  provides the post based on id, which is provided in req.params, aggregation is used to join tables and take out mix fields that will be required.
 export const getPost = async (req, res) => {
   const postId = new mongoose.Types.ObjectId(req.params.id);
   const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -112,6 +112,8 @@ export const getPost = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+//This controller initially fetch 5 posts based on optional queries depend on category and cursor, next 5 post will be fetch on loading or clicking load more button
 export const getMorePost = async (req, res) => {
   const { cursor, category } = req.query;
   const parsedLimit = Math.min(parseInt(req.query.limit) || 5, 10);
@@ -198,6 +200,9 @@ export const getMorePost = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// This controller will take data from body and files, body will be having all field like title,category,... and files will be having thumbnail and videoUrl, both will be available info only when multer runs.
+// also video length is calculated for duration.
 export const createPost = async (req, res) => {
   const { channel_id, title, type, category, tags, description, details } =
     req.body;
@@ -262,6 +267,8 @@ export const createPost = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+//require id and update data info, using PATCH here instead of PUT
+//Only updates the field that are updatable
 export const updatePost = async (req, res) => {
   try {
     const acceptedKey = ["description", "details", "category", "tags"];
@@ -298,7 +305,9 @@ export const updatePost = async (req, res) => {
       { new: true, runValidators: true }
     )
       .lean()
-      .select("thumbnail category title views postedAt channel_id _id tags details description type");
+      .select(
+        "thumbnail category title views postedAt channel_id _id tags details description type"
+      );
 
     // Cleanup: If a NEW file was uploaded, delete the OLD one
     if (req.file && oldThumbnailPath) {
@@ -327,6 +336,9 @@ export const updatePost = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
+//This Controller handles deletion on post, post id will be taken from params
+//TODO : As post is deleted then using transaction delete post related comment,likes,dislikes etc... : Not necessary now do it late priority:low
 export const deletePost = async (req, res) => {
   try {
     const dltPost = await Post.findOneAndDelete({

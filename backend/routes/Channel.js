@@ -15,7 +15,7 @@ import channelUpdateValidation from "../middlewares/validators/channelUpdateVali
 import handlerValidation from "../middlewares/validators/handlerValidation.js";
 import { upload } from "../middlewares/multer/Upload.js";
 const router = express.Router();
-
+//TODO : In future remove jwt verification from /channel/:handler route because guest user can also see userChannel Info, rest keep as it is 
 const uploadMultiple = upload.fields([
   { name: "channelPicture", maxCount: 1 },
   { name: "channelBanner", maxCount: 1 },

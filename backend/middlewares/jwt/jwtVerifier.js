@@ -1,5 +1,6 @@
 import User from "../../models/User.js";
 import jwt from "jsonwebtoken";
+//This middleware checks request by accessing their token attached at req header, using jwt.verify it will verify and return result as per token validation. If token validates user can move forward otherwise unauthorized.
 const jwtVerifier = async (req, res, next) => {
   try {
     const header = req.headers["authorization"];
@@ -25,6 +26,7 @@ const jwtVerifier = async (req, res, next) => {
     req.user = UserExist;
     next();
   } catch (err) {
+    //All kind of jwt error is handled
     if (err instanceof jwt.TokenExpiredError) {
       return res
         .status(401)

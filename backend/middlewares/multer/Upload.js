@@ -1,6 +1,6 @@
 import multer from "multer";
 import path from "path";
-
+//assigning path to the multer to store uploads data and formatting the file format with date and round lib so that there are no duplicates of filename
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
     );
   },
 });
+//Formats that are currently accepted
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/jpeg",

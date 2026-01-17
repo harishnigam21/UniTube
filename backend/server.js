@@ -17,14 +17,15 @@ configDotenv();
 connectDB();
 
 //App level middlewares
-app.use("/uploads", express.static("uploads"));
-app.use(credentials);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(cors(corsOptions));
+app.use("/uploads", express.static("uploads")); //make upload folder static
+app.use(credentials);//checking origin
+app.use(express.json()); //parsing data and make fully used data available in body
+app.use(express.urlencoded({ extended: true })); //parses incoming requests with URL-encoded payloads
+app.use(cookieParser()); //parse the cookies that are attached to the request 
+app.use(cors(corsOptions)); //enable CORS with various options
 
 //App level Routes
+// NOTE: In controller no validation of data has ben done, for validation separate middleware are created and used it before controller in route.
 app.use("/", Auth);
 app.use("/", Channel);
 app.use("/", Post);

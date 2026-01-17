@@ -17,6 +17,8 @@ const uploadMultiple = upload.fields([
 ]);
 const updateThumbnail = upload.single("thumbnail");
 const router = express.Router();
+//TODO : In future remove jwtVErifier from /posts request so that guest user can see posts, rest keep as it is
+
 router
   .route("/post/:id")
   .get(Validate, jwtVerifier, getPost)

@@ -2,4 +2,5 @@
 export const whitelist = [
   "http://localhost:5173",
   "https://unitube.vercel.app",
+  'https://api.unitube.harishnigam.cloud'
 ];

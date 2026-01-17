@@ -475,7 +475,7 @@ export const deleteChannel = async (req, res) => {
 };
 //require id and update data info, using PATCH here instead of PUT
 //available only for channel creator
-//Only updates the field which has been updated
+//Only updates the field that are updatable
 export const updateChannel = async (req, res) => {
   try {
     //remove unwanted payloads
