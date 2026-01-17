@@ -17,7 +17,7 @@ export default function Search({ items }) {
               id="search"
               name="search"
               value={search}
-              placeholder="Search"
+              placeholder="Searching....."
               className="w-full py-2 px-4"
               onChange={(e) => setSearch(e.target.value)}
             />
