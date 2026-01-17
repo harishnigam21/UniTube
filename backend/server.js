@@ -11,7 +11,7 @@ import Post from "./routes/Post.js";
 import Comment from "./routes/Comment.js";
 import PostInteraction from "./routes/PostInteraction.js";
 import CommentInteraction from "./routes/CommentInteraction.js";
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5003;
 const app = express();
 configDotenv();
 connectDB();
