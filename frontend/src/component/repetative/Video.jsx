@@ -43,7 +43,7 @@ const Video = memo(function Video({ vid, type }) {
       <Link to={`/watch?v=${vid._id}`} className="relative overflow-hidden">
         <img
           src={`${import.meta.env.VITE_BACKEND_HOST}/${vid.thumbnail}`}
-          alt={`thumbnail for video ${vid._id}`}
+          alt={`thumbnail for video`}
           className="w-full rounded-xl object-cover object-center aspect-video"
         />
         <small className="absolute bottom-2 right-2 bg-black/60 rounded-md text-white py-0.5 px-3 font-medium">

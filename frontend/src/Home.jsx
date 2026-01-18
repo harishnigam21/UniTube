@@ -1,12 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useNavigate,
-  useOutletContext,
-  useSearchParams,
-} from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
+import Categories from "./component/common/Categories";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
 import { setCategories, setItems, addItems } from "./store/Slices/videoSlice";
@@ -23,7 +20,6 @@ export default function Home() {
     searchStatus ? store.videos.searchItems : store.videos.items
   );
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   //this two params are optional, getting it every time, when navigating to this page
   const cursorParams = searchParams.get("cursor");
@@ -77,7 +73,7 @@ export default function Home() {
       scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
-//Component with filter category buttons, posts and load more button if more post available
+  //Component with filter category buttons, posts and load more button if more post available
   return (
     <section className="flex flex-col gap-3 px-2 h-screen w-full overflow-y-auto overflow-x-hidden">
       {loading && video.length == 0 ? (
@@ -85,20 +81,9 @@ export default function Home() {
       ) : (
         <article className="flex flex-col w-full">
           {/* all category fetched along with post so whenever new category comes it updates the array at redux store and that array will be mapped here*/}
-          <article className="w-full flex flex-wrap sticky bg-bgprimary top-0 z-10 py-5 px-2 overflow-x-auto noscrollbar gap-4">
-            {categories &&
-              categories.map((categ, index) => (
-                <span
-                  key={`home/filterby/category/${index}`}
-                  className="rounded-md bg-border text-text py-1 px-3 icon"
-                  onClick={() => {
-                    navigate(`?category=${categ}`, { replace: true });
-                  }}
-                >
-                  {categ}
-                </span>
-              ))}
-          </article>
+          {categories && categories.length > 0 && (
+            <Categories categories={categories} />
+          )}
           <article className="w-full text-text">
             <article className="flex flex-col gap-8">
               {video.length > 0 ? (
