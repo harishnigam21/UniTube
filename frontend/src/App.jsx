@@ -370,7 +370,7 @@ export default function App() {
     },
   ]);
   return (
-    <main className="flex relative flex-col box-border ">
+    <main className="flex relative flex-col box-border w-screen h-screen noscrollbar overflow-auto ">
       {/* header`` */}
       <Header
         navToggle={navToggle}
@@ -380,12 +380,13 @@ export default function App() {
         headerHeight={headerHeight}
         setHeaderHeight={setHeaderHeight}
       />
-      <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
+      <section className="flex absolute top-0 left-0 box-border w-full h-full overflow-y-auto noscrollbar">
         <SlideBar
           navToggle={navToggle}
           setNavToggle={setNavToggle}
           sidebarToggle={sidebarToggle}
           screenSize={screenSize}
+          headerHeight={headerHeight}
         />
         <article
           className="flex flex-col w-full max-w-full"

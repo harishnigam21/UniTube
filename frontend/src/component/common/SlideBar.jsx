@@ -2,7 +2,12 @@ import items from "../../assets/data/static/sidebar";
 import { useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SlideBarItem from "./SlideBarItem";
-export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
+export default function SlideBar({
+  navToggle,
+  sidebarToggle,
+  setNavToggle,
+  headerHeight,
+}) {
   const barRef = useRef(null);
   //sidebar variation for different component to manage responsiveness of component
   useEffect(() => {
@@ -28,7 +33,8 @@ export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
           exit={{ opacity: 0, x: "-100%" }}
           transition={{ duration: 0.25, ease: "easeIn" }}
           ref={barRef}
-          className=" flex flex-col z-40 sticky left-0 h-screen bg-bgprimary pl-4 pt-16 overflow-y-scroll gap-4 min-w-fit whitespace-nowrap transition-all"
+          className=" flex flex-col z-40 sticky left-0 h-screen bg-bgprimary pl-4 overflow-y-scroll gap-4 min-w-fit whitespace-nowrap transition-all "
+          style={{ paddingTop: `${headerHeight}px` }}
         >
           {items.map((item, index) => (
             <SlideBarItem
