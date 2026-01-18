@@ -1,5 +1,7 @@
 # UniTube
 
+This project is mainly based optimized for dark view, light view is also optimized but may face small issues
+
 # 🖥️ Frontend Overview
 
 This project has a frontend application deployed and accessible here:
@@ -76,7 +78,7 @@ for development purpose : npm run dev
 NOTE : This project uses multer for file uploads (thumbnail, channelPicture, channelBanner, videoURL etc.).
 All uploaded files are stored inside an uploads/ folder at the root of backend project.
 ⚠️ I am not including the uploads/ folder in this submission (to keep repo clean).
-✅ If you want to see existing uploaded images/videos properly, download the uploads folder from here and place it in your backend root like:
+✅ If you want to see existing uploaded images/videos properly, download the uploads folder from here, and place it in your backend root like:
 backend/uploads/
 Folder name must be exactly: uploads
 
@@ -290,3 +292,7 @@ I have implemented channel information fetching using GET /channel/:handler, whi
 
 Live : https://unitube.harishnigam.cloud
 Github :https://github.com/harishnigam21/UniTube
+
+# My Learning on this Project
+1. Mongoose Transaction
+2. Mongoose Aggregation

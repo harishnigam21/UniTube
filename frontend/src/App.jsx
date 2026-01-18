@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Footer from "./component/common/Footer";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
 import "./App.css";
@@ -396,7 +395,6 @@ export default function App() {
           <Outlet context={{ short, setSidebarToggle, screenSize }} />
         </article>
       </section>
-      {/* <Footer /> */}
     </main>
   );
 }

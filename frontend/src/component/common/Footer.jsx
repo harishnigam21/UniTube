@@ -1,5 +1,7 @@
-import React from "react";
-
 export default function Footer() {
-  return <div>Footer</div>;
+  return (
+    <div className="flex items-center justify-center">
+      <small>© 2026 UniTube LMT</small>
+    </div>
+  );
 }

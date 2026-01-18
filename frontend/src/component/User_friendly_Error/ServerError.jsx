@@ -10,7 +10,7 @@ export default function ServerError() {
   }, [setSidebarToggle]);
   return (
     <section className="w-full p-4 h-screen flex items-center justify-center">
-      <article className="max-w-full flex-wrap sm:flex-nowrap flex justify-center gap-6 rounded-xl py-10 px-6 bg-black border border-border">
+      <article className="max-w-full flex-wrap sm:flex-nowrap flex justify-center gap-6 rounded-xl py-10 px-6 bg-border border border-border">
         <div className="icon flex items-center">
           <LuServerOff className="text-9xl text-red-600" />
         </div>
@@ -19,21 +19,21 @@ export default function ServerError() {
             <h1 className="text-2xl sm:text-4xl text-red-500 uppercase font-extrabold">
               Server Error
             </h1>
-            <p className="text-xl sm:text-2xl font-semibold text-white">
+            <p className="text-xl sm:text-2xl font-semibold text-text">
               Currently we are fetching issue at server, please try after few
               minutes or hours
             </p>
           </div>
           <div className="flex gap-2">
             <button
-              className="py-2 px-4 rounded-full uppercase text-white bg-red-500 icon font-medium"
+              className="py-2 px-4 rounded-full uppercase text-text bg-red-500 icon font-medium"
               onClick={() => navigate("/login")}
             >
               {/* TODO:Complete it after adding notifying functionality */}
               Notify
             </button>
             <button
-              className="py-2 px-4 rounded-full uppercase border-2 border-white text-white icon font-medium"
+              className="py-2 px-4 rounded-full uppercase border-2 border-white text-text icon font-medium"
               onClick={() => navigate(-1)}
             >
               Go Back
