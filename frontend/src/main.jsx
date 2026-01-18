@@ -1,60 +1,150 @@
-import { StrictMode } from "react";
+import { StrictMode, lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import Home from "./Home.jsx";
-import Video from "./component/Player/Video.jsx";
-import SignIn from "./component/Auth_Component/SignIn.jsx";
-import SignUp from "./component/Auth_Component/SignUp.jsx";
 import myStore from "./store/Store";
+import Loading from "./component/other/Loading.jsx";
+//Making all unused component at page loading lazy so that they don't effect performance like more time to load initial page
+const Video = lazy(() => import("./component/Player/Video.jsx"));
+const SignIn = lazy(() => import("./component/Auth_Component/SignIn.jsx"));
+const SignUp = lazy(() => import("./component/Auth_Component/SignUp.jsx"));
+const CreatePost = lazy(() => import("./component/post/CreatePost.jsx"));
+const CreateChannel = lazy(() =>
+  import("./component/channel/CreateChannel.jsx")
+);
+const ViewChannel = lazy(() => import("./component/channel/ViewChannel.jsx"));
+const Post = lazy(() => import("./component/post/Post.jsx"));
+const Channel = lazy(() => import("./component/channel/Channel.jsx"));
+const Login = lazy(() => import("./component/User_friendly_Error/Login.jsx"));
+const NotFound = lazy(() =>
+  import("./component/User_friendly_Error/NotFound.jsx")
+);
+const BadRequest = lazy(() =>
+  import("./component/User_friendly_Error/BadRequest.jsx")
+);
+const ServerError = lazy(() =>
+  import("./component/User_friendly_Error/ServerError.jsx")
+);
 
-import { Provider } from "react-redux";
-import CreatePost from "./component/post/CreatePost.jsx";
-import CreateChannel from "./component/channel/CreateChannel.jsx";
-import ViewChannel from "./component/channel/ViewChannel.jsx";
-import Post from "./component/post/Post.jsx";
-import Channel from "./component/channel/Channel.jsx";
-import Login from "./component/User_friendly_Error/Login.jsx";
-import NotFound from "./component/User_friendly_Error/NotFound.jsx";
-import BadRequest from "./component/User_friendly_Error/BadRequest.jsx";
-import ServerError from "./component/User_friendly_Error/ServerError.jsx";
+//creating Routes array, where every lazy component is wrapped on Suspense with fallback component so that this component appear until the respective component is coming in network
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    //children of '/' route
     children: [
-      { index: true, element: <Home /> },
-      { path: "watch", element: <Video /> },
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "watch",
+        element: (
+          <Suspense fallback={Loading}>
+            <Video />
+          </Suspense>
+        ),
+      },
       {
         path: "post",
-        element: <Post />,
+        element: (
+          <Suspense fallback={Loading}>
+            <Post />
+          </Suspense>
+        ),
       },
-      { path: "post/create", element: <CreatePost /> },
+      {
+        path: "post/create",
+        element: (
+          <Suspense fallback={Loading}>
+            <CreatePost />
+          </Suspense>
+        ),
+      },
       {
         path: "channel/:handler",
-        element: <Channel />,
+        element: (
+          <Suspense fallback={Loading}>
+            <Channel />
+          </Suspense>
+        ),
       },
-      { path: "channel/create", element: <CreateChannel /> },
-      { path: "channel/view", element: <ViewChannel /> },
-      { path: "msg/login", element: <Login /> },
-      { path: "msg/not-found", element: <NotFound /> },
-      { path: "msg/bad-request", element: <BadRequest /> },
-      { path: "msg/server-error", element: <ServerError /> },
+      {
+        path: "channel/create",
+        element: (
+          <Suspense fallback={Loading}>
+            <CreateChannel />
+          </Suspense>
+        ),
+      },
+      {
+        path: "channel/view",
+        element: (
+          <Suspense fallback={Loading}>
+            <ViewChannel />
+          </Suspense>
+        ),
+      },
+      {
+        path: "msg/login",
+        element: (
+          <Suspense fallback={Loading}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: "msg/not-found",
+        element: (
+          <Suspense fallback={Loading}>
+            <NotFound />
+          </Suspense>
+        ),
+      },
+      {
+        path: "msg/bad-request",
+        element: (
+          <Suspense fallback={Loading}>
+            <BadRequest />
+          </Suspense>
+        ),
+      },
+      {
+        path: "msg/server-error",
+        element: (
+          <Suspense fallback={Loading}>
+            <ServerError />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
     path: "/login",
-    element: <SignIn />,
+    element: (
+      <Suspense fallback={Loading}>
+        <SignIn />
+      </Suspense>
+    ),
   },
   {
     path: "/register",
-    element: <SignUp />,
+
+    element: (
+      <Suspense fallback={Loading}>
+        <SignUp />
+      </Suspense>
+    ),
   },
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    {/* //providing store here so that all component in app can use redux store */}
     <Provider store={myStore}>
+      {/* // wrapping up our route array in RouterProvider*/}
       <RouterProvider router={router} />
     </Provider>
   </StrictMode>
