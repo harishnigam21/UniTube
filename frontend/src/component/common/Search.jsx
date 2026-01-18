@@ -4,7 +4,7 @@ import { setSearchItems, setSearchStatus } from "../../store/Slices/videoSlice";
 import { ImCross } from "react-icons/im";
 //Currently this search component only manages local search.
 //TODO:handle searches from backend as we done for category, currently not required.
-export default function Search({ items }) {
+export default function Search({ items, setShowSearch }) {
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   return (
@@ -30,6 +30,7 @@ export default function Search({ items }) {
                 onClick={() => {
                   dispatch(setSearchStatus(false));
                   setSearch("");
+                  setShowSearch(false);
                 }}
               >
                 <ImCross className="text-sm text-red-500" />

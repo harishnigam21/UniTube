@@ -9,11 +9,12 @@ import Shorts from "./component/repetative/Shorts";
 import { setCategories, setItems, addItems } from "./store/Slices/videoSlice";
 import useApi from "./hooks/Api";
 import LoadMore from "./component/common/LoadMore";
+import CategorySlider from "./component/common/Categories";
 export default function Home() {
   const { loading, sendRequest } = useApi();
   const { short, setSidebarToggle, screenSize } = useOutletContext();
   const nextCursor = useSelector((store) => store.videos.nextCursor);
-  const categories = useSelector((store) => store.videos.itemsCategories);
+
   const searchStatus = useSelector((store) => store.videos.searchStatus);
   //getting post from redux store based on condition of search field
   const video = useSelector((store) =>
@@ -80,10 +81,6 @@ export default function Home() {
         <HomeSkeleton />
       ) : (
         <article className="flex flex-col w-full">
-          {/* all category fetched along with post so whenever new category comes it updates the array at redux store and that array will be mapped here*/}
-          {categories && categories.length > 0 && (
-            <Categories categories={categories} />
-          )}
           <article className="w-full text-text">
             <article className="flex flex-col gap-8">
               {video.length > 0 ? (

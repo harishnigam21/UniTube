@@ -7,14 +7,13 @@ import SlideBar from "./component/common/SlideBar";
 import "./App.css";
 import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "./store/Slices/userSlice";
-import items from "./assets/data/static/header";
 import useApi from "./hooks/Api";
-import Search from "./component/common/Search";
 export default function App() {
   const { sendRequest } = useApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [navToggle, setNavToggle] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(null);
   //changing sidebar nature for this page
   const [sidebarToggle, setSidebarToggle] = useState({
     status: true,
@@ -378,6 +377,8 @@ export default function App() {
         screenSize={screenSize}
         setNavToggle={setNavToggle}
         setSidebarToggle={setSidebarToggle}
+        headerHeight={headerHeight}
+        setHeaderHeight={setHeaderHeight}
       />
       <section className="flex absolute top-0 left-0 box-border w-full max-h-screen overflow-y-auto noscrollbar">
         <SlideBar
@@ -386,13 +387,11 @@ export default function App() {
           sidebarToggle={sidebarToggle}
           screenSize={screenSize}
         />
-        <article className="flex flex-col w-full max-w-full pt-13">
+        <article
+          className="flex flex-col w-full max-w-full"
+          style={{ marginTop: `${headerHeight}px` }}
+        >
           {/* all children route of App will be handle by this Outlet */}
-          {screenSize.width < 768 && (
-            <article className="flex items-center justify-center py-2 px-4">
-              <Search items={items} />
-            </article>
-          )}
           <Outlet context={{ short, setSidebarToggle, screenSize }} />
         </article>
       </section>

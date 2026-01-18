@@ -1,22 +1,31 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import items from "../../assets/data/static/header";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Search from "./Search";
 import useApi from "../../hooks/Api";
-import { LuSun, LuMoon } from "react-icons/lu";
+import { LuSun, LuMoon, LuSearch } from "react-icons/lu";
 import logoDark from "../../assets/images/logo-dark.png";
 import logoLight from "../../assets/images/logo-light.png";
+import CategorySlider from "./Categories";
+import { setSearchStatus } from "../../store/Slices/videoSlice";
 export default function Header({
   navToggle,
   setNavToggle,
   setSidebarToggle,
   screenSize,
+  headerHeight,
+  setHeaderHeight,
 }) {
+  const dispatch = useDispatch();
   const { sendRequest } = useApi();
-  const headerRef = useRef(null);
   const navigate = useNavigate();
-  const [headerHeight, setHeaderHeight] = useState(0);
   const [expandProfile, setExpandProfile] = useState(false);
   const login = useSelector((store) => store.user.loginStatus);
   const user = useSelector((store) => store.user.userInfo);
@@ -26,6 +35,24 @@ export default function Header({
     if (saved) return saved === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const [showSearch, setShowSearch] = useState(false);
+  const categories = useSelector((store) => store.videos.itemsCategories);
+  const headerRef = useRef(null);
+  const handleHeight = useCallback(() => {
+    if (headerRef.current) {
+      const bounds = headerRef.current.getBoundingClientRect();
+      setHeaderHeight(bounds.height);
+    }
+  }, [setHeaderHeight]);
+
+  useLayoutEffect(() => {
+    //  Running it immediately when the component mounts
+    handleHeight();
+    // Set up the listener for subsequent window resizes
+    window.addEventListener("resize", handleHeight);
+    // Clean up
+    return () => window.removeEventListener("resize", handleHeight);
+  }, [categories, handleHeight]);
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
@@ -40,12 +67,7 @@ export default function Header({
       localStorage.setItem("theme", "light");
     }
   }, [isDark]);
-  const handleHeight = () => {
-    if (headerRef.current) {
-      let need = headerRef.current.getBoundingClientRect();
-      setHeaderHeight(need.height);
-    }
-  };
+
   //send Request for logout after successful response access token will be deleted from localstorage
   const handleLogout = async () => {
     await sendRequest("logout", "GET").then((result) => {
@@ -55,12 +77,6 @@ export default function Header({
       }
     });
   };
-  //using above headerHeight state to keep track of header height when resize occurs
-  useEffect(() => {
-    handleHeight();
-    window.addEventListener("resize", handleHeight);
-    return () => window.removeEventListener("resize", handleHeight);
-  }, []);
 
   //Items in header section will be get from items that we have import from static data, which is in form of array, so here our work is only to map that items at their respective positions
   //Search Component is separately created to handle it easy in responsiveness
@@ -88,7 +104,10 @@ export default function Header({
                 <item.icon className="text-text text-2xl" />
               </div>
             ))}
-          <Link to={items[1].path}>
+          <Link
+            to={items[1].path}
+            onClick={() => dispatch(setSearchStatus(false))}
+          >
             <img
               src={logo}
               alt={items[1].name}
@@ -96,7 +115,20 @@ export default function Header({
             />
           </Link>
         </article>
-        {screenSize.width >= 768 && <Search items={items} />}
+        {screenSize.width >= 768 ? (
+          <Search items={items} />
+        ) : (
+          <div className="flex items-center w-full justify-end">
+            <div
+              className="flex items-center rounded-full p-2 bg-border icon"
+              onClick={() => {
+                setShowSearch(true);
+              }}
+            >
+              <LuSearch className="text-xl" />
+            </div>
+          </div>
+        )}
         <article className="flex gap-4 items-center text-text">
           <p
             onClick={() => setIsDark(!isDark)}
@@ -112,7 +144,7 @@ export default function Header({
           {login
             ? items.slice(-4, -1).map((item) =>
                 item.name.toLowerCase() == "create" ? (
-                  screenSize.width > 380 && (
+                  screenSize.width > 430 && (
                     <Link
                       to={item.path}
                       key={`header/item/${item.id}`}
@@ -120,7 +152,7 @@ export default function Header({
                       title={item.name}
                     >
                       <item.icon className="text-2xl icon" />
-                      {screenSize.width > 420 && (
+                      {screenSize.width > 500 && (
                         <span className="whitespace-nowrap">{item.name}</span>
                       )}
                     </Link>
@@ -160,13 +192,21 @@ export default function Header({
                             {user.firstname} {user.lastname}
                           </strong>
                         )}
+                        {screenSize.width <= 380 && (
+                          <Link
+                            to={"/notification"}
+                            className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
+                          >
+                            Notifications
+                          </Link>
+                        )}
                         <Link
                           to={"/post/view"}
                           className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
                         >
                           My Posts
                         </Link>
-                        {screenSize.width <= 380 && (
+                        {screenSize.width <= 430 && (
                           <Link
                             to={"/post/create"}
                             className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
@@ -190,13 +230,15 @@ export default function Header({
                     )}
                   </div>
                 ) : (
-                  <Link
-                    to={item.path}
-                    key={`header/item/${item.id}`}
-                    className="relative flex items-center"
-                  >
-                    <item.icon className={`text-2xl icon`} />
-                  </Link>
+                  screenSize.width > 380 && (
+                    <Link
+                      to={item.path}
+                      key={`header/item/${item.id}`}
+                      className="relative flex items-center"
+                    >
+                      <item.icon className={`text-2xl icon`} />
+                    </Link>
+                  )
                 )
               )
             : items.slice(-1).map((item) => (
@@ -211,6 +253,12 @@ export default function Header({
               ))}
         </article>
       </article>
+      <CategorySlider />
+      {showSearch && (
+        <article className="absolute self-center justify-self-center flex items-center justify-center py-2 px-4 bg-bgprimary w-full h-full z-10">
+          <Search items={items} setShowSearch={setShowSearch} />
+        </article>
+      )}
     </header>
   );
 }
