@@ -11,34 +11,45 @@ import { addChannel } from "../../store/Slices/channelSlice.js";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import useApi from "../../hooks/Api.jsx";
 export default function CreateChannel() {
-  const { setSidebarToggle } = useOutletContext();
+  const { setSidebarToggle } = useOutletContext(); //taking props that is provided to outlet
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, sendRequest } = useApi();
+  const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
+
+  //store message to show user
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
-  const [handlerAvailability, setHandlerAvailability] = useState(false);
-  const [channelName, setChannelName] = useState("");
-  const [channelHandler, setChannelHandler] = useState("");
-  const [channelBanner, setChannelBanner] = useState(null);
-  const [channelPicture, setChannelPicture] = useState(null);
-  const [preview, setPreview] = useState({
-    banner: dummyUpload,
-    picture: dummyUpload,
-  });
-  const [channelDescription, setChannelDescription] = useState("");
-  useEffect(() => {
-    setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
-  }, [setSidebarToggle]);
+  // & this function reflect the message to user
   const showInfoFunc = (color, message) => {
     setShowInfo({ status: true, message, color });
     setTimeout(() => {
       setShowInfo({ status: false, message: "", color: "" });
     }, 4000);
   };
+  //state that manage the use availability
+  const [handlerAvailability, setHandlerAvailability] = useState(false);
+
+  //state to manage for data
+  const [channelName, setChannelName] = useState("");
+  const [channelHandler, setChannelHandler] = useState("");
+  const [channelBanner, setChannelBanner] = useState(null);
+  const [channelPicture, setChannelPicture] = useState(null);
+
+  //state that preview to banner and picture
+  const [preview, setPreview] = useState({
+    banner: dummyUpload,
+    picture: dummyUpload,
+  });
+  const [channelDescription, setChannelDescription] = useState("");
+  //Handle sidebar nature
+  useEffect(() => {
+    setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+  }, [setSidebarToggle]);
+
+  // handler validation
   const validateHandler = (name) => {
     const HANDLER_REGEX = /^@[a-z0-9._-]{3,30}$/;
     if (!name.startsWith("@")) {
@@ -52,7 +63,7 @@ export default function CreateChannel() {
     }
     return true;
   };
-
+  //form validation
   const validateData = () => {
     // 1. Channel Name
     if (!channelName || channelName.trim().length < 4) {
@@ -80,6 +91,7 @@ export default function CreateChannel() {
     return validateHandler(channelHandler);
   };
 
+  //form submission after all field validation completes, on success response adding channel at reduc channel slice items and also update channel array at user Slice and setting state to their initial state.
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Only proceed if validateData returns TRUE
@@ -117,6 +129,8 @@ export default function CreateChannel() {
         URL.revokeObjectURL(preview.picture);
       });
   };
+
+  //send request to check weather handler exist or not
   const checkhandlerAvailabilty = async (e) => {
     e.preventDefault();
     if (!validateHandler(channelHandler)) {
@@ -131,7 +145,7 @@ export default function CreateChannel() {
         }
       }
     );
-  };
+  }; //Form that collect information that required to create a channel,extra thing used - used URL.createObjectURL() to preview picture nad banner
   return (
     <section className="text-text flex flex-col gap-4 p-2 md:p-4">
       <h1 className="text-2xl md:text-3xl text-center font-medium font-serif py-4 md:py-8">

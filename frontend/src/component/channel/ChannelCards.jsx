@@ -9,6 +9,7 @@ import Loading from "../other/Loading.jsx";
 export default function ChannelCards({ channel }) {
   const dispatch = useDispatch();
   const { loading, sendRequest } = useApi();
+  //send request to handle delete of channels, on successful response redux channel slice items array will be updated
   const handleDelete = async () => {
     await sendRequest(`delete_channel/${channel._id}`, "DELETE").then(
       (result) => {
@@ -20,6 +21,7 @@ export default function ChannelCards({ channel }) {
       }
     );
   };
+  //Card that will be show the basic channel info like banner images ,total posts,subscribers
   return loading ? (
     <div className="w-ful h-full flex items-center justify-center">
       <Loading />

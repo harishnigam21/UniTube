@@ -481,30 +481,35 @@ const videoSlice = createSlice({
     nextCursor: null,
   },
   reducers: {
-    addCategory: (state, action) => {
-      state.filterItems.category = [
-        ...state.filterItems.category,
-        action.payload.data,
-      ];
-    },
+    // addCategory: (state, action) => {
+    //   state.filterItems.category = [
+    //     ...state.filterItems.category,
+    //     action.payload.data,
+    //   ];
+    // },
+    //reducer that manages the payload enter in search field
     setSearchItems: (state, action) => {
       state.searchItems = state.items.filter((post) =>
         post.title.toLowerCase().includes(action.payload.search.toLowerCase())
       );
     },
+    //reducer change status of search item to show or not
     setSearchStatus: (state, action) => {
       state.searchStatus = action.payload.status;
       if (!action.payload.status) {
         state.searchItems = [];
       }
     },
+    //replacing current item with the new payload along with cursor
     setItems: (state, action) => {
       state.items = action.payload.posts;
       state.nextCursor = action.payload.nextCursor;
     },
+    //updating category array, as per response got from backend
     setCategories: (state, action) => {
       state.itemsCategories = ["All", ...action.payload.categories];
     },
+    //Adding item to current item, when load more button triggers
     addItems: (state, action) => {
       const incomingPosts = action.payload.posts || [];
       const existingIds = new Set(state.items.map((i) => i._id));
@@ -514,12 +519,15 @@ const videoSlice = createSlice({
       state.items = [...state.items, ...uniquePosts];
       state.nextCursor = action.payload.nextCursor;
     },
+    //Replacing selected post in main player page info here
     setSelectedItem: (state, action) => {
       state.selectedItem = action.payload.selectedItem;
     },
+    //Replacing selected post comment in main player page
     setSelectedItemComment: (state, action) => {
       state.selectedItemComment = action.payload.selectedItemComment;
     },
+    // reducer to add comment, same tree structure will be form here, as we have done in backend.
     addItemComment: (state, action) => {
       const { newComment } = action.payload;
       const flatten = (nodes) => {
@@ -546,6 +554,7 @@ const videoSlice = createSlice({
 
       state.selectedItemComment = root;
     },
+    //deleting comment, comment can be top level ad nested also, nested comment will be handled recursively
     deleteItemComment: (state, action) => {
       const { commentIdToDelete } = action.payload;
       const removeRecursive = (comments, id) => {
@@ -564,6 +573,7 @@ const videoSlice = createSlice({
       };
       removeRecursive(state.selectedItemComment, commentIdToDelete);
     },
+    //updating comment, comment can be top level ad nested also, nested comment will be handled recursively
     updateItemComment: (state, action) => {
       const { commentId, updatedText } = action.payload;
 

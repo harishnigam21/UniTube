@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SlideBarItem from "./SlideBarItem";
 export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
   const barRef = useRef(null);
+  //sidebar variation for different component to manage responsiveness of component
   useEffect(() => {
     if (barRef.current) {
       if (sidebarToggle.type == "type2") {
@@ -16,7 +17,8 @@ export default function SlideBar({ navToggle, sidebarToggle, setNavToggle }) {
       }
     }
   }, [sidebarToggle, setNavToggle]);
-
+  // Same as Header component, all items os sidebar is got from static data and then mapped here
+  //Separated Item component to manage their toggle within state
   return (
     <AnimatePresence>
       {sidebarToggle.status && (

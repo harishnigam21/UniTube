@@ -9,24 +9,29 @@ import { changeLoginStatus, newUser } from "../../store/Slices/userSlice";
 import useApi from "../../hooks/Api";
 export default function SignIn() {
   const dispatch = useDispatch();
-  const { loading, sendRequest } = useApi();
+  const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
+  //state that manges form data
   const [userCredentials, setUserCredentials] = useState({
     email: "",
     password: "",
   });
+  //state manages password to plain txt and plain txt to password
   const [passwordStatus, setPasswordStatus] = useState(false);
+  //state used to store message
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
-  const navigate = useNavigate();
+  // & function that shows this messages
   const showInfoFunc = (color, message) => {
     setShowInfo({ status: true, message, color });
     setTimeout(() => {
       setShowInfo({ status: false, message: "", color: "" });
     }, 4000);
   };
+  const navigate = useNavigate();
+  //form fields validations
   const validate = () => {
     //  Email: Standard RFC format
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -39,12 +44,14 @@ export default function SignIn() {
     }
     return true;
   };
-
+  //form submission, on successful response userInfo will be stored in userSlice and access token will be stored in localstorage
   const handleSubmit = async (e) => {
     e.preventDefault();
+    //form validation
     if (!validate()) {
       return;
     }
+    //sending request to the backend to verify user
     await sendRequest(
       "login",
       "POST",
@@ -80,9 +87,12 @@ export default function SignIn() {
       }
     });
   };
+  //checking for user system default theme
   const [isDark, setIsDark] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches
   );
+
+  //A form with two fields email and password,on input change, onChange event handler is used which change their default value state with e.target.value
   return (
     <section className="w-screen h-screen bg-bgprimary box-border flex flex-col justify-center items-center p-8 text-text">
       <Link to={"/"}>

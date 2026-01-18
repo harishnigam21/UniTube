@@ -9,7 +9,6 @@ export default function LoadMore({ nextCursor, loading }) {
     const params = new URLSearchParams();
     if (categoryParams) params.append("category", categoryParams);
     if (nextCursor) params.append("cursor", nextCursor);
-
     // replace: true prevents filling the history with dozens of "pages" of the same list
     navigate(`?${params.toString()}`, { replace: true });
   };

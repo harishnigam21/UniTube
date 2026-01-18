@@ -26,6 +26,8 @@ export default function VideoInteractiveBar({
   const [like, setLike] = useState(likes);
   const [subscribers, setSubscribers] = useState(subscriber);
   const [isSubscribe, setIsSubscribe] = useState(isSubscribed);
+
+  //dynamic area that view as per screen size
   const dynaBtn = [
     { icon: RiShareForwardLine, name: "Share", number: "", work: "" },
     { icon: FaRegBookmark, name: "Save", number: "", work: "" },
@@ -34,20 +36,25 @@ export default function VideoInteractiveBar({
     { icon: MdOutlinedFlag, name: "Report", number: "", work: "" },
   ];
   const dynaBtnRef = useRef(null);
+  const [dynaBtnRange, setDynaBtnRange] = useState(dynaBtn.length);
+
+  //ref for like and dislike icons to change element properties
   const likeRef = useRef(null);
   const dislikeRef = useRef(null);
-  const [dynaBtnRange, setDynaBtnRange] = useState(dynaBtn.length);
+  //set dynamic button range to view within viewport
   const handleAlignment = () => {
     if (dynaBtnRef.current) {
       let need = dynaBtnRef.current.getBoundingClientRect();
       setDynaBtnRange(need.width >= 580 ? 3 : need.width >= 320 ? 2 : 1);
     }
   };
+  // handleAlignment function triggers whenever resize occurs
   useEffect(() => {
     handleAlignment();
     window.addEventListener("resize", handleAlignment);
     return () => window.removeEventListener("resize", handleAlignment);
   }, []);
+  // send Request to like post and remove like from post, and on successful response update like number with received like number in redux store
   const handleLike = async () => {
     await sendRequest(`like/${postid}`, "PATCH").then((result) => {
       const data = result?.data;
@@ -71,6 +78,7 @@ export default function VideoInteractiveBar({
       }
     });
   };
+  // send Request to dislike post and remove dislike from post, and on successful response update like number with received like number in redux store
   const handleDisLike = async () => {
     await sendRequest(`dislike/${postid}`, "PATCH").then((result) => {
       const data = result?.data;
@@ -94,6 +102,7 @@ export default function VideoInteractiveBar({
       }
     });
   };
+  // send Request to subscribe channel and unsubscribe channel
   const handleSubscribe = async () => {
     await sendRequest(`new_subscriber/${channelid}`, "PATCH").then((result) => {
       const data = result?.data;
@@ -103,6 +112,8 @@ export default function VideoInteractiveBar({
       }
     });
   };
+
+  //A component with interactive items such as like, dislike, subscribe and others //TODO which will be active later, just not required 
   return (
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">
       <div className="flex items-center gap-4">

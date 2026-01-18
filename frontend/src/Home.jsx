@@ -18,14 +18,17 @@ export default function Home() {
   const nextCursor = useSelector((store) => store.videos.nextCursor);
   const categories = useSelector((store) => store.videos.itemsCategories);
   const searchStatus = useSelector((store) => store.videos.searchStatus);
+  //getting post from redux store based on condition of search field
   const video = useSelector((store) =>
     searchStatus ? store.videos.searchItems : store.videos.items
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  //this two params are optional, getting it every time, when navigating to this page
   const cursorParams = searchParams.get("cursor");
   const categoryParams = searchParams.get("category");
+  //send request to backend to get post based on query parameters if available, this will called on page load and when Load more button will click
   const handlePostFetch = async () => {
     const params = new URLSearchParams();
     if (categoryParams) params.append("category", categoryParams);
@@ -52,9 +55,11 @@ export default function Home() {
       dispatch(setCategories({ categories: data?.categories }));
     }
   };
+  //calling it initially when page loads and whenever params changes
   useEffect(() => {
     handlePostFetch();
   }, [searchParams]);
+  ////changing sidebar nature for this page
   useEffect(() => {
     screenSize.width >= 768
       ? setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }))
@@ -72,13 +77,14 @@ export default function Home() {
       scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
-
+//Component with filter category buttons, posts and load more button if more post available
   return (
     <section className="flex flex-col gap-3 px-2 h-screen w-full overflow-y-auto overflow-x-hidden">
       {loading && video.length == 0 ? (
         <HomeSkeleton />
       ) : (
         <article className="flex flex-col w-full">
+          {/* all category fetched along with post so whenever new category comes it updates the array at redux store and that array will be mapped here*/}
           <article className="w-full flex flex-wrap sticky bg-bgprimary top-0 z-10 py-5 px-2 overflow-x-auto noscrollbar gap-4">
             {categories &&
               categories.map((categ, index) => (

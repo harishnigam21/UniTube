@@ -15,6 +15,7 @@ export default function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [navToggle, setNavToggle] = useState(false);
+  //changing sidebar nature for this page
   const [sidebarToggle, setSidebarToggle] = useState({
     status: true,
     type: "type1",
@@ -23,6 +24,7 @@ export default function App() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  //getting userInfo at every refresh and assigning new access token to local storage and userInfo to redux store
   useEffect(() => {
     sendRequest("refresh", "GET").then((result) => {
       if (result && result.success) {
@@ -39,6 +41,7 @@ export default function App() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  //TODO:Currently we don't have any functionality for shorts, so it is for dummy purpose for later use
   const [short, setShort] = useState([
     {
       id: "s1",
@@ -369,6 +372,7 @@ export default function App() {
   ]);
   return (
     <main className="flex relative flex-col box-border ">
+      {/* header`` */}
       <Header
         navToggle={navToggle}
         screenSize={screenSize}
@@ -383,6 +387,7 @@ export default function App() {
           screenSize={screenSize}
         />
         <article className="flex flex-col w-full max-w-full pt-13">
+          {/* all children route of App will be handle by this Outlet */}
           {screenSize.width < 768 && (
             <article className="flex items-center justify-center py-2 px-4">
               <Search items={items} />

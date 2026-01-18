@@ -16,8 +16,9 @@ export default function Video() {
   const { setSidebarToggle, screenSize } = useOutletContext();
   const VideoInfo = useSelector((store) => store.videos.selectedItem);
   const [searchParams] = useSearchParams();
-  const videoId = searchParams.get("v");
+  const videoId = searchParams.get("v"); //getting video id from url
 
+  //send request to get detailed information about video, on successful response this video info will be stored redux store.
   useEffect(() => {
     sendRequest(`post/${videoId}`, "GET").then((result) => {
       const data = result?.data;
@@ -31,10 +32,12 @@ export default function Video() {
     });
   }, [dispatch, videoId, sendRequest]);
 
+  //handle sidebar behavior
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
 
+  // This component is parent and created children component to handle this components better
   return loading && Object.keys(VideoInfo).length === 0 ? (
     <div className="flex w-screen h-screen justify-center items-center">
       <Loading />
@@ -47,6 +50,7 @@ export default function Video() {
       <article className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-4 text-text px-5">
         <article className="flex flex-col gap-4 justify-center self-start w-full">
           <strong className="text-xl">{VideoInfo.title}</strong>
+          {/* like, dislike, subscribe and others.... */}
           <VideoInteractiveBar
             postid={VideoInfo._id}
             channelid={VideoInfo.channel_id?._id}

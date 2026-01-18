@@ -10,14 +10,24 @@ import useApi from "../../hooks/Api";
 import Loading from "../other/Loading";
 export default function CreatePost() {
   const { setSidebarToggle } = useOutletContext();
-  const { loading, sendRequest } = useApi();
+  const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
   const navigate = useNavigate();
+  //store message to show user
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
+  // & this function reflect the message to user
+  const showInfoFunc = (color, message) => {
+    setShowInfo({ status: true, message, color });
+    setTimeout(() => {
+      setShowInfo({ status: false, message: "", color: "" });
+    }, 4000);
+  };
+  //state to store channel handler, will be fetch
   const [channel, setChannels] = useState([]);
+  //Form fields
   const [postInfo, setPostInfo] = useState({
     channel_id: null,
     title: "",
@@ -31,6 +41,7 @@ export default function CreatePost() {
   });
   const [tag, setTag] = useState("");
   const [detail, setDetail] = useState({ key: "", value: "" });
+  //allowed typres
   const typeAllowed = [
     "video",
     "Short",
@@ -39,19 +50,14 @@ export default function CreatePost() {
     "live",
     "podcast",
   ];
+  //default handler
   const [handler, setHandler] = useState("select");
+  //to preview thumbnail and videoURL
   const [preview, setPreview] = useState({
     thumbnail: dummyUpload,
     video: dummyUpload,
   });
-
-  const showInfoFunc = (color, message) => {
-    setShowInfo({ status: true, message, color });
-    setTimeout(() => {
-      setShowInfo({ status: false, message: "", color: "" });
-    }, 4000);
-  };
-
+  //form field validation
   const validateData = () => {
     // Title
     if (!postInfo.title || postInfo.title.trim().length < 4) {
@@ -94,9 +100,11 @@ export default function CreatePost() {
     }
     return true;
   };
+  //set sidebar nature for this component
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
+  //send request to get a channels that will be list in fields
   useEffect(() => {
     sendRequest("my_channels", "GET").then((result) => {
       const data = result?.data;
@@ -110,6 +118,7 @@ export default function CreatePost() {
       }
     });
   }, [navigate, sendRequest]);
+  //send request to create post only after validation completed
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Only proceed if validateData returns TRUE
@@ -154,7 +163,7 @@ export default function CreatePost() {
         URL.revokeObjectURL(preview.video);
       });
   };
-
+  // Form with field required to create a new post, input used like text,file,radio. and onchange their respective changes to target value
   return channel.length > 0 ? (
     <section className="text-text flex flex-col gap-4 p-8 md:p-4">
       <h1 className="text-2xl md:text-3xl text-center font-medium font-serif py-4 md:py-8">
@@ -350,7 +359,7 @@ export default function CreatePost() {
                   }));
                   setPreview((prev) => ({
                     ...prev,
-                    video: `${URL.createObjectURL(e.target.files[0])}#0.5`,
+                    video: `${URL.createObjectURL(e.target.files[0])}#1.5`,
                   }));
                 }}
               />

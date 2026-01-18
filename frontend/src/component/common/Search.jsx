@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSearchItems, setSearchStatus } from "../../store/Slices/videoSlice";
 import { ImCross } from "react-icons/im";
+//Currently this search component only manages local search.
+//TODO:handle searches from backend as we done for category, currently not required.
 export default function Search({ items }) {
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
@@ -22,6 +24,7 @@ export default function Search({ items }) {
               onChange={(e) => setSearch(e.target.value)}
             />
             <div className="flex items-center absolute right-0 h-full">
+              {/* Changing search status to show search item at home page */}
               <div
                 className="flex items-center icon mx-2"
                 onClick={() => {
@@ -33,6 +36,7 @@ export default function Search({ items }) {
               </div>
               <div
                 className="flex items-center bg-border h-full icon"
+                // when this icon is clicked search item will be clear and all item will be mapped
                 onClick={() => {
                   dispatch(setSearchItems({ search: search }));
                   dispatch(setSearchStatus({ status: true }));

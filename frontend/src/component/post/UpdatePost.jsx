@@ -15,6 +15,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
     message: "",
     color: "white",
   });
+  //for field states
   const [postInfo, setPostInfo] = useState({
     channel_id: vid.channel_id,
     category: vid.category,
@@ -28,9 +29,11 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
         ? vid.details
         : {},
   });
+  //for initial preview
   const [preview, setPreview] = useState({
     thumbnail: vid.thumbnail,
   });
+  //when older thumbnail is replaced
   const [previewUrl, setPreviewUrl] = useState("");
   useEffect(() => {
     if (!preview.thumbnail) {
@@ -46,14 +49,14 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
   }, [preview.thumbnail]);
   const [tag, setTag] = useState("");
   const [detail, setDetail] = useState({ key: "", value: "" });
-
+  //show message to user
   const showInfoFunc = (color, message) => {
     setShowInfo({ status: true, message, color });
     setTimeout(() => {
       setShowInfo({ status: false, message: "", color: "" });
     }, 4000);
   };
-
+  // form field validation
   const validateData = () => {
     // 1. Identify "dirty" fields (fields that changed from original 'vid')
     const changedFields = Object.keys(postInfo).filter((key) => {
@@ -98,9 +101,12 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
 
     return true; // Passed validation
   };
+  //switch sidebar nature
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
+  //sending request to update post, only after validation completed
+  // only sending field which are changed****
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Only proceed if validateData returns TRUE

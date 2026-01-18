@@ -16,15 +16,23 @@ import useApi from "../../hooks/Api";
 export default function Comment({ comm, postid }) {
   const { sendRequest } = useApi();
   const dispatch = useDispatch();
+  //ref for like and dislike
   const likeRef = useRef(null);
   const dislikeRef = useRef(null);
+  //state that manages reply toggle
   const [toggleReply, setToggleReply] = useState(false);
+  //state that manage toggle for replies of their children comments
   const [toggleReplies, setToggleReplies] = useState(false);
+  //state that manage comment option to show or not, options like edit and delete
   const [commentOption, seCommentOption] = useState(false);
+  //State that manage update section when user tries to update comment
   const [showUpdateSection, setShowUpdateSection] = useState(false);
+  //state to keep track of updated text while updating
   const [updateCommentTxt, setUpdateCommentTxt] = useState(comm.commentText);
+  //taking user from userSlice
   const user = useSelector((store) => store.user.userInfo);
   const [like, setLike] = useState(comm && comm.likes ? comm.likes : 0);
+  //send request to update comment by sending comment id, on successful update redux slice will also update
   const handleEdit = async () => {
     if (updateCommentTxt.length > 1) {
       await sendRequest(`comment/${comm._id}`, "PATCH", {
@@ -43,6 +51,7 @@ export default function Comment({ comm, postid }) {
       });
     } //TODO:handle if input field is empty
   };
+  //send request to delete comment by sending comment id, on successful update redux slice will also update
   const handleDelete = async () => {
     await sendRequest(`comment/${comm._id}`, "DELETE").then((result) => {
       if (result && result.success) {
@@ -51,7 +60,7 @@ export default function Comment({ comm, postid }) {
     });
   };
   const handleReport = async () => {}; //TODO:Complete it later, currently not necessary
-
+  //send request to update comment like by sending comment id, on successful update redux slice will also update
   const handleLike = async () => {
     await sendRequest(`clike/${comm._id}`, "PATCH").then((result) => {
       const data = result?.data;
@@ -75,6 +84,7 @@ export default function Comment({ comm, postid }) {
       }
     });
   };
+  //send request to update comment dislike by sending comment id, on successful update redux slice will also update
   const handleDisLike = async () => {
     await sendRequest(`cdislike/${comm._id}`, "PATCH").then((result) => {
       const data = result?.data;

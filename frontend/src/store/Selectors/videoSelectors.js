@@ -2,7 +2,8 @@ import { createSelector } from "@reduxjs/toolkit";
 const selectItems = (state) => state.videos.items;
 const selectCategory = (state) => state.videos.filterItems.category;
 const selectSearch = (state) => state.videos.filterItems.search;
-
+//Currently not using this selector
+//TODO:Using this selector later, to get post for user as per their interest and recommendation
 export const interestItems = createSelector(
   [selectItems, selectCategory, selectSearch],
   (items, categories, searches) => {
@@ -33,7 +34,7 @@ export const interestItems = createSelector(
     });
   }
 );
-
+//array of interested post sort over their views,likes and subscribe
 export const recommendedItems = createSelector([interestItems], (items) => {
   return [...items].sort((a, b) => {
     //ranking videos

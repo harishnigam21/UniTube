@@ -18,6 +18,7 @@ export default function PostComment({
   const dispatch = useDispatch();
   const [showBtn, setShowBtn] = useState(false);
   const [commentIpt, setCommentIpt] = useState("");
+  //send request to add comment on successful response, redux videoSlice is also updated with new comment
   const handleCommentPost = async () => {
     if (commentIpt.length > 1) {
       await sendRequest(`comment/${postid}`, "POST", {
@@ -35,9 +36,10 @@ export default function PostComment({
       });
     } //TODO:handle for field with 0 length
   };
+  //sub component of comment component which is mapped when user tries to add comment, having input field of type text to get comment and some button for interaction.
+  //TODO : emoji section will be handle later not necessary now
   return (
     <article className="flex gap-4 items-center w-full">
-      {/* //TODO: Replace below div with signed user profile image*/}
       <div
         className={`w-${size} h-${size} rounded-full overflow-hidden border flex items-center justify-center`}
       >

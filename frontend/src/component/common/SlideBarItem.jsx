@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
-
+//Side bar Item component, this are mapped with their nested item.
+//TODO : If nested Item increases then switch it to recursive method of calling Item component.
 export default function SlideBarItem({ item, navToggle, motion }) {
   const [show, setShow] = useState(false);
   return (

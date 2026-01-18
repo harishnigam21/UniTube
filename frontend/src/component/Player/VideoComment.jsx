@@ -11,8 +11,9 @@ import useApi from "../../hooks/Api";
 export default function VideoComment({ postid }) {
   const { loading, sendRequest } = useApi();
   const [toggleReply, setToggleReply] = useState(false);
-  const comments = useSelector((store) => store.videos.selectedItemComment);
+  const comments = useSelector((store) => store.videos.selectedItemComment); //getting comment from store, where comments are assigned on page load using useEffect
   const dispatch = useDispatch();
+  //sending request to get comment of this post, on successful response comment is added to redux store.
   useEffect(() => {
     sendRequest(`comment/${postid}`, "GET").then((result) => {
       const data = result?.data;
@@ -21,6 +22,7 @@ export default function VideoComment({ postid }) {
       }
     });
   }, [postid, dispatch, sendRequest]);
+  //All comment are mapped with Comment component and to post used postcomment component
   return loading ? (
     <div className="flex w-screen h-screen justify-center items-center">
       <Loading />

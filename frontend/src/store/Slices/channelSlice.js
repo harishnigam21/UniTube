@@ -7,11 +7,14 @@ const channelSlice = createSlice({
   },
   reducers: {
     setChannel: (state, action) => {
+      //replacing current channel with payload items
       state.items = action.payload.items;
     },
     setSelectedChannel: (state, action) => {
+      //replacing current selectedchannelItems with payload items
       state.selectedItems = action.payload.items;
     },
+    //Checking for post availability in channel if available then delete and also updating post count
     deleteSelectedChannelItem: (state, action) => {
       const id = action.payload.id;
       const type = action.payload.type;
@@ -32,6 +35,7 @@ const channelSlice = createSlice({
         console.log("Unable to get totalPosts");
       }
     },
+    //response will return whole object so just replacing old with new one
     updateSelectedChannelItem: (state, action) => {
       const updatedData = action.payload.data; // Full object containing _id
       if (state.selectedItems[updatedData.type]) {
@@ -46,12 +50,15 @@ const channelSlice = createSlice({
         });
       }
     },
+    //adding new channel to items
     addChannel: (state, action) => {
       state.items = state.items.push(action.payload.item);
     },
+    //deleting channel from item based on id
     deleteChannel: (state, action) => {
       state.items = state.items.filter((item) => item._id != action.payload.id);
     },
+
     updateChannel: (state, action) => {
       const toUpdate = action.payload.items;
       for (const key in toUpdate) {
@@ -60,6 +67,7 @@ const channelSlice = createSlice({
         }
       }
     },
+    //Updating subscribe toggle based on response
     updateSelectedChannelSubscribe: (state, action) => {
       if (state.selectedItems.isSubscribed) {
         if (state.selectedItems.subscribers >= 1) {

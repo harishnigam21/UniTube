@@ -13,15 +13,18 @@ import useApi from "../../hooks/Api";
 import Loading from "../other/Loading";
 
 export default function Channel() {
-  const { loading, sendRequest } = useApi();
-  const { setSidebarToggle } = useOutletContext();
-  const [fieldSelected, setFieldSelected] = useState("home");
+  const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
+  const { setSidebarToggle } = useOutletContext(); //taking props that is provided to outlet
+  const [fieldSelected, setFieldSelected] = useState("home"); // State that will be used to take key of post type and perform hover animation or any other
+  //this field array is used to map the post types
   const fieldListed = ["home", "video", "short", "live", "podcast", "playlist"];
+  //state that manages description toggle
   const [showDescription, setShowDescription] = useState(false);
   const params = useParams();
   const dispatch = useDispatch();
+  //getting selected channel data from redux store
   const selectedChannel = useSelector((store) => store.channels.selectedItems);
-
+  //Fetch Channel data from backend and successful response data will be stored in redux store at channel slice
   useEffect(() => {
     sendRequest(`channel/${params.handler}`, "GET").then((result) => {
       const data = result?.data;
@@ -30,9 +33,11 @@ export default function Channel() {
       }
     });
   }, [dispatch, params.handler, sendRequest]);
+  //Handle sidebar nature
   useEffect(() => {
     setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
   }, [setSidebarToggle]);
+  //Send Request of subscribe, on successful response data will be updated at redux store also
   const handleSubscribe = async () => {
     await sendRequest(`new_subscriber/${selectedChannel._id}`, "PATCH").then(
       (result) => {

@@ -10,6 +10,7 @@ export default function ViewChannel() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const channels = useSelector((store) => store.channels.items);
+  //send Request to get limited channel information for channel preview purpose only, on successful response also update made on redux store
   useEffect(() => {
     const getChannels = async () => {
       setLoading(true);
@@ -38,6 +39,7 @@ export default function ViewChannel() {
     };
     getChannels();
   }, [dispatch]);
+  //receiving data will be array so,here Channel Card component is used, which is mapped with unique key, & this component is passed with props that include all needed information about channel
   return loading ? (
     <p className="text-red-500 text-center text-2xl">Loading</p>
   ) : (

@@ -12,7 +12,7 @@ import { SlLike } from "react-icons/sl";
 import { GoVideo } from "react-icons/go";
 import { AiFillHome } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
-
+//all items for sidebar
 const items = [
   { id: 0, name: "Home", icon: AiFillHome, path: "/home" },
   { id: 1, name: "Shorts", icon: SiYoutubeshorts, path: "/Shorts" },

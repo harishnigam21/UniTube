@@ -4,7 +4,8 @@ import logoDark from "../../assets/images/logo-dark.png";
 import logoLight from "../../assets/images/logo-light.png";
 import useApi from "../../hooks/Api";
 export default function SignUp() {
-  const { sendRequest, loading } = useApi();
+  const { sendRequest, loading } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
+  //state that manges form data
   const [userCredentials, setUserCredentials] = useState({
     firstname: "",
     middlename: "",
@@ -16,19 +17,21 @@ export default function SignUp() {
     password: "",
     cnfPassword: "",
   });
+  //state used to store message
   const [showInfo, setShowInfo] = useState({
     status: false,
     message: "",
     color: "white",
   });
-  const navigate = useNavigate();
-
+  // & function that shows this messages
   const showInfoFunc = (color, message) => {
     setShowInfo({ status: true, message, color });
     setTimeout(() => {
       setShowInfo({ status: false, message: "", color: "" });
     }, 4000);
   };
+  const navigate = useNavigate();
+  //form fields validations
   const validate = () => {
     //  Names: Only alphabets allowed
     const nameRegex = /^[A-Za-z]+$/;
@@ -156,9 +159,11 @@ export default function SignUp() {
 
     return true;
   };
+  //checking for user system default theme
   const [isDark, setIsDark] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches
   );
+  //sending request to the backend to store user information after field validation
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
@@ -196,6 +201,7 @@ export default function SignUp() {
       }
     );
   };
+  //form with fields, max are mandatory as per user criteria, on input change, onChange event handler is used which change their default value state with e.target.value
   return (
     <section className="w-screen h-screen box-border flex flex-col min-[480px]:justify-center items-center p-8 overflow-y-scroll text-text">
       <Link to={"/"}>
@@ -226,7 +232,7 @@ export default function SignUp() {
                 First Name
               </label>
               <input
-                type="first_name"
+                type="text"
                 name="first_name"
                 id="first_name"
                 value={userCredentials.firstname}
@@ -250,7 +256,7 @@ export default function SignUp() {
                 Middle Name
               </label>
               <input
-                type="middle_name"
+                type="text"
                 name="middle_name"
                 id="middle_name"
                 value={userCredentials.middlename}
@@ -272,7 +278,7 @@ export default function SignUp() {
                 Last Name
               </label>
               <input
-                type="last_name"
+                type="text"
                 name="last_name"
                 id="last_name"
                 value={userCredentials.lastname}
@@ -352,7 +358,7 @@ export default function SignUp() {
                 Mobile No.
               </label>
               <input
-                type="mobile_no"
+                type="text"
                 name="mobile_no"
                 id="mobile_no"
                 value={userCredentials.mobileno}

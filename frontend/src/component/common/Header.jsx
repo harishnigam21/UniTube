@@ -46,6 +46,7 @@ export default function Header({
       setHeaderHeight(need.height);
     }
   };
+  //send Request for logout after successful response access token will be deleted from localstorage
   const handleLogout = async () => {
     await sendRequest("logout", "GET").then((result) => {
       if (result && result.success) {
@@ -54,11 +55,15 @@ export default function Header({
       }
     });
   };
+  //using above headerHeight state to keep track of header height when resize occurs
   useEffect(() => {
     handleHeight();
     window.addEventListener("resize", handleHeight);
     return () => window.removeEventListener("resize", handleHeight);
   }, []);
+
+  //Items in header section will be get from items that we have import from static data, which is in form of array, so here our work is only to map that items at their respective positions
+  //Search Component is separately created to handle it easy in responsiveness
   return (
     <header
       ref={headerRef}
@@ -107,17 +112,19 @@ export default function Header({
           {login
             ? items.slice(-4, -1).map((item) =>
                 item.name.toLowerCase() == "create" ? (
-                  <Link
-                    to={item.path}
-                    key={`header/item/${item.id}`}
-                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-border icon"
-                    title={item.name}
-                  >
-                    <item.icon className="text-2xl icon" />
-                    {screenSize.width > 420 && (
-                      <span className="whitespace-nowrap">{item.name}</span>
-                    )}
-                  </Link>
+                  screenSize.width > 380 && (
+                    <Link
+                      to={item.path}
+                      key={`header/item/${item.id}`}
+                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-border icon"
+                      title={item.name}
+                    >
+                      <item.icon className="text-2xl icon" />
+                      {screenSize.width > 420 && (
+                        <span className="whitespace-nowrap">{item.name}</span>
+                      )}
+                    </Link>
+                  )
                 ) : item.name == "profile" ? (
                   <div
                     key={`header/item/${item.id}`}
@@ -127,7 +134,7 @@ export default function Header({
                       <img
                         src={`${import.meta.env.VITE_BACKEND_HOST}/${user.pic}`}
                         alt="userpic"
-                        className="w-10 aspect-square rounded-full icon"
+                        className="min-w-10 max-w-10 aspect-square rounded-full icon"
                         onClick={() => {
                           setExpandProfile((prev) => !prev);
                         }}
@@ -159,6 +166,14 @@ export default function Header({
                         >
                           My Posts
                         </Link>
+                        {screenSize.width <= 380 && (
+                          <Link
+                            to={"/post/create"}
+                            className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"
+                          >
+                            Create Post
+                          </Link>
+                        )}
                         <Link
                           to={"/channel/view"}
                           className="icon py-2 px-8 hover:bg-border self-center justify-self-center w-full transition-all"

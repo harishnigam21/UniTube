@@ -87,6 +87,7 @@ export const getPost = async (req, res) => {
           duration: 1,
           user_id: { firstname: 1, lastname: 1 },
           channel_id: {
+            _id: 1,
             channelPicture: 1,
             channelName: 1,
             channelHandler: 1,

@@ -12,6 +12,8 @@ const theme =
     window.matchMedia("(prefers-color-scheme: dark)").matches)
     ? "dark"
     : "light";
+
+//all items for headers
 const items = [
   { id: 0, name: "navbar", icon: LuMenu, path: "/navbar" },
   {

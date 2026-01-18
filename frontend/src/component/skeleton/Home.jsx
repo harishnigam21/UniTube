@@ -1,3 +1,4 @@
+// Skeleton for home page``
 export default function Home() {
   return (
     <section className="flex flex-col px-2 h-screen w-full overflow-y-hidden">

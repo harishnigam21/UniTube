@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { FaPause } from "react-icons/fa";
@@ -12,6 +13,7 @@ import { AiOutlineFullscreenExit, AiOutlineFullscreen } from "react-icons/ai";
 export default function VideoPlayer({ url }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
+  //states manges the progress,volume,duration and others
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(0.5);
@@ -20,17 +22,18 @@ export default function VideoPlayer({ url }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  //setting back to initial state when video finished
   useEffect(() => {
     if (progress == 100) {
       setIsPlaying(false);
     }
   }, [progress]);
-
+  
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
-
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () =>
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
@@ -47,6 +50,7 @@ export default function VideoPlayer({ url }) {
     setCurrentTime(videoRef.current.currentTime);
   };
 
+  // formatting video time because video provide use it in seconds
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds)) return "0:00";
     const hours = Math.floor(timeInSeconds / 3600);
@@ -69,6 +73,7 @@ export default function VideoPlayer({ url }) {
       setIsPlaying(false);
     }
   };
+  //toggle video to fullscreen and vice versa
   const toggleFullscreen = () => {
     const container = containerRef.current;
     if (!document.fullscreenElement) {

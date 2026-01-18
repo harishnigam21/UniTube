@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { changeLoginStatus } from "../store/Slices/userSlice";
-
+//custom hook to fetch API
 const useApi = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,6 +11,7 @@ const useApi = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  //handles all necessary action for status codes
   const handleGlobalStatus = useCallback(
     (statusCode) => {
       switch (statusCode) {
@@ -34,7 +35,7 @@ const useApi = () => {
     },
     [navigate, dispatch]
   );
-
+  //useCallback to rerender on changes when applying it on useEffect dependencies
   const sendRequest = useCallback(
     async (
       url,
