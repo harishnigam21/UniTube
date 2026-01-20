@@ -12,21 +12,21 @@ const Video = lazy(() => import("./component/Player/Video.jsx"));
 const SignIn = lazy(() => import("./component/Auth_Component/SignIn.jsx"));
 const SignUp = lazy(() => import("./component/Auth_Component/SignUp.jsx"));
 const CreatePost = lazy(() => import("./component/post/CreatePost.jsx"));
-const CreateChannel = lazy(() =>
-  import("./component/channel/CreateChannel.jsx")
+const CreateChannel = lazy(
+  () => import("./component/channel/CreateChannel.jsx"),
 );
 const ViewChannel = lazy(() => import("./component/channel/ViewChannel.jsx"));
 const Post = lazy(() => import("./component/post/Post.jsx"));
 const Channel = lazy(() => import("./component/channel/Channel.jsx"));
 const Login = lazy(() => import("./component/User_friendly_Error/Login.jsx"));
-const NotFound = lazy(() =>
-  import("./component/User_friendly_Error/NotFound.jsx")
+const NotFound = lazy(
+  () => import("./component/User_friendly_Error/NotFound.jsx"),
 );
-const BadRequest = lazy(() =>
-  import("./component/User_friendly_Error/BadRequest.jsx")
+const BadRequest = lazy(
+  () => import("./component/User_friendly_Error/BadRequest.jsx"),
 );
-const ServerError = lazy(() =>
-  import("./component/User_friendly_Error/ServerError.jsx")
+const ServerError = lazy(
+  () => import("./component/User_friendly_Error/ServerError.jsx"),
 );
 
 //creating Routes array, where every lazy component is wrapped on Suspense with fallback component so that this component appear until the respective component is coming in network
@@ -120,6 +120,10 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: "*",
+        element: <NotFound />,
+      },
     ],
   },
   {
@@ -147,5 +151,5 @@ createRoot(document.getElementById("root")).render(
       {/* // wrapping up our route array in RouterProvider*/}
       <RouterProvider router={router} />
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 );
