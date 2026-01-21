@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useDispatch, useSelector } from "react-redux";
 import items from "../../assets/data/static/header";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,6 +17,7 @@ import logoLight from "../../assets/images/logo-light.png";
 import CategorySlider from "./Categories";
 import { setSearchStatus } from "../../store/Slices/videoSlice";
 export default function Header({
+  showCategory,
   navToggle,
   setNavToggle,
   setSidebarToggle,
@@ -52,7 +54,7 @@ export default function Header({
     window.addEventListener("resize", handleHeight);
     // Clean up
     return () => window.removeEventListener("resize", handleHeight);
-  }, [categories, handleHeight]);
+  }, [categories, handleHeight, showCategory]);
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
@@ -83,7 +85,7 @@ export default function Header({
   return (
     <header
       ref={headerRef}
-      className="flex flex-col w-full justify-between sticky top-0 py-1.5 px-4 z-50 bg-bgprimary" //TODO:and remove this hidden and settle down header
+      className="flex flex-col w-full justify-between sticky top-0 border-b border-border py-3 px-4 z-50 backdrop-blur-[200px] bg-bgprimary/50"
     >
       <article className="flex gap-4 justify-between items-center">
         <article className="flex gap-4 items-center">
@@ -239,7 +241,7 @@ export default function Header({
                       <item.icon className={`text-2xl icon`} />
                     </Link>
                   )
-                )
+                ),
               )
             : items.slice(-1).map((item) => (
                 <Link
@@ -253,7 +255,7 @@ export default function Header({
               ))}
         </article>
       </article>
-      <CategorySlider />
+      {showCategory && <CategorySlider />}
       {showSearch && (
         <article className="absolute self-center justify-self-center flex items-center justify-center py-2 px-4 bg-bgprimary w-full h-full z-10">
           <Search items={items} setShowSearch={setShowSearch} />

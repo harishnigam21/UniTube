@@ -166,7 +166,15 @@ export default function CreatePost() {
   // Form with field required to create a new post, input used like text,file,radio. and onchange their respective changes to target value
   return channel.length > 0 ? (
     <section className="text-text flex flex-col gap-4 p-8 md:p-4">
-      <h1 className="text-2xl md:text-3xl text-center font-medium font-serif py-4 md:py-8">
+      <h1
+        className="
+  [font-variant:small-caps] justify-self-center self-center 
+  text-2xl md:text-4xl font-medium tracking-wide
+  bg-linear-to-b from-text from-0% via-text via-65% to-primary to-50%
+  bg-clip-text text-transparent
+  drop-shadow-sm
+"
+      >
         Create Post
       </h1>
       <form
@@ -273,7 +281,7 @@ export default function CreatePost() {
                     channel_id: e.target.value,
                   }));
                   setHandler(
-                    channel.find((item) => item._id == e.target.value)
+                    channel.find((item) => item._id == e.target.value),
                   );
                 }}
               >
@@ -400,7 +408,7 @@ export default function CreatePost() {
                   } else {
                     showInfoFunc(
                       "red",
-                      "Duplicate or Invalid tag, require minimum 3 character"
+                      "Duplicate or Invalid tag, require minimum 3 character",
                     );
                   }
                 }}
@@ -423,7 +431,7 @@ export default function CreatePost() {
                         setPostInfo((prev) => ({
                           ...prev,
                           tags: prev.tags.filter(
-                            (item) => item.toLowerCase() != tg.toLowerCase()
+                            (item) => item.toLowerCase() != tg.toLowerCase(),
                           ),
                         }))
                       }
@@ -487,7 +495,7 @@ export default function CreatePost() {
                 } else {
                   showInfoFunc(
                     "red",
-                    "No Duplicates and Both requires as (key,value) pair"
+                    "No Duplicates and Both requires as (key,value) pair",
                   );
                 }
               }}
@@ -520,7 +528,7 @@ export default function CreatePost() {
                     />
                   </div>
                 </div>
-              )
+              ),
             )}
           </article>
         </article>

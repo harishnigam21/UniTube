@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       {
         path: "watch",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <Video />
           </Suspense>
         ),
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       {
         path: "post",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <Post />
           </Suspense>
         ),
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
       {
         path: "post/create",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <CreatePost />
           </Suspense>
         ),
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
       {
         path: "channel/:handler",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <Channel />
           </Suspense>
         ),
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
       {
         path: "channel/create",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <CreateChannel />
           </Suspense>
         ),
@@ -83,7 +83,7 @@ const router = createBrowserRouter([
       {
         path: "channel/view",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <ViewChannel />
           </Suspense>
         ),
@@ -91,7 +91,7 @@ const router = createBrowserRouter([
       {
         path: "msg/login",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <Login />
           </Suspense>
         ),
@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       {
         path: "msg/not-found",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <NotFound />
           </Suspense>
         ),
@@ -107,7 +107,7 @@ const router = createBrowserRouter([
       {
         path: "msg/bad-request",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <BadRequest />
           </Suspense>
         ),
@@ -115,7 +115,7 @@ const router = createBrowserRouter([
       {
         path: "msg/server-error",
         element: (
-          <Suspense fallback={Loading}>
+          <Suspense fallback={<Loading />}>
             <ServerError />
           </Suspense>
         ),
@@ -129,7 +129,7 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: (
-      <Suspense fallback={Loading}>
+      <Suspense fallback={<Loading />}>
         <SignIn />
       </Suspense>
     ),
@@ -138,7 +138,7 @@ const router = createBrowserRouter([
     path: "/register",
 
     element: (
-      <Suspense fallback={Loading}>
+      <Suspense fallback={<Loading />}>
         <SignUp />
       </Suspense>
     ),

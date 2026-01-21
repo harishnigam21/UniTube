@@ -14,6 +14,7 @@ export default function VideoPlayer({ url }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   //states manges the progress,volume,duration and others
+  const [hasPlayed, setHasPlayed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(0.5);
@@ -29,7 +30,7 @@ export default function VideoPlayer({ url }) {
       setIsPlaying(false);
     }
   }, [progress]);
-  
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -65,6 +66,15 @@ export default function VideoPlayer({ url }) {
   };
   // Toggle Play/Pause
   const togglePlay = () => {
+    if (!hasPlayed) {
+      // Reset everything for the first time
+      videoRef.current.currentTime = 0;
+      setHasPlayed(true);
+      // Start playing immediately
+      videoRef.current.play();
+      setIsPlaying(true);
+      return; // Exit here so we don't hit the other logic
+    }
     if (videoRef.current.paused) {
       videoRef.current.play();
       setIsPlaying(true);
@@ -95,7 +105,7 @@ export default function VideoPlayer({ url }) {
     >
       <video
         ref={videoRef}
-        src={`${import.meta.env.VITE_BACKEND_HOST}/${url}`}
+        src={`${import.meta.env.VITE_BACKEND_HOST}/${url}${!hasPlayed ? "#t=5" : ""}`}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onClick={togglePlay} // Click video to play/pause

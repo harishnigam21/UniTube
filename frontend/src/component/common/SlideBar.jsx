@@ -33,8 +33,8 @@ export default function SlideBar({
           exit={{ opacity: 0, x: "-100%" }}
           transition={{ duration: 0.25, ease: "easeIn" }}
           ref={barRef}
+          style={{ paddingTop: `${headerHeight+15}px` }}
           className=" flex flex-col z-40 sticky left-0 h-screen bg-bgprimary pl-4 overflow-y-scroll gap-4 min-w-fit whitespace-nowrap transition-all "
-          style={{ paddingTop: `${headerHeight}px` }}
         >
           {items.map((item, index) => (
             <SlideBarItem

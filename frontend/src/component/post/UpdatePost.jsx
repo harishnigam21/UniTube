@@ -6,7 +6,12 @@ import { useOutletContext } from "react-router-dom";
 import useApi from "../../hooks/Api";
 import { useDispatch } from "react-redux";
 import { updateSelectedChannelItem } from "../../store/Slices/channelSlice";
-export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
+export default function UpdatePost({
+  setShowUpdate,
+  vid,
+  setShowOption,
+  handleNewMessage,
+}) {
   const dispatch = useDispatch();
   const { setSidebarToggle } = useOutletContext();
   const { loading, sendRequest } = useApi();
@@ -145,6 +150,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
           setShowUpdate(false);
           dispatch(updateSelectedChannelItem({ data: data.data }));
           setShowOption(false);
+          handleNewMessage(data?.message);
         }
       })
       .finally(() => {
@@ -153,10 +159,10 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
   };
 
   return (
-    <section className="fixed overflow-scroll noscrollbar bg-bgprimary z-100 top-0 w-full h-full text-text flex flex-col justify-center gap-4 p-8 md:p-4">
+    <section className="fixed overflow-auto noscrollbar bg-bgprimary z-100 top-0 left-0 w-full h-full text-text flex flex-col justify-center gap-4 p-8 md:p-4">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-8 w-full md:w-3/4 xl:w-1/2 self-center"
+        className="flex flex-col gap-8 w-full md:w-3/4 xl:w-1/2 self-center h-9/10 justify-center overflow-auto [scrollbar-width:none]"
       >
         {/* 1st row category,tag,details,thumbnail*/}
         <article className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -217,7 +223,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
                     } else {
                       showInfoFunc(
                         "red",
-                        "Duplicate or Invalid tag, require minimum 3 character"
+                        "Duplicate or Invalid tag, require minimum 3 character",
                       );
                     }
                   }}
@@ -240,7 +246,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
                           setPostInfo((prev) => ({
                             ...prev,
                             tags: prev.tags.filter(
-                              (item) => item.toLowerCase() != tg.toLowerCase()
+                              (item) => item.toLowerCase() != tg.toLowerCase(),
                             ),
                           }))
                         }
@@ -302,7 +308,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
                   } else {
                     showInfoFunc(
                       "red",
-                      "No Duplicates and Both requires as (key,value) pair"
+                      "No Duplicates and Both requires as (key,value) pair",
                     );
                   }
                 }}
@@ -335,7 +341,7 @@ export default function UpdatePost({ setShowUpdate, vid, setShowOption }) {
                       />
                     </div>
                   </div>
-                )
+                ),
               )}
             </article>
           </article>

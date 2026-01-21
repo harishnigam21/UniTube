@@ -8,7 +8,7 @@ import { setSelectedItemComment } from "../../store/Slices/videoSlice";
 import Loading from "../other/Loading";
 import useApi from "../../hooks/Api";
 
-export default function VideoComment({ postid }) {
+export default function VideoComment({ postid, handleNewMessage }) {
   const { loading, sendRequest } = useApi();
   const [toggleReply, setToggleReply] = useState(false);
   const comments = useSelector((store) => store.videos.selectedItemComment); //getting comment from store, where comments are assigned on page load using useEffect
@@ -43,6 +43,7 @@ export default function VideoComment({ postid }) {
           postid={postid}
           setToggleReply={setToggleReply}
           setToggleReplies={setToggleReply}
+          handleNewMessage={handleNewMessage}
         />
       </article>
       {/* other comments */}
@@ -52,6 +53,7 @@ export default function VideoComment({ postid }) {
             key={`toplevel/comment/${comm._id}`}
             comm={comm}
             postid={postid}
+            handleNewMessage={handleNewMessage}
           />
         ))}
       </article>

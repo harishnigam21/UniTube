@@ -1,7 +1,7 @@
 import { HiDotsVertical } from "react-icons/hi";
 export default function Shorts({ srt }) {
   return (
-    <article className="relative group flex flex-col rounded-xl overflow-hidden gap-2 p-2 icon min-w-40 sm:min-w-50 lg:min-w-60">
+    <article className="relative group flex flex-col rounded-xl overflow-hidden gap-2 p-2 icon min-w-40 sm:min-w-50 lg:min-w-60 backdrop-blur-[1000px]">
       <img
         src={srt.thumbnail}
         alt={`thumbnail for short ${srt.id}`}

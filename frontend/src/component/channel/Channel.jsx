@@ -14,7 +14,7 @@ import Loading from "../other/Loading";
 
 export default function Channel() {
   const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
-  const { setSidebarToggle } = useOutletContext(); //taking props that is provided to outlet
+  const { setSidebarToggle, handleNewMessage } = useOutletContext(); //taking props that is provided to outlet
   const [fieldSelected, setFieldSelected] = useState("home"); // State that will be used to take key of post type and perform hover animation or any other
   //this field array is used to map the post types
   const fieldListed = ["home", "video", "short", "live", "podcast", "playlist"];
@@ -41,10 +41,12 @@ export default function Channel() {
   const handleSubscribe = async () => {
     await sendRequest(`new_subscriber/${selectedChannel._id}`, "PATCH").then(
       (result) => {
+        const data = result?.data;
         if (result && result.success) {
           dispatch(updateSelectedChannelSubscribe());
+          handleNewMessage(data?.message);
         }
-      }
+      },
     );
   };
   return loading ? (
@@ -174,6 +176,7 @@ export default function Channel() {
                               key={`channel/posts/fields/items/${item._id}`}
                               vid={item}
                               type={"channel"}
+                              handleNewMessage={handleNewMessage}
                             />
                           ))}
                         </article>

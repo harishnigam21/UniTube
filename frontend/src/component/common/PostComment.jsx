@@ -11,6 +11,7 @@ export default function PostComment({
   parent,
   setToggleReply,
   setToggleReplies,
+  handleNewMessage,
 }) {
   const { sendRequest } = useApi();
   const postid = useSelector((store) => store.videos.selectedItem._id);
@@ -32,6 +33,7 @@ export default function PostComment({
           setToggleReplies(true);
           setCommentIpt("");
           setShowBtn(false);
+          handleNewMessage(data?.message);
         }
       });
     } //TODO:handle for field with 0 length

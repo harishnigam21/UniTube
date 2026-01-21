@@ -11,7 +11,7 @@ import { addChannel } from "../../store/Slices/channelSlice.js";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import useApi from "../../hooks/Api.jsx";
 export default function CreateChannel() {
-  const { setSidebarToggle } = useOutletContext(); //taking props that is provided to outlet
+  const { setSidebarToggle, handleNewMessage } = useOutletContext(); //taking props that is provided to outlet
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, sendRequest } = useApi(); //custom hook, using loading to manage loading between api calls and sendRequest function to make api call
@@ -119,6 +119,7 @@ export default function CreateChannel() {
           setChannelBanner(null);
           setChannelPicture(null);
           setPreview({ banner: dummyUpload, picture: dummyUpload });
+          handleNewMessage("Redirecting to your channel page....");
           setTimeout(() => {
             navigate("/channel/view");
           }, 4000);
@@ -143,12 +144,20 @@ export default function CreateChannel() {
         if (result && result.success) {
           setHandlerAvailability(data.status);
         }
-      }
+      },
     );
   }; //Form that collect information that required to create a channel,extra thing used - used URL.createObjectURL() to preview picture nad banner
   return (
     <section className="text-text flex flex-col gap-4 p-2 md:p-4">
-      <h1 className="text-2xl md:text-3xl text-center font-medium font-serif py-4 md:py-8">
+      <h1
+        className="
+  [font-variant:small-caps] justify-self-center self-center 
+  text-2xl md:text-4xl font-medium tracking-wide
+  bg-linear-to-b from-text from-0% via-text via-65% to-primary to-50%
+  bg-clip-text text-transparent
+  drop-shadow-sm
+"
+      >
         Create Channel
       </h1>
       <form

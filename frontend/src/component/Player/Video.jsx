@@ -13,7 +13,7 @@ import Loading from "../other/Loading";
 export default function Video() {
   const dispatch = useDispatch();
   const { loading, sendRequest } = useApi();
-  const { setSidebarToggle, screenSize } = useOutletContext();
+  const { setSidebarToggle, screenSize, handleNewMessage } = useOutletContext();
   const VideoInfo = useSelector((store) => store.videos.selectedItem);
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v"); //getting video id from url
@@ -26,10 +26,11 @@ export default function Video() {
         dispatch(
           setSelectedItem({
             selectedItem: data.data,
-          })
+          }),
         );
       }
     });
+    return () => dispatch(setSelectedItem({ selectedItem: {} }));
   }, [dispatch, videoId, sendRequest]);
 
   //handle sidebar behavior
@@ -43,9 +44,9 @@ export default function Video() {
       <Loading />
     </div>
   ) : (
-    <section className="w-full overflow-y-auto overflow-x-hidden text-text flex flex-col gap-4">
+    <section className="w-full overflow-x-hidden text-text flex flex-col gap-4">
       {/* THE ACTUAL VIDEO */}
-      <VideoPlayer url={VideoInfo.videoURL} />
+      <VideoPlayer url={VideoInfo.videoURL} poster={VideoInfo.thumbnail} />
 
       <article className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-4 text-text px-5">
         <article className="flex flex-col gap-4 justify-center self-start w-full">
@@ -62,6 +63,7 @@ export default function Video() {
             likes={VideoInfo.likes}
             isDisLiked={VideoInfo.isDisLiked}
             isliked={VideoInfo.isliked}
+            handleNewMessage={handleNewMessage}
           />
           <VideoDescription
             views={VideoInfo.views}
@@ -70,7 +72,12 @@ export default function Video() {
             details={VideoInfo.details}
           />
           {/* comments */}
-          {VideoInfo._id && <VideoComment postid={VideoInfo._id} />}
+          {VideoInfo._id && (
+            <VideoComment
+              postid={VideoInfo._id}
+              handleNewMessage={handleNewMessage}
+            />
+          )}
           {/* TODO:Check later that why this component API calls first then its parent API*/}
         </article>
         <VideoRecommendation

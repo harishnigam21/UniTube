@@ -3,22 +3,21 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import HomeSkeleton from "./component/skeleton/Home";
-import Categories from "./component/common/Categories";
 import Video from "./component/repetative/Video";
 import Shorts from "./component/repetative/Shorts";
 import { setCategories, setItems, addItems } from "./store/Slices/videoSlice";
 import useApi from "./hooks/Api";
 import LoadMore from "./component/common/LoadMore";
-import CategorySlider from "./component/common/Categories";
 export default function Home() {
   const { loading, sendRequest } = useApi();
-  const { short, setSidebarToggle, screenSize } = useOutletContext();
+  const { short, setSidebarToggle, screenSize, setShowCategory } =
+    useOutletContext();
   const nextCursor = useSelector((store) => store.videos.nextCursor);
 
   const searchStatus = useSelector((store) => store.videos.searchStatus);
   //getting post from redux store based on condition of search field
   const video = useSelector((store) =>
-    searchStatus ? store.videos.searchItems : store.videos.items
+    searchStatus ? store.videos.searchItems : store.videos.items,
   );
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
@@ -38,14 +37,14 @@ export default function Home() {
           addItems({
             posts: data?.data,
             nextCursor: data?.nextCursor,
-          })
+          }),
         );
       } else {
         dispatch(
           setItems({
             posts: data?.data,
             nextCursor: data?.nextCursor,
-          })
+          }),
         );
       }
 
@@ -58,9 +57,11 @@ export default function Home() {
   }, [searchParams]);
   ////changing sidebar nature for this page
   useEffect(() => {
+    setShowCategory(true);
     screenSize.width >= 768
       ? setSidebarToggle((prev) => ({ ...prev, type: "type1", status: true }))
       : setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+    return () => setShowCategory(false);
   }, [setSidebarToggle, screenSize]);
   const scrollRef = useRef(null);
   const scrollShorts = (direction) => {
@@ -76,7 +77,7 @@ export default function Home() {
   };
   //Component with filter category buttons, posts and load more button if more post available
   return (
-    <section className="flex flex-col gap-3 px-2 h-screen w-full overflow-y-auto overflow-x-hidden">
+    <section className="flex flex-col gap-3 px-2">
       {loading && video.length == 0 ? (
         <HomeSkeleton />
       ) : (

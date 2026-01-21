@@ -13,7 +13,7 @@ import {
 import { BiSolidDislike, BiSolidLike } from "react-icons/bi";
 import { millifyNum } from "../../utils/millify";
 import useApi from "../../hooks/Api";
-export default function Comment({ comm, postid }) {
+export default function Comment({ comm, postid, handleNewMessage }) {
   const { sendRequest } = useApi();
   const dispatch = useDispatch();
   //ref for like and dislike
@@ -44,8 +44,9 @@ export default function Comment({ comm, postid }) {
             updateItemComment({
               commentId: comm._id,
               updatedText: data.txt,
-            })
+            }),
           );
+          handleNewMessage(data?.message);
           setShowUpdateSection(false);
         }
       });
@@ -54,8 +55,10 @@ export default function Comment({ comm, postid }) {
   //send request to delete comment by sending comment id, on successful update redux slice will also update
   const handleDelete = async () => {
     await sendRequest(`comment/${comm._id}`, "DELETE").then((result) => {
+      const data = result?.data;
       if (result && result.success) {
         dispatch(deleteItemComment({ commentIdToDelete: comm._id }));
+        handleNewMessage(data?.message || "Deleted Comment");
       }
     });
   };
@@ -81,6 +84,7 @@ export default function Comment({ comm, postid }) {
           }, 200);
         }
         setLike(data.likes);
+        handleNewMessage(data?.message);
       }
     });
   };
@@ -106,6 +110,7 @@ export default function Comment({ comm, postid }) {
         }
       }
       setLike(data?.likes);
+      handleNewMessage(data?.message);
     });
   };
   return (
@@ -212,6 +217,7 @@ export default function Comment({ comm, postid }) {
                 postid={postid}
                 setToggleReply={setToggleReply}
                 setToggleReplies={setToggleReplies}
+                handleNewMessage={handleNewMessage}
               />
             </div>
           )}
@@ -236,7 +242,11 @@ export default function Comment({ comm, postid }) {
             {toggleReplies && (
               <article className="flex flex-col gap-8">
                 {comm.replies.map((item) => (
-                  <Comment key={`subcomment/of/${item._id}`} comm={item} />
+                  <Comment
+                    key={`subcomment/of/${item._id}`}
+                    comm={item}
+                    handleNewMessage={handleNewMessage}
+                  />
                 ))}
               </article>
             )}

@@ -20,6 +20,7 @@ export default function VideoInteractiveBar({
   likes,
   isliked,
   isDisLiked,
+  handleNewMessage,
 }) {
   const { sendRequest } = useApi();
   const [showExtra, setShowExtra] = useState(false);
@@ -75,6 +76,7 @@ export default function VideoInteractiveBar({
           }, 200);
         }
         setLike(data.likes);
+        handleNewMessage(data?.message);
       }
     });
   };
@@ -99,6 +101,7 @@ export default function VideoInteractiveBar({
           }, 200);
         }
         setLike(data?.likes);
+        handleNewMessage(data?.message);
       }
     });
   };
@@ -109,11 +112,12 @@ export default function VideoInteractiveBar({
       if (result && result.success) {
         setSubscribers(data.subscriber);
         setIsSubscribe(data.status);
+        handleNewMessage(data?.message);
       }
     });
   };
 
-  //A component with interactive items such as like, dislike, subscribe and others //TODO which will be active later, just not required 
+  //A component with interactive items such as like, dislike, subscribe and others //TODO which will be active later, just not required
   return (
     <article className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap w-full">
       <div className="flex items-center gap-4">

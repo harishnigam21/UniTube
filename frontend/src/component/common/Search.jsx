@@ -20,7 +20,7 @@ export default function Search({ items, setShowSearch }) {
               name="search"
               value={search}
               placeholder="Search..."
-              className="w-full py-2 px-4"
+              className="w-full py-2 px-4 bg-bgprimary text-text"
               onChange={(e) => setSearch(e.target.value)}
             />
             <div className="flex items-center absolute right-0 h-full">

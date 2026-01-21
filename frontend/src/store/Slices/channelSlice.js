@@ -44,9 +44,8 @@ const channelSlice = createSlice({
         ].posts.map((item) => {
           if (item._id == updatedData._id) {
             return updatedData;
-          } else {
-            item;
           }
+          return item;
         });
       }
     },

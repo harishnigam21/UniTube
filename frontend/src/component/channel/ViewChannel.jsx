@@ -4,12 +4,18 @@ import { setChannel } from "../../store/Slices/channelSlice";
 import { useState } from "react";
 import ChannelCards from "./ChannelCards";
 import { IoMdAdd } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
+import Loading from "../other/Loading";
 
 export default function ViewChannel() {
+  const { setSidebarToggle, handleNewMessage } = useOutletContext(); //taking props that is provided to outlet
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const channels = useSelector((store) => store.channels.items);
+  //Handle sidebar nature
+  useEffect(() => {
+    setSidebarToggle((prev) => ({ ...prev, type: "type2", status: false }));
+  }, [setSidebarToggle]);
   //send Request to get limited channel information for channel preview purpose only, on successful response also update made on redux store
   useEffect(() => {
     const getChannels = async () => {
@@ -41,11 +47,21 @@ export default function ViewChannel() {
   }, [dispatch]);
   //receiving data will be array so,here Channel Card component is used, which is mapped with unique key, & this component is passed with props that include all needed information about channel
   return loading ? (
-    <p className="text-red-500 text-center text-2xl">Loading</p>
+    <div className="w-screen h-screen flex justify-center items-center">
+      <Loading />
+    </div>
   ) : (
     <section className="text-text flex flex-col gap-8 p-4">
       <article className="flex justify-between gap-4 items-center whitespace-nowrap">
-        <h1 className="text-2xl md:text-3xl font-serif font-medium ">
+        <h1
+          className="
+  [font-variant:small-caps] justify-self-center self-center 
+  text-2xl md:text-4xl font-medium tracking-wide
+  bg-linear-to-b from-text from-0% via-text via-65% to-primary to-50%
+  bg-clip-text text-transparent
+  drop-shadow-sm
+"
+        >
           Your Channels
         </h1>
         <Link
@@ -65,6 +81,7 @@ export default function ViewChannel() {
             <ChannelCards
               key={`card/channel/${channel._id}`}
               channel={channel}
+              handleNewMessage={handleNewMessage}
             />
           ))}
         </article>

@@ -6,7 +6,7 @@ import { deleteChannelID } from "../../store/Slices/userSlice.js";
 import { deleteChannel } from "../../store/Slices/channelSlice.js";
 import useApi from "../../hooks/Api.jsx";
 import Loading from "../other/Loading.jsx";
-export default function ChannelCards({ channel }) {
+export default function ChannelCards({ channel, handleNewMessage }) {
   const dispatch = useDispatch();
   const { loading, sendRequest } = useApi();
   //send request to handle delete of channels, on successful response redux channel slice items array will be updated
@@ -17,8 +17,9 @@ export default function ChannelCards({ channel }) {
         if (result && result.success) {
           dispatch(deleteChannelID({ id: data.data }));
           dispatch(deleteChannel({ id: data.data }));
+          handleNewMessage(data?.message);
         }
-      }
+      },
     );
   };
   //Card that will be show the basic channel info like banner images ,total posts,subscribers

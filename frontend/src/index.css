@@ -44,7 +44,9 @@
     }
   }
 }
-
+button {
+  cursor: pointer;
+}
 body,
 #root {
   margin: 0px;

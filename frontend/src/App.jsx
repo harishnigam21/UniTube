@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable no-unused-vars */
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "./component/common/Header";
 import SlideBar from "./component/common/SlideBar";
 import "./App.css";
@@ -8,6 +9,43 @@ import { useDispatch } from "react-redux";
 import { changeLoginStatus, newUser } from "./store/Slices/userSlice";
 import useApi from "./hooks/Api";
 export default function App() {
+  const popRef = useRef(null);
+  const popDelay = 1000;
+  const [showCategory, setShowCategory] = useState(false);
+  const [messageQueue, setMessageQueue] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  //this function handle message whenever any event done like add to cart, delete item, increment and decrement, this generally push message in queue, with base condition that process is off then make it live because there is message in queue.
+  const handleNewMessage = (newMessage) => {
+    setMessageQueue((prevQueue) => [...prevQueue, newMessage]);
+    if (!isProcessing) {
+      setIsProcessing(true);
+    }
+  };
+  //useEffect generally makes message visible in interval manner, for which I used setTimeout, It runs when process is running and there is message in queue otherwise if process is on but there is no message in queue then it turn off process
+  //useEffect takes place whenever there is changes in message queue or in process switching, this will work as infinite loop until message queue got empty
+  useEffect(() => {
+    if (isProcessing && messageQueue.length > 0) {
+      const currentMessage = messageQueue[0];
+      if (popRef.current) {
+        popRef.current.textContent = currentMessage;
+        popRef.current.style.display = "flex";
+      }
+
+      const timerId = setTimeout(() => {
+        //delete the current message from queue, when timer finished
+        setMessageQueue((prevQueue) => prevQueue.slice(1));
+        if (popRef.current) {
+          popRef.current.style.display = "none";
+        }
+      }, popDelay);
+      return () => clearTimeout(timerId);
+    } else if (isProcessing && messageQueue.length === 0) {
+      setIsProcessing(false);
+      if (popRef.current) {
+        popRef.current.textContent = "";
+      }
+    }
+  }, [messageQueue, isProcessing]);
   const { sendRequest } = useApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -370,8 +408,14 @@ export default function App() {
   ]);
   return (
     <main className="flex relative flex-col box-border w-screen h-screen noscrollbar overflow-auto ">
+      {/* message popping */}
+      <p
+        ref={popRef}
+        className="fixed w-fit hidden items-center py-1 px-6 rounded-r-xl animate-[fromLeft_0.5s_ease] text-white font-bold z-100 top-0 h-9 bg-[#389b55]"
+      ></p>
       {/* header`` */}
       <Header
+        showCategory={showCategory}
         navToggle={navToggle}
         screenSize={screenSize}
         setNavToggle={setNavToggle}
@@ -388,11 +432,19 @@ export default function App() {
           headerHeight={headerHeight}
         />
         <article
-          className="flex flex-col w-full max-w-full"
-          style={{ marginTop: `${headerHeight}px` }}
+          className="flex flex-col w-full max-w-full h-screen overflow-x-hidden"
+          style={{ paddingTop: `${headerHeight}px` }}
         >
           {/* all children route of App will be handle by this Outlet */}
-          <Outlet context={{ short, setSidebarToggle, screenSize }} />
+          <Outlet
+            context={{
+              short,
+              setSidebarToggle,
+              screenSize,
+              handleNewMessage,
+              setShowCategory,
+            }}
+          />
         </article>
       </section>
     </main>

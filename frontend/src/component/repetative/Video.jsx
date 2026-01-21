@@ -9,7 +9,7 @@ import useApi from "../../hooks/Api";
 import { deleteSelectedChannelItem } from "../../store/Slices/channelSlice";
 import Loading from "../other/Loading";
 import UpdatePost from "../post/UpdatePost";
-const Video = memo(function Video({ vid, type }) {
+const Video = memo(function Video({ vid, type, handleNewMessage }) {
   const dispatch = useDispatch();
   const [showUpdate, setShowUpdate] = useState(false);
   const { loading, sendRequest } = useApi();
@@ -24,9 +24,10 @@ const Video = memo(function Video({ vid, type }) {
       const data = result?.data;
       if (result && result.success) {
         dispatch(
-          deleteSelectedChannelItem({ id: data.data.id, type: data.data.type })
+          deleteSelectedChannelItem({ id: data.data.id, type: data.data.type }),
         );
         setShowOption(false);
+        handleNewMessage(data?.message);
       }
     });
   };
@@ -34,6 +35,7 @@ const Video = memo(function Video({ vid, type }) {
     <UpdatePost
       setShowUpdate={setShowUpdate}
       setShowOption={setShowOption}
+      handleNewMessage={handleNewMessage}
       vid={vid}
     />
   ) : (
