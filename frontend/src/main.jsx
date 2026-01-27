@@ -22,6 +22,9 @@ const Login = lazy(() => import("./component/User_friendly_Error/Login.jsx"));
 const NotFound = lazy(
   () => import("./component/User_friendly_Error/NotFound.jsx"),
 );
+const Refresh = lazy(
+  () => import("./component/User_friendly_Error/Refresh.jsx"),
+);
 const BadRequest = lazy(
   () => import("./component/User_friendly_Error/BadRequest.jsx"),
 );
@@ -117,6 +120,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <ServerError />
+          </Suspense>
+        ),
+      },
+      {
+        path: "msg/refresh",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Refresh />
           </Suspense>
         ),
       },

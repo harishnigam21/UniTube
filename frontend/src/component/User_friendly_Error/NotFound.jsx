@@ -33,7 +33,7 @@ export default function NotFound() {
             </button>
             <button
               className="py-2 px-4 rounded-full uppercase border-2 border-white text-text icon font-medium"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/", { replace: true })}
             >
               Go Home
             </button>

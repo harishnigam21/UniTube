@@ -153,7 +153,7 @@ export default function CreateChannel() {
         className="
   [font-variant:small-caps] justify-self-center self-center 
   text-2xl md:text-4xl font-medium tracking-wide
-  bg-linear-to-b from-text from-0% via-text via-65% to-primary to-50%
+  bg-linear-to-b from-text from-0% via-text via-50% to-primary to-50%
   bg-clip-text text-transparent
   drop-shadow-sm
 "
@@ -323,7 +323,7 @@ export default function CreateChannel() {
         <div className="flex self-center gap-4">
           <button
             className="font-medium py-2 px-6 rounded-md border border-border icon"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/", { replace: true })}
           >
             Cancel
           </button>

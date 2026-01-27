@@ -90,7 +90,7 @@ button:disabled {
     --color-primary: #ff0033;
     --color-secondary: white;
     --color-tertiary: #2da6ff;
-    --color-border: #222222;
+    --color-border: #d1d5db;
     --color-text: white;
     --color-txlight: #aaaaaa;
   }
@@ -110,7 +110,7 @@ button:disabled {
   --color-primary: #ff0033;
   --color-secondary: #0f0f0f;
   --color-tertiary: #2da6ff;
-  --color-border: #e5e7eb;
+  --color-border: #d1d5db;
   --color-text: #0f0f0f;
   --color-txlight: #666666;
 }

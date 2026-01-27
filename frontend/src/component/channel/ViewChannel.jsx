@@ -57,7 +57,7 @@ export default function ViewChannel() {
           className="
   [font-variant:small-caps] justify-self-center self-center 
   text-2xl md:text-4xl font-medium tracking-wide
-  bg-linear-to-b from-text from-0% via-text via-65% to-primary to-50%
+  bg-linear-to-b from-text from-0% via-text via-50% to-primary to-50%
   bg-clip-text text-transparent
   drop-shadow-sm
 "

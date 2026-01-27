@@ -18,22 +18,25 @@ const useApi = () => {
         case 401:
         case 403:
           dispatch(changeLoginStatus(false));
-          navigate("/msg/login");
+          navigate("/msg/login", { replace: true });
           break;
         case 404:
-          navigate("/msg/not-found");
+          navigate("/msg/not-found", { replace: true });
+          break;
+        case 421:
+          navigate("/msg/refresh", { replace: true });
           break;
         case 400:
-          navigate("/msg/bad-request");
+          navigate("/msg/bad-request", { replace: true });
           break;
         case 500:
-          navigate("/msg/server-error");
+          navigate("/msg/server-error", { replace: true });
           break;
         default:
           break;
       }
     },
-    [navigate, dispatch]
+    [navigate, dispatch],
   );
   //useCallback to rerender on changes when applying it on useEffect dependencies
   const sendRequest = useCallback(
@@ -42,7 +45,7 @@ const useApi = () => {
       method = "GET",
       body = null,
       customHeaders = {},
-      redirect = true
+      redirect = true,
     ) => {
       setLoading(true);
       setError(null);
@@ -67,8 +70,8 @@ const useApi = () => {
             body instanceof FormData
               ? body
               : body
-              ? JSON.stringify(body)
-              : null,
+                ? JSON.stringify(body)
+                : null,
         };
 
         const response = await fetch(updateUrl, options);
@@ -111,7 +114,7 @@ const useApi = () => {
         setLoading(false);
       }
     },
-    [handleGlobalStatus]
+    [handleGlobalStatus],
   );
 
   return { data, loading, error, status, sendRequest };

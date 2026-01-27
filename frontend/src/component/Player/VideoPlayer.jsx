@@ -113,7 +113,7 @@ export default function VideoPlayer({ url }) {
       />
 
       {/* CUSTOM CONTROLS OVERLAY */}
-      <article className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-bgprimary text-text to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      <article className="absolute bottom-0 left-0 right-0 text-white p-4 opacity-0 group-hover:opacity-100 transition-opacity">
         {/* Progress Bar */}
         <article className="w-full h-1 bg-zinc-600 mb-4 cursor-pointer relative">
           <div
@@ -126,12 +126,12 @@ export default function VideoPlayer({ url }) {
           <article className="flex items-center gap-8">
             <button onClick={togglePlay} className="text-2xl">
               {isPlaying ? (
-                <FaPause className="text-xl text-text" />
+                <FaPause className="text-xl" />
               ) : (
-                <FaPlay className="text-xl text-text" />
+                <FaPlay className="text-xl" />
               )}
             </button>
-            <div className="group/volume flex gap-2 items-center text-text rounded-full hover:bg-border p-1.5">
+            <div className="group/volume flex gap-2 items-center rounded-full hover:bg-border p-1.5">
               <div
                 className="relative flex items-center transition-all text-xl icon"
                 onClick={() => {

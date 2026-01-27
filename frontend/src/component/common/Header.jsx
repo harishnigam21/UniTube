@@ -75,7 +75,7 @@ export default function Header({
     await sendRequest("logout", "GET").then((result) => {
       if (result && result.success) {
         window.localStorage.clear();
-        navigate("/login");
+        navigate("/login", { replace: true });
       }
     });
   };

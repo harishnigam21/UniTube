@@ -24,7 +24,7 @@ export default function Login() {
           <div className="flex justify-center gap-2">
             <button
               className="py-2 px-4 rounded-full uppercase text-text bg-red-500 icon font-medium"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/login", { replace: true })}
             >
               login
             </button>

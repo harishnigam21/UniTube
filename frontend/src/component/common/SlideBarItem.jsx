@@ -14,7 +14,7 @@ export default function SlideBarItem({ item, navToggle, motion }) {
             initial={{ opacity: 0, x: "-100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "-100%" }}
-            transition={{ duration: 0.25, ease: "easeIn" }}
+            transition={{ duration: 0.15, ease: "easeIn" }}
             className="flex gap-2 items-center icon"
             onClick={() => setShow((prev) => !prev)}
           >

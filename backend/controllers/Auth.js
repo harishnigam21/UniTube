@@ -15,7 +15,7 @@ export const LogIn = async (req, res) => {
     }
     const comparePassword = await bcrypt.compare(
       req.body.password,
-      ExistingUser.password
+      ExistingUser.password,
     );
     if (!comparePassword) {
       console.error("Incorrect password received from : ", ExistingUser.email);
@@ -26,19 +26,19 @@ export const LogIn = async (req, res) => {
     const access_token = jwt.sign(
       { id: ExistingUser._id },
       process.env.ACCESS_TOKEN_KEY,
-      { expiresIn: "2h" }
+      { expiresIn: "1d" },
     );
     const refresh_token = jwt.sign(
       { id: ExistingUser._id },
       process.env.REFRESH_TOKEN_KEY,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" },
     );
     const updateRefreshToken = await Users.findByIdAndUpdate(
       ExistingUser._id,
       {
         $set: { refreshToken: refresh_token },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     res.cookie("jwt", refresh_token, {
       httpOnly: true,
@@ -74,7 +74,7 @@ export const Register = async (req, res) => {
     if (userExist) {
       console.error(
         "Registered User trying to register again : ",
-        userExist.email
+        userExist.email,
       );
       return res.status(403).json({ message: "Email ID already exist" });
     }
@@ -129,10 +129,10 @@ export const handleRefresh = async (req, res) => {
         const access_token = jwt.sign(
           { id: decoded.id },
           process.env.ACCESS_TOKEN_KEY,
-          { expiresIn: "2h" }
+          { expiresIn: "1d" },
         );
         return res.status(200).json({ acTk: access_token, userInfo: other });
-      }
+      },
     );
   } catch (error) {
     console.error("Error from handleRefresh controller : ", error);
@@ -157,7 +157,7 @@ export const logOut = async (req, res) => {
       {
         refreshToken: findUser.refreshToken,
       },
-      { $set: { refreshToken: "" } }
+      { $set: { refreshToken: "" } },
     );
     res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
     return res.status(200).json({ status: true });

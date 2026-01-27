@@ -29,7 +29,7 @@ const jwtVerifier = async (req, res, next) => {
     //All kind of jwt error is handled
     if (err instanceof jwt.TokenExpiredError) {
       return res
-        .status(401)
+        .status(421)
         .send({ error: "Auth token expired. Please refresh." });
     }
     if (err instanceof jwt.JsonWebTokenError) {
